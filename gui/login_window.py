@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from controllers.auth_controller import autenticar
-from utils.check_data import check_email
+from utils.check_data import check_email, check_password
 from gui.main_window import MainWindow
 
 class LoginWindow(tk.Tk):
@@ -33,7 +33,7 @@ class LoginWindow(tk.Tk):
         self.entry_senha = tk.Entry(frame, show="*", width=40)
         self.entry_senha.pack(pady=(0, 20))
 
-        # Botão de login
+        # Botão de login -> o parametro "command" chama a função login() quando o botão é pressionado
         tk.Button(frame, text="Login", width=15, command=self.login).pack()
 
         # Rodapé com links
@@ -54,6 +54,9 @@ class LoginWindow(tk.Tk):
             return
         
         senha = self.entry_senha.get()
+        if not check_password(senha):
+            messagebox.showerror("Erro", "Senha inválida!")
+            return
 
         if autenticar(email, senha):
             messagebox.showinfo("Sucesso", "Login bem-sucedido!")
