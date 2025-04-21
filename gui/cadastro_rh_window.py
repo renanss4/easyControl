@@ -9,7 +9,7 @@ class CadastroRHWindow(tk.Tk):
         super().__init__()
         self.title("Cadastro de RH")
         self.configure(bg="#dcdcdc")
-        self.geometry("400x580")
+        self.geometry("700x600")
         self.resizable(False, False)
 
         # Frame principal com borda

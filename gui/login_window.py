@@ -13,7 +13,7 @@ class LoginWindow(tk.Tk):
 
         # Título da janela
         self.title("Login - EasyControl")
-        self.geometry("500x400")
+        self.geometry("700x600")
         self.configure(bg="#dcdcdc")  # Cor de fundo clara
 
         # Frame central
@@ -72,6 +72,7 @@ class LoginWindow(tk.Tk):
             messagebox.showerror("Erro", "E-mail ou senha inválidos!")
 
     def cadastrar_rh(self, event=None):
+        self.destroy()
         CadastroRHWindow()
         
         

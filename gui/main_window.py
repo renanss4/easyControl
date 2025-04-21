@@ -2,13 +2,14 @@ import tkinter as tk
 from tkinter import messagebox
 
 from gui.cadastro_rh_window import CadastroRHWindow
+from gui.cadastro_colaborador_window import CadastroColaboradorWindow  # Importar a janela de cadastro
 
 class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
 
         self.title("Home - EasyControl")
-        self.geometry("600x500")
+        self.geometry("700x600")
         self.configure(bg="#dcdcdc")
 
         tk.Label(self, text="EASY CONTROL", font=("Arial", 18, "bold"), bg="#dcdcdc").pack(pady=20)
@@ -53,12 +54,14 @@ class MainWindow(tk.Tk):
             self.destroy()
 
     def cadastrar_colaborador(self, event=None):
-        messagebox.showinfo("Cadastro colaborador", "Funcionalidade cadastro de colaborador ainda não implementada.")
+        self.destroy()
+        CadastroColaboradorWindow()  # Abre a janela de cadastro de colaboradores
 
     def cadastrar_gestor(self, event=None):
         messagebox.showinfo("Cadastro gestor", "Funcionalidade cadastro de gestor ainda não implementada.")
 
     def cadastrar_funcionario_rh(self, event=None):
+        self.destroy()
         CadastroRHWindow()
 
     def registrar_solicitacoes(self, event=None):

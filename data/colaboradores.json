@@ -1,0 +1,26 @@
+[
+    {
+        "cpf": "12312312312",
+        "nome": "Pedro Teste",
+        "cargo": "dev",
+        "equipe": "iot",
+        "dataAdmissao": "21042025",
+        "email": "pedro@teste.com"
+    },
+    {
+        "cpf": "12312312332",
+        "nome": "Rodrigueira",
+        "cargo": "dev",
+        "equipe": "iot",
+        "dataAdmissao": "21042025",
+        "email": "rodrigueira@teste.com"
+    },
+    {
+        "cpf": "12312312323",
+        "nome": "asas",
+        "cargo": "qq",
+        "equipe": "ee",
+        "dataAdmissao": "211111",
+        "email": "sdsd@sdsd.com"
+    }
+]
