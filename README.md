@@ -5,16 +5,6 @@ Projeto da disciplina de Análise e Projeto de Sistemas (UFSC)
 
 ---
 
-# Desenvolvedores
-
-- [Pedro Alencar](https://github.com/PedroAlencarr)
-
-- [Renan Silva](https://github.com/renanss4)
-
-- [Rodrigo Ciuffo]()
-
----
-
 ## 🛠 Tecnologias utilizadas
 
 - Python 3.x
