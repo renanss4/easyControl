@@ -8,7 +8,7 @@ class MainWindow(tk.Tk):
         super().__init__()
 
         self.title("Home - EasyControl")
-        self.geometry("600x500")
+        self.geometry("700x600")
         self.configure(bg="#dcdcdc")
 
         tk.Label(self, text="EASY CONTROL", font=("Arial", 18, "bold"), bg="#dcdcdc").pack(pady=20)

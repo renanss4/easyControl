@@ -13,7 +13,7 @@ class LoginWindow(tk.Tk):
 
         # Título da janela
         self.title("Login - EasyControl")
-        self.geometry("500x400")
+        self.geometry("700x600")
         self.configure(bg="#dcdcdc")  # Cor de fundo clara
 
         # Frame central
@@ -52,24 +52,25 @@ class LoginWindow(tk.Tk):
         email = self.entry_email.get()
         if not check_email(email):
             messagebox.showerror("Erro", "E-mail inválido!")
+            self.entry_email.delete(0, tk.END)
             return
         
         senha = self.entry_senha.get()
         if not check_password(senha):
             messagebox.showerror("Erro", "Senha inválida!")
+            self.entry_senha.delete(0, tk.END)
             return
 
         if autenticar(email, senha):
             messagebox.showinfo("Sucesso", "Login bem-sucedido!")
-
-            # Quando queremos ir para outra janela, devemos destruir a janela atual
-            # e chamar a nova janela. 
-            
             self.destroy()
             main_window = MainWindow()
             main_window.mainloop()
         else:
             messagebox.showerror("Erro", "E-mail ou senha inválidos!")
+            self.entry_email.delete(0, tk.END)
+            self.entry_senha.delete(0, tk.END)
+
 
     def cadastrar_rh(self, event=None):
         CadastroRHWindow()

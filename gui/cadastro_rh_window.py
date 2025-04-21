@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkcalendar import DateEntry
 from datetime import datetime
 from controllers.rh_controller import cadastrar_rh
 
@@ -9,7 +10,7 @@ class CadastroRHWindow(tk.Tk):
         super().__init__()
         self.title("Cadastro de RH")
         self.configure(bg="#dcdcdc")
-        self.geometry("400x580")
+        self.geometry("700x600")
         self.resizable(False, False)
 
         # Frame principal com borda
@@ -42,7 +43,7 @@ class CadastroRHWindow(tk.Tk):
 
         # Data de admissão
         tk.Label(campos_frame, text="Data de admissão", font=("Arial", 10, "bold"), bg="#dcdcdc", anchor="w").pack(fill="x", padx=20, pady=(10, 2))
-        self.campos["dataAdmissao"] = tk.Entry(campos_frame, width=30)
+        self.campos["dataAdmissao"] = DateEntry(campos_frame, date_pattern="yyyy-mm-dd", width=27, background='darkblue', foreground='white', borderwidth=2)
         self.campos["dataAdmissao"].pack(padx=20)
 
         # Equipe
