@@ -73,6 +73,7 @@ class LoginWindow(tk.Tk):
 
 
     def cadastrar_rh(self, event=None):
+        self.destroy()
         CadastroRHWindow()
         
         
