@@ -2,11 +2,12 @@ import tkinter as tk
 from tkinter import messagebox
 
 from gui.cadastro_rh_window import CadastroRHWindow
-from gui.cadastro_colaborador_window import CadastroColaboradorWindow  # Importar a janela de cadastro
+from gui.cadastro_colaborador_window import CadastroColaboradorWindow
 
 class MainWindow(tk.Tk):
-    def __init__(self):
+    def __init__(self, tela_anterior=None):
         super().__init__()
+        self.tela_anterior = tela_anterior
 
         self.title("Home - EasyControl")
         self.geometry("700x600")
@@ -52,17 +53,19 @@ class MainWindow(tk.Tk):
         confirm = messagebox.askyesno("Sair", "Deseja realmente sair?")
         if confirm:
             self.destroy()
+            from gui.login_window import LoginWindow
+            LoginWindow().mainloop()
 
     def cadastrar_colaborador(self, event=None):
         self.destroy()
-        CadastroColaboradorWindow()  # Abre a janela de cadastro de colaboradores
+        CadastroColaboradorWindow(tela_anterior="main")
 
     def cadastrar_gestor(self, event=None):
         messagebox.showinfo("Cadastro gestor", "Funcionalidade cadastro de gestor ainda não implementada.")
 
     def cadastrar_funcionario_rh(self, event=None):
         self.destroy()
-        CadastroRHWindow()
+        CadastroRHWindow(tela_anterior="main")
 
     def registrar_solicitacoes(self, event=None):
         messagebox.showinfo("Registro de solicitações", "Funcionalidade registro de solicitações ainda não implementada.")

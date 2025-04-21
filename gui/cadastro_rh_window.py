@@ -6,12 +6,12 @@ from controllers.rh_controller import cadastrar_rh
 
 
 class CadastroRHWindow(tk.Tk):
-    def __init__(self):
+    def __init__(self, tela_anterior=None):
         super().__init__()
         self.title("Cadastro de RH")
         self.configure(bg="#dcdcdc")
         self.geometry("700x600")
-        self.resizable(False, False)
+        self.tela_anterior = tela_anterior
 
         # Frame principal com borda
         borda_frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=10, pady=10)
@@ -66,7 +66,7 @@ class CadastroRHWindow(tk.Tk):
         self.campos["senha"] = tk.Entry(campos_frame, width=30, show="*")
         self.campos["senha"].pack(padx=20)
 
-        # Botão de conclusão (FORA da borda_frame)
+        # Botão de conclusão
         tk.Button(
             self,
             text="Concluir cadastro",
@@ -107,3 +107,10 @@ class CadastroRHWindow(tk.Tk):
         else:
             messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
             self.destroy()
+            
+            if self.tela_anterior == "login":
+                from gui.login_window import LoginWindow
+                LoginWindow().mainloop()
+            elif self.tela_anterior == "main":
+                from gui.main_window import MainWindow
+                MainWindow().mainloop()

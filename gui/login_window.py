@@ -6,8 +6,9 @@ from gui.main_window import MainWindow
 from gui.cadastro_rh_window import CadastroRHWindow
 
 class LoginWindow(tk.Tk):
-    def __init__(self):
+    def __init__(self, tela_anterior=None):
         super().__init__()
+        self.tela_anterior = tela_anterior
 
         # PARTE VISUAL
 
@@ -64,7 +65,7 @@ class LoginWindow(tk.Tk):
         if autenticar(email, senha):
             messagebox.showinfo("Sucesso", "Login bem-sucedido!")
             self.destroy()
-            main_window = MainWindow()
+            main_window = MainWindow(tela_anterior="login")
             main_window.mainloop()
         else:
             messagebox.showerror("Erro", "E-mail ou senha inválidos!")
@@ -74,7 +75,7 @@ class LoginWindow(tk.Tk):
 
     def cadastrar_rh(self, event=None):
         self.destroy()
-        CadastroRHWindow()
+        CadastroRHWindow(tela_anterior="login")
         
         
     def abrir_solicitacoes(self, event=None):
