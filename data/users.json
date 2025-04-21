@@ -1,9 +1,11 @@
 [
-  {
-    "cpf": "12345678900",
-    "nome": "usuario teste",
-    "cargo": "RH",
-    "email": "teste@teste.com",
-    "senha": "Senha123"
-  }
+    {
+        "cpf": "12345678900",
+        "nome": "usuario teste",
+        "cargo": "RH",
+        "equipe": 1,
+        "dataAdmissao": "2000-11-05",
+        "email": "teste@teste.com",
+        "senha": "Senha123"
+    }
 ]

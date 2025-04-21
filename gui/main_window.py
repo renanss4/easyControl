@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 
+from gui.cadastro_rh_window import CadastroRHWindow
+
 class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -57,7 +59,7 @@ class MainWindow(tk.Tk):
         messagebox.showinfo("Cadastro gestor", "Funcionalidade cadastro de gestor ainda não implementada.")
 
     def cadastrar_funcionario_rh(self, event=None):
-        messagebox.showinfo("Cadastro funcionário RH", "Funcionalidade cadastro de funcionário RH ainda não implementada.")
+        CadastroRHWindow()
 
     def registrar_solicitacoes(self, event=None):
         messagebox.showinfo("Registro de solicitações", "Funcionalidade registro de solicitações ainda não implementada.")

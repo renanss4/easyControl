@@ -3,6 +3,7 @@ from tkinter import messagebox
 from controllers.auth_controller import autenticar
 from utils.check_data import check_email, check_password
 from gui.main_window import MainWindow
+from gui.cadastro_rh_window import CadastroRHWindow
 
 class LoginWindow(tk.Tk):
     def __init__(self):
@@ -37,9 +38,9 @@ class LoginWindow(tk.Tk):
         tk.Button(frame, text="Login", width=15, command=self.login).pack()
 
         # Rodapé com links
-        label_register = tk.Label(self, text="Ainda não tem uma conta? Cadastre-se aqui!", fg="blue", bg="#dcdcdc", cursor="hand2")
+        label_register = tk.Label(self, text="Cadastrar funcionário de RH", fg="blue", bg="#dcdcdc", cursor="hand2")
         label_register.place(relx=0.0, rely=1.0, x=10, y=-10, anchor="sw")
-        label_register.bind("<Button-1>", self.abrir_cadastro)
+        label_register.bind("<Button-1>", self.cadastrar_rh)
 
         label_solicitacoes = tk.Label(self, text="Consulte aqui suas solicitações!", fg="blue", bg="#dcdcdc", cursor="hand2")
         label_solicitacoes.place(relx=1.0, rely=1.0, x=-10, y=-10, anchor="se")
@@ -70,8 +71,9 @@ class LoginWindow(tk.Tk):
         else:
             messagebox.showerror("Erro", "E-mail ou senha inválidos!")
 
-    def abrir_cadastro(self, event=None):
-        messagebox.showinfo("Cadastro", "Funcionalidade de cadastro ainda não implementada.")
-
+    def cadastrar_rh(self, event=None):
+        CadastroRHWindow()
+        
+        
     def abrir_solicitacoes(self, event=None):
         messagebox.showinfo("Solicitações", "Visualização de solicitações ainda não implementada.")
