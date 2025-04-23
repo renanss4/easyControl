@@ -3,7 +3,7 @@ from tkinter import messagebox
 from controllers.colaborador_controller import criar_colaborador
 
 class CadastroColaboradorWindow(tk.Tk): 
-    def __init__(self):
+    def __init__(self, tela_anterior=None):
         super().__init__()
         
         # Configurações da janela
@@ -74,4 +74,7 @@ class CadastroColaboradorWindow(tk.Tk):
         else:
             # Se não for string, é o objeto colaborador criado
             messagebox.showinfo("Sucesso", "Colaborador cadastrado com sucesso!")
-            self.destroy()  # Fecha a janela de cadastro
+            self.destroy()
+            # Fecha a janela de cadastro
+            from gui.main_window import MainWindow #Import feito aqui para evitar importação circular entre os arquivos
+            MainWindow().mainloop()

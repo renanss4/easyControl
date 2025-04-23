@@ -109,8 +109,8 @@ class CadastroRHWindow(tk.Tk):
             self.destroy()
             
             if self.tela_anterior == "login":
-                from gui.login_window import LoginWindow
-                LoginWindow().mainloop()
+                from gui.login_window import LoginWindow #Imports feitos aqui para evitar importação circular entre os arquivos
+                LoginWindow().mainloop() 
             elif self.tela_anterior == "main":
                 from gui.main_window import MainWindow
                 MainWindow().mainloop()

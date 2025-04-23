@@ -18,7 +18,7 @@ Projeto da disciplina de Análise e Projeto de Sistemas (UFSC)
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/easyControl.git
+git clone https://github.com/renanss4/easyControl.git
 cd easyControl
 ```
 
