@@ -22,5 +22,13 @@
         "equipe": "ee",
         "dataAdmissao": "211111",
         "email": "sdsd@sdsd.com"
+    },
+    {
+        "cpf": "12312312313",
+        "nome": "teste",
+        "cargo": "teste",
+        "equipe": "02",
+        "dataAdmissao": "2000-05-11",
+        "email": "email@email.com"
     }
 ]

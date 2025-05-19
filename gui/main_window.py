@@ -3,6 +3,8 @@ from tkinter import messagebox
 
 from gui.cadastro_rh_window import CadastroRHWindow
 from gui.cadastro_colaborador_window import CadastroColaboradorWindow
+from gui.cadastro_solicitacoes_windows import CadastroSolicitacoesWindow
+from gui.consultar_solicitacoes import ConsultarSolicitacoesWindow
 
 class MainWindow(tk.Tk):
     def __init__(self, tela_anterior=None):
@@ -68,10 +70,12 @@ class MainWindow(tk.Tk):
         CadastroRHWindow(tela_anterior="main")
 
     def registrar_solicitacoes(self, event=None):
-        messagebox.showinfo("Registro de solicitações", "Funcionalidade registro de solicitações ainda não implementada.")
+        self.destroy()
+        CadastroSolicitacoesWindow(tela_anterior="main")
 
     def consultar_solicitacoes(self, event=None):
-        messagebox.showinfo("Consultar solicitações", "Funcionalidade consultar solicitações ainda não implementada.")
+        self.destroy()
+        ConsultarSolicitacoesWindow(tela_anterior="main")
 
     def gerar_relatorio_ferias(self, event=None):
         messagebox.showinfo("Gerar relatório de férias", "Funcionalidade gerar relatório de férias ainda não implementada.")
