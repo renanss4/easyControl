@@ -4,7 +4,7 @@ from tkinter import messagebox
 from gui.cadastro_rh_window import CadastroRHWindow
 from gui.cadastro_colaborador_window import CadastroColaboradorWindow
 from gui.cadastro_solicitacoes_windows import CadastroSolicitacoesWindow
-from gui.consultar_solicitacoes import ConsultarSolicitacoesWindow
+from gui.consultar_solicitacoes_window import ConsultarSolicitacoesWindow
 
 class MainWindow(tk.Tk):
     def __init__(self, tela_anterior=None):
