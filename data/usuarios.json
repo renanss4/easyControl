@@ -1,0 +1,24 @@
+[
+    {
+        "cpf": "12345678901",
+        "nome": "João Silva",
+        "cargo": "Gestor de Desenvolvimento",
+        "equipe": "Desenvolvimento",
+        "data_admissao": "2020-01-15",
+        "email": "joao.silva@empresa.com",
+        "senha": "Gestor123@",
+        "tipo": "gestor",
+        "solicitacoes_protocolos": []
+    },
+    {
+        "cpf": "32165498701",
+        "nome": "Maria Santos",
+        "cargo": "Gestor de RH",
+        "equipe": "RH",
+        "data_admissao": "2019-06-20",
+        "email": "maria.santos@empresa.com",
+        "senha": "GestorRH456@",
+        "tipo": "rh",
+        "solicitacoes_protocolos": []
+    }
+]

@@ -1,0 +1,19 @@
+[
+    {
+        "nome": "Desenvolvimento",
+        "gestor_cpf": "12345678901",
+        "colaboradores_cpf": [
+            "98765432101",
+            "45678912301",
+            "78912345601"
+        ]
+    },
+    {
+        "nome": "RH",
+        "gestor_cpf": "32165498701",
+        "colaboradores_cpf": [
+            "65498732101",
+            "95175384201"
+        ]
+    }
+]
