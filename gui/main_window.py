@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from gui.cadastro_rh_window import CadastroRHWindow
-from gui.cadastro_colaborador_window import CadastroColaboradorWindow
-from gui.cadastro_solicitacoes_windows import CadastroSolicitacoesWindow
+from gui.rh.cadastro_rh_window import CadastroRHWindow
+from gui.rh.cadastro_colaborador_window import CadastroColaboradorWindow
+from gui.rh.cadastro_solicitacoes_windows import CadastroSolicitacoesWindow
 from gui.consultar_solicitacoes_window import ConsultarSolicitacoesWindow
 
 class MainWindow(tk.Tk):

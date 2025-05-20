@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkcalendar import DateEntry
 from datetime import datetime
-from controllers.solicitacoes_controller import cadastrar_solicitacao
+from controllers.solicitacao_controller import cadastrar_solicitacao
 
 class CadastroSolicitacoesWindow(tk.Tk):
     def __init__(self, tela_anterior=None):
@@ -64,15 +64,29 @@ class CadastroSolicitacoesWindow(tk.Tk):
             state="disabled"  # Desabilitado por enquanto
         ).pack(pady=10)
 
-        # Botão de conclusão
+        # Frame para os botões
+        botoes_frame = tk.Frame(self, bg="#dcdcdc")
+        botoes_frame.pack(pady=(10, 20))
+
+        # Botão de enviar solicitação
         tk.Button(
-            self,
+            botoes_frame,
             text="Enviar solicitação",
             font=("Arial", 10, "bold"),
             bg="#c0c0c0",
-            width=25,
+            width=20,
             command=self.concluir_solicitacao
-        ).pack(pady=(10, 20))
+        ).pack(side="left", padx=5)
+
+        # Botão de voltar
+        tk.Button(
+            botoes_frame,
+            text="Voltar",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=20,
+            command=self.voltar
+        ).pack(side="left", padx=5)
 
     def abrir_calendario(self, campo):
         top = tk.Toplevel(self)
@@ -129,3 +143,8 @@ class CadastroSolicitacoesWindow(tk.Tk):
             if self.tela_anterior:
                 from gui.main_window import MainWindow
                 MainWindow().mainloop()
+
+    def voltar(self):
+        self.destroy()
+        from gui.main_window import MainWindow
+        MainWindow().mainloop()

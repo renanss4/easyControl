@@ -5,6 +5,7 @@ from controllers.colaborador_controller import criar_colaborador
 class CadastroColaboradorWindow(tk.Tk): 
     def __init__(self, tela_anterior=None):
         super().__init__()
+        self.tela_anterior = tela_anterior
         
         # Configurações da janela
         self.title("Cadastro de Colaborador")
@@ -30,9 +31,29 @@ class CadastroColaboradorWindow(tk.Tk):
         self.entries["Cargo"] = self.create_label_and_entry(frame, "Cargo")
         self.entries["Email"] = self.create_label_and_entry(frame, "Email")
         
+        # Frame para os botões
+        botoes_frame = tk.Frame(frame, bg="#dcdcdc")
+        botoes_frame.pack(pady=(20, 0))
+
         # Botão de cadastro
-        btn_cadastrar = tk.Button(frame, text="Concluir cadastro", command=self.concluir_cadastro)
-        btn_cadastrar.pack(pady=(20, 0))
+        tk.Button(
+            botoes_frame,
+            text="Concluir cadastro",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=20,
+            command=self.concluir_cadastro
+        ).pack(side="left", padx=5)
+
+        # Botão de voltar
+        tk.Button(
+            botoes_frame,
+            text="Voltar",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=20,
+            command=self.voltar
+        ).pack(side="left", padx=5)
 
         self.mainloop()  # Adicionado no final do método __init__
 
@@ -78,3 +99,8 @@ class CadastroColaboradorWindow(tk.Tk):
             # Fecha a janela de cadastro
             from gui.main_window import MainWindow #Import feito aqui para evitar importação circular entre os arquivos
             MainWindow().mainloop()
+
+    def voltar(self):
+        self.destroy()
+        from gui.main_window import MainWindow
+        MainWindow().mainloop()

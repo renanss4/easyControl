@@ -1,21 +1,20 @@
 import tkinter as tk
 from tkinter import messagebox
-from controllers.auth_controller import autenticar
+from controllers.usuario_controller import autenticar
 from utils.check_data import check_email, check_password
 from gui.main_window import MainWindow
-from gui.cadastro_rh_window import CadastroRHWindow
+from gui.rh.cadastro_rh_window import CadastroRHWindow
 
 class LoginWindow(tk.Tk):
-    def __init__(self, tela_anterior=None):
+    def __init__(self):
         super().__init__()
-        self.tela_anterior = tela_anterior
 
         # PARTE VISUAL
 
         # Título da janela
         self.title("Login - EasyControl")
         self.geometry("700x600")
-        self.configure(bg="#dcdcdc")  # Cor de fundo clara
+        self.configure(bg="#dcdcdc")
 
         # Frame central
         frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=20, pady=20)

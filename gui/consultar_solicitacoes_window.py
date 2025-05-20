@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from controllers.solicitacoes_controller import obter_solicitacoes_detalhadas
+from controllers.solicitacao_controller import obter_solicitacoes_detalhadas
 
 class ConsultarSolicitacoesWindow(tk.Tk):
     def __init__(self, tela_anterior=None):

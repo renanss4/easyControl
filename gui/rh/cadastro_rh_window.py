@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkcalendar import DateEntry
 from datetime import datetime
-from controllers.rh_controller import cadastrar_rh
+from controllers.usuario_controller import cadastrar_rh
 
 
 class CadastroRHWindow(tk.Tk):
@@ -66,15 +66,29 @@ class CadastroRHWindow(tk.Tk):
         self.campos["senha"] = tk.Entry(campos_frame, width=30, show="*")
         self.campos["senha"].pack(padx=20)
 
+        # Frame para os botões
+        botoes_frame = tk.Frame(self, bg="#dcdcdc")
+        botoes_frame.pack(pady=(10, 20))
+
         # Botão de conclusão
         tk.Button(
-            self,
+            botoes_frame,
             text="Concluir cadastro",
             font=("Arial", 10, "bold"),
             bg="#c0c0c0",
             width=25,
             command=self.concluir_cadastro
-        ).pack(pady=(10, 20))
+        ).pack(side="left", padx=5)
+
+        # Botão de voltar
+        tk.Button(
+            botoes_frame,
+            text="Voltar",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=25,
+            command=self.voltar
+        ).pack(side="left", padx=5)
 
     def concluir_cadastro(self):
         dados = {chave: campo.get().strip() for chave, campo in self.campos.items()}
@@ -106,11 +120,14 @@ class CadastroRHWindow(tk.Tk):
             messagebox.showerror("Erro", resultado)
         else:
             messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
-            self.destroy()
-            
-            if self.tela_anterior == "login":
-                from gui.login_window import LoginWindow #Imports feitos aqui para evitar importação circular entre os arquivos
-                LoginWindow().mainloop() 
-            elif self.tela_anterior == "main":
-                from gui.main_window import MainWindow
-                MainWindow().mainloop()
+            self.voltar()
+
+    def voltar(self):
+        self.destroy()
+        # Verifica de qual tela o usuário veio baseado na pilha de janelas
+        if not hasattr(self, "_previous_window"):
+            from gui.login_window import LoginWindow
+            LoginWindow().mainloop()
+        else:
+            from gui.main_window import MainWindow
+            MainWindow().mainloop()
