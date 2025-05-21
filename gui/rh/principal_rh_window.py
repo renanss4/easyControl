@@ -1,18 +1,16 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from gui.rh.cadastrar_rh_window import CadastroRHWindow
-from gui.rh.cadastrar_colaborador_window import CadastroColaboradorWindow
-from gui.rh.cadastrar_solicitacao_window import CadastroSolicitacoesWindow
-from gui.consultar_solicitacoes_window import ConsultarSolicitacoesWindow
+from gui.rh.cadastrar_colaborador_window import CadastraColaboradorWindow
+from gui.rh.cadastrar_solicitacao_window import CadastraSolicitacaoWindow
+from gui.rh.cadastrar_rh_window import CadastraRhWindow
 
-class MainWindow(tk.Tk):
-    def __init__(self, tela_anterior=None):
+class PrincipalRhWindow(tk.Tk):
+    def __init__(self):
         super().__init__()
-        self.tela_anterior = tela_anterior
 
-        self.title("Home - EasyControl")
-        self.geometry("700x600")
+        self.title("Principal RH - EasyControl")
+        self.geometry("900x600")
         self.configure(bg="#dcdcdc")
 
         tk.Label(self, text="EASY CONTROL", font=("Arial", 18, "bold"), bg="#dcdcdc").pack(pady=20)
@@ -28,14 +26,14 @@ class MainWindow(tk.Tk):
         ).grid(row=0, column=1, padx=10, pady=5)
 
         tk.Button(
-            quadro_botoes, text="Cadastrar Funcionário RH", width=25, height=2, command=self.cadastrar_funcionario_rh
+            quadro_botoes, text="Cadastrar Funcionário RH", width=25, height=2, command=self.cadastrar_rh
         ).grid(row=1, column=0, padx=10, pady=5)
         tk.Button(
-            quadro_botoes, text="Registro de Solicitações", width=25, height=2, command=self.registrar_solicitacoes
+            quadro_botoes, text="Cadastrar Solicitações", width=25, height=2, command=self.cadastrar_solicitacao
         ).grid(row=1, column=1, padx=10, pady=5)
 
         tk.Button(
-            quadro_botoes, text="Consultar Solicitações", width=25, height=2, command=self.consultar_solicitacoes
+            quadro_botoes, text="Cadastrar Equipe", width=25, height=2, command=self.cadastrar_equipe
         ).grid(row=2, column=0, padx=10, pady=5)
         tk.Button(
             quadro_botoes, text="Gerar Relatório de Férias", width=25, height=2, command=self.gerar_relatorio_ferias
@@ -68,7 +66,7 @@ class MainWindow(tk.Tk):
     def cadastrar_colaborador(self, event=None):
         # aqui, quando entra na tela de cadastro, deve ter botões do crud
         self.destroy()
-        CadastroColaboradorWindow(tela_anterior="main")
+        CadastraColaboradorWindow()
 
     # UC05
     def cadastrar_gestor(self, event=None):
@@ -79,13 +77,13 @@ class MainWindow(tk.Tk):
     def cadastrar_rh(self, event=None):
         # aqui, quando entra na tela de cadastro, deve ter botões do crud
         self.destroy()
-        CadastroRHWindow(tela_anterior="main")
+        CadastraRhWindow()
 
     # UC07
     def cadastrar_solicitacao(self, event=None):
         # aqui, quando entra na tela de cadastro, deve ter botões do crud
         self.destroy()
-        CadastroSolicitacoesWindow(tela_anterior="main")
+        CadastraSolicitacaoWindow()
 
     # UC08
     def gerar_relatorio_ferias(self, event=None):

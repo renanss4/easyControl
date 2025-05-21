@@ -1,16 +1,14 @@
 import tkinter as tk
-from tkinter import messagebox
 from tkcalendar import DateEntry
 from datetime import datetime
 from controllers.solicitacao_controller import cadastrar_solicitacao
 
-class CadastroSolicitacoesWindow(tk.Tk):
-    def __init__(self, tela_anterior=None):
+class CadastraSolicitacaoWindow(tk.Tk):
+    def __init__(self):
         super().__init__()
         self.title("Cadastro de Solicitação de Férias")
         self.configure(bg="#dcdcdc")
-        self.geometry("700x600")
-        self.tela_anterior = tela_anterior
+        self.geometry("900x600")
 
         # Frame principal com borda
         borda_frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=10, pady=10)
@@ -121,7 +119,7 @@ class CadastroSolicitacoesWindow(tk.Tk):
         data_fim = datetime.strptime(self.campos["data_fim"].get(), "%Y-%m-%d").date()
 
         if not cpf:
-            messagebox.showerror("Erro", "Por favor, preencha o CPF.")
+            tk.messagebox.showerror("Erro", "Por favor, preencha o CPF.")
             return
 
         resultado = cadastrar_solicitacao(
@@ -132,19 +130,17 @@ class CadastroSolicitacoesWindow(tk.Tk):
         )
 
         if isinstance(resultado, str):
-            messagebox.showerror("Erro", resultado)
+            tk.messagebox.showerror("Erro", resultado)
         else:
-            messagebox.showinfo(
+            tk.messagebox.showinfo(
                 "Sucesso", 
                 f"Solicitação cadastrada com sucesso!\nProtocolo: {resultado['protocolo']}"
             )
             self.destroy()
+            self.voltar()
             
-            if self.tela_anterior:
-                from gui.main_window import MainWindow
-                MainWindow().mainloop()
 
     def voltar(self):
         self.destroy()
-        from gui.main_window import MainWindow
-        MainWindow().mainloop()
+        from gui.rh.principal_rh_window import PrincipalRhWindow
+        PrincipalRhWindow().mainloop()

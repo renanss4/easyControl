@@ -1,15 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
 from controllers.solicitacao_controller import obter_solicitacoes_detalhadas
 
-class ConsultarSolicitacoesWindow(tk.Tk):
-    def __init__(self, tela_anterior=None):
+class ConsultaSolicitacoesWindow(tk.Tk):
+    def __init__(self):
         super().__init__()
-        self.title("Consulta de Solicitações")
+        self.title("Consulta de Solicitações - EasyControl")
         self.configure(bg="#dcdcdc")
         self.geometry("900x600")
-        self.tela_anterior = tela_anterior
 
         # Frame principal
         main_frame = tk.Frame(self, bg="#dcdcdc")
@@ -102,6 +100,5 @@ class ConsultarSolicitacoesWindow(tk.Tk):
 
     def voltar(self):
         self.destroy()
-        if self.tela_anterior:
-            from gui.main_window import MainWindow
-            MainWindow().mainloop()
+        from gui.login_window import LoginWindow
+        LoginWindow().mainloop()

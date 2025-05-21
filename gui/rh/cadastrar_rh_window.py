@@ -1,17 +1,15 @@
 import tkinter as tk
-from tkinter import messagebox
 from tkcalendar import DateEntry
 from datetime import datetime
 from controllers.usuario_controller import cadastrar_rh
 
 
-class CadastroRHWindow(tk.Tk):
-    def __init__(self, tela_anterior=None):
+class CadastraRhWindow(tk.Tk):
+    def __init__(self):
         super().__init__()
-        self.title("Cadastro de RH")
+        self.title("Cadastro de RH - EasyControl")
         self.configure(bg="#dcdcdc")
-        self.geometry("700x600")
-        self.tela_anterior = tela_anterior
+        self.geometry("900x600")
 
         # Frame principal com borda
         borda_frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=10, pady=10)
@@ -93,17 +91,17 @@ class CadastroRHWindow(tk.Tk):
     def concluir_cadastro(self):
         dados = {chave: campo.get().strip() for chave, campo in self.campos.items()}
         if not all(dados.values()):
-            messagebox.showerror("Erro", "Por favor, preencha todos os campos.")
+            tk.messagebox.showerror("Erro", "Por favor, preencha todos os campos.")
             return
         try:
             data_formatada = datetime.strptime(dados["dataAdmissao"], "%Y-%m-%d")
         except ValueError:
-            messagebox.showerror("Erro", "A data deve estar no formato YYYY-MM-DD.")
+            tk.messagebox.showerror("Erro", "A data deve estar no formato YYYY-MM-DD.")
             return
         try:
             equipe_int = int(dados["equipe"])
         except ValueError:
-            messagebox.showerror("Erro", "Equipe deve ser um número inteiro.")
+            tk.messagebox.showerror("Erro", "Equipe deve ser um número inteiro.")
             return
 
         resultado = cadastrar_rh(
@@ -117,17 +115,13 @@ class CadastroRHWindow(tk.Tk):
         )
 
         if isinstance(resultado, str):
-            messagebox.showerror("Erro", resultado)
+            tk.messagebox.showerror("Erro", resultado)
         else:
-            messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
+            tk.messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
             self.voltar()
 
+   
     def voltar(self):
         self.destroy()
-        # Verifica de qual tela o usuário veio baseado na pilha de janelas
-        if not hasattr(self, "_previous_window"):
-            from gui.login_window import LoginWindow
-            LoginWindow().mainloop()
-        else:
-            from gui.main_window import MainWindow
-            MainWindow().mainloop()
+        from gui.rh.principal_rh_window import PrincipalRhWindow
+        PrincipalRhWindow().mainloop()

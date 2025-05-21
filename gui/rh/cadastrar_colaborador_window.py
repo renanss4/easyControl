@@ -2,10 +2,9 @@ import tkinter as tk
 from tkinter import messagebox
 from controllers.colaborador_controller import criar_colaborador
 
-class CadastroColaboradorWindow(tk.Tk): 
-    def __init__(self, tela_anterior=None):
+class CadastraColaboradorWindow(tk.Tk): 
+    def __init__(self):
         super().__init__()
-        self.tela_anterior = tela_anterior
         
         # Configurações da janela
         self.title("Cadastro de Colaborador")
@@ -97,10 +96,9 @@ class CadastroColaboradorWindow(tk.Tk):
             messagebox.showinfo("Sucesso", "Colaborador cadastrado com sucesso!")
             self.destroy()
             # Fecha a janela de cadastro
-            from gui.main_window import MainWindow #Import feito aqui para evitar importação circular entre os arquivos
-            MainWindow().mainloop()
+            self.voltar()
 
     def voltar(self):
         self.destroy()
-        from gui.main_window import MainWindow
-        MainWindow().mainloop()
+        from gui.rh.principal_rh_window import PrincipalRhWindow
+        PrincipalRhWindow().mainloop()
