@@ -1,127 +1,139 @@
 import tkinter as tk
+from tkinter import messagebox
 from tkcalendar import DateEntry
-from datetime import datetime
 from controllers.usuario_controller import cadastrar_rh
-
+from utils.check_data import valida_todos_dados
+from datetime import datetime
 
 class CadastraRhWindow(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Cadastro de RH - EasyControl")
-        self.configure(bg="#dcdcdc")
-        self.geometry("900x600")
-
-        # Frame principal com borda
-        borda_frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=10, pady=10)
-        borda_frame.pack(padx=20, pady=(20, 10), fill="both", expand=False)
-
-        # Título da janela
-        tk.Label(
-            borda_frame,
-            text="Cadastro de RH",
-            font=("Arial", 16, "bold"),
-            bg="#dcdcdc"
-        ).pack(pady=15)
         
-        # Container dos campos
-        campos_frame = tk.Frame(borda_frame, bg="#dcdcdc")
-        campos_frame.pack(pady=10)
-
-        self.campos = {}
-
-        # Nome
-        tk.Label(campos_frame, text="Nome", font=("Arial", 10, "bold"), bg="#dcdcdc", anchor="w").pack(fill="x", padx=20, pady=(10, 2))
-        self.campos["nome"] = tk.Entry(campos_frame, width=30)
-        self.campos["nome"].pack(padx=20)
-
-        # CPF
-        tk.Label(campos_frame, text="CPF", font=("Arial", 10, "bold"), bg="#dcdcdc", anchor="w").pack(fill="x", padx=20, pady=(10, 2))
-        self.campos["cpf"] = tk.Entry(campos_frame, width=30)
-        self.campos["cpf"].pack(padx=20)
-
-        # Data de admissão
-        tk.Label(campos_frame, text="Data de admissão", font=("Arial", 10, "bold"), bg="#dcdcdc", anchor="w").pack(fill="x", padx=20, pady=(10, 2))
-        self.campos["dataAdmissao"] = DateEntry(campos_frame, date_pattern="yyyy-mm-dd", width=27, background='darkblue', foreground='white', borderwidth=2)
-        self.campos["dataAdmissao"].pack(padx=20)
-
-        # Equipe
-        tk.Label(campos_frame, text="Equipe", font=("Arial", 10, "bold"), bg="#dcdcdc", anchor="w").pack(fill="x", padx=20, pady=(10, 2))
-        self.campos["equipe"] = tk.Entry(campos_frame, width=30)
-        self.campos["equipe"].pack(padx=20)
-
-        # Cargo
-        tk.Label(campos_frame, text="Cargo", font=("Arial", 10, "bold"), bg="#dcdcdc", anchor="w").pack(fill="x", padx=20, pady=(10, 2))
-        self.campos["cargo"] = tk.Entry(campos_frame, width=30)
-        self.campos["cargo"].pack(padx=20)
-
-        # Email
-        tk.Label(campos_frame, text="Email", font=("Arial", 10, "bold"), bg="#dcdcdc", anchor="w").pack(fill="x", padx=20, pady=(10, 2))
-        self.campos["email"] = tk.Entry(campos_frame, width=30)
-        self.campos["email"].pack(padx=20)
-
-        # Senha
-        tk.Label(campos_frame, text="Senha", font=("Arial", 10, "bold"), bg="#dcdcdc", anchor="w").pack(fill="x", padx=20, pady=(10, 2))
-        self.campos["senha"] = tk.Entry(campos_frame, width=30, show="*")
-        self.campos["senha"].pack(padx=20)
-
+        # Configurações da janela
+        self.title("Cadastro de RH - EasyControl")
+        self.geometry("900x600")
+        self.configure(bg="#dcdcdc")
+        
+        # Frame central
+        frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=20, pady=20)
+        frame.place(relx=0.5, rely=0.5, anchor="center")
+        
+        # Título
+        label_title = tk.Label(frame, text="Cadastro de RH", font=("Arial", 16, "bold"), bg="#dcdcdc")
+        label_title.pack(pady=(0, 20))
+        
+        # Campos de entrada
+        self.campos = [
+            ("nome", "Nome"),
+            ("cpf", "CPF"),
+            ("email", "Email"),
+            ("senha", "Senha"),
+            ("cargo", "Cargo")
+        ]
+        
+        # Dicionário para armazenar as entries
+        self.entries = {}
+        
+        # Criar campos
+        for campo_id, label in self.campos:
+            # Se for o campo de senha, criar com máscara
+            if campo_id == "senha":
+                self.entries[campo_id] = self.create_label_and_entry(frame, label, show="*")
+            else:
+                self.entries[campo_id] = self.create_label_and_entry(frame, label)
+            
+        # Criando o campo de data_admissao separadamente com DateEntry
+        tk.Label(frame, text="Data de admissão", bg="#dcdcdc").pack(anchor="w", pady=(5, 0))
+        self.entries["data_admissao"] = DateEntry(
+            frame, 
+            date_pattern="yyyy-mm-dd",
+            width=27,
+            background='darkblue',
+            foreground='white',
+            borderwidth=2
+        )
+        self.entries["data_admissao"].pack(pady=(0, 10))
+        
         # Frame para os botões
-        botoes_frame = tk.Frame(self, bg="#dcdcdc")
-        botoes_frame.pack(pady=(10, 20))
+        botoes_frame = tk.Frame(frame, bg="#dcdcdc")
+        botoes_frame.pack(pady=(20, 0))
 
-        # Botão de conclusão
+        # Botões
         tk.Button(
             botoes_frame,
             text="Concluir cadastro",
             font=("Arial", 10, "bold"),
             bg="#c0c0c0",
-            width=25,
+            width=20,
             command=self.concluir_cadastro
         ).pack(side="left", padx=5)
 
-        # Botão de voltar
         tk.Button(
             botoes_frame,
             text="Voltar",
             font=("Arial", 10, "bold"),
             bg="#c0c0c0",
-            width=25,
+            width=20,
             command=self.voltar
         ).pack(side="left", padx=5)
 
+    def create_label_and_entry(self, parent, text, show=None):
+        """Cria um par de label e entry e retorna o entry."""
+        tk.Label(parent, text=text, bg="#dcdcdc").pack(anchor="w", pady=(5, 0))
+        entry = tk.Entry(parent, width=30, show=show)
+        entry.pack(pady=(0, 10))
+        return entry
+
     def concluir_cadastro(self):
-        dados = {chave: campo.get().strip() for chave, campo in self.campos.items()}
-        if not all(dados.values()):
-            tk.messagebox.showerror("Erro", "Por favor, preencha todos os campos.")
-            return
-        try:
-            data_formatada = datetime.strptime(dados["dataAdmissao"], "%Y-%m-%d")
-        except ValueError:
-            tk.messagebox.showerror("Erro", "A data deve estar no formato YYYY-MM-DD.")
-            return
-        try:
-            equipe_int = int(dados["equipe"])
-        except ValueError:
-            tk.messagebox.showerror("Erro", "Equipe deve ser um número inteiro.")
-            return
-
-        resultado = cadastrar_rh(
-            nome=dados["nome"],
-            cpf=dados["cpf"],
-            email=dados["email"],
-            senha=dados["senha"],
-            dataAdmissao=data_formatada,
-            cargo=dados["cargo"],
-            equipe=equipe_int
+        # Coletar dados dos campos
+        dados = {
+            campo_id: self.entries[campo_id].get().strip()
+            for campo_id, _ in self.campos
+        }
+        
+        # Adicionar a data de admissão e converter para objeto date
+        data_str = self.entries['data_admissao'].get()
+        dados['data_admissao'] = datetime.strptime(data_str, "%Y-%m-%d").date()
+        
+        # Validar todos os dados
+        sucesso, mensagem = valida_todos_dados(
+            nome=dados['nome'],
+            cpf=dados['cpf'],
+            email=dados['email'],
+            senha=dados['senha'],
+            data_admissao=data_str,  # Para validação, usamos a string
+            cargo=dados['cargo'],
+            equipe="RH",  # Equipe fixa para RH
+            solicitacoes_protocolos=[]
         )
-
+        
+        if not sucesso:
+            messagebox.showerror("Erro de Validação", mensagem)
+            return
+        
+        # Chamar o controller para criar o usuário RH
+        resultado = cadastrar_rh(
+            nome=dados['nome'],
+            cpf=dados['cpf'],
+            email=dados['email'],
+            senha=dados['senha'],
+            data_admissao=dados['data_admissao'],  # Aqui passamos o objeto date
+            cargo=dados['cargo']  # Equipe será definida como "RH" no controller
+        )
+        
         if isinstance(resultado, str):
-            tk.messagebox.showerror("Erro", resultado)
+            # Se for uma string, é uma mensagem de erro
+            messagebox.showerror("Erro", resultado)
         else:
-            tk.messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
+            # Se não for string, é o objeto usuário criado
+            messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
             self.voltar()
 
-   
     def voltar(self):
         self.destroy()
         from gui.rh.principal_rh_window import PrincipalRhWindow
-        PrincipalRhWindow().mainloop()
+        PrincipalRhWindow()
+
+if __name__ == "__main__":
+    app = CadastraRhWindow()
+    app.mainloop()

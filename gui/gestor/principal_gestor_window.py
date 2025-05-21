@@ -6,7 +6,7 @@ class PrincipalGestorWindow(tk.Tk):
         super().__init__()
 
         self.title("Principal Gestor - EasyControl")
-        self.geometry("700x600")
+        self.geometry("900x600")
         self.configure(bg="#dcdcdc")
 
         tk.Label(self, text="EASY CONTROL", font=("Arial", 18, "bold"), bg="#dcdcdc").pack(pady=20)

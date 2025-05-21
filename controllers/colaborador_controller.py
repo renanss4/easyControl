@@ -40,7 +40,7 @@ def criar_colaborador(nome, cpf, email, data_admissao, cargo, equipe):
         nome=nome,
         cpf=cpf,
         email=email,
-        dataAdmissao=data_admissao,
+        data_admissao=data_admissao,
         cargo=cargo,
         equipe=equipe,
     )
@@ -50,8 +50,9 @@ def criar_colaborador(nome, cpf, email, data_admissao, cargo, equipe):
         "nome": novo_colaborador.nome,
         "cargo": novo_colaborador.cargo,
         "equipe": novo_colaborador.equipe,
-        "dataAdmissao": novo_colaborador.dataAdmissao,
+        "data_admissao": novo_colaborador.data_admissao,
         "email": novo_colaborador.email,
+        "solicitacoes_protocolos": []  # Inicializa a lista vazia de solicitações
     }
 
     colaboradores.append(colaborador_dict)
@@ -74,7 +75,7 @@ def listar_colaboradores():
                         nome=c.get("nome"),
                         cpf=c.get("cpf"),
                         email=c.get("email"),
-                        dataAdmissao=c.get("dataAdmissao"),
+                        data_admissao=c.get("data_admissao"),
                         cargo=c.get("cargo"),
                         equipe=c.get("equipe"),
                     )
@@ -125,7 +126,7 @@ def atualizar_colaborador(
             if data_admissao:
                 if isinstance(data_admissao, datetime):
                     data_admissao = data_admissao.strftime("%Y-%m-%d")
-                colaboradores[i]["dataAdmissao"] = data_admissao
+                colaboradores[i]["data_admissao"] = data_admissao
             if cargo:
                 colaboradores[i]["cargo"] = cargo
             if equipe:

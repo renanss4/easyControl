@@ -90,7 +90,7 @@ def cadastrar_usuario(
             "email": email,
             "senha": senha,
             "tipo": tipo.value,
-            "solicitacoes_protocolos": [],
+            "solicitacoes_protocolos": []  # Inicializa com lista vazia
         }
     )
 

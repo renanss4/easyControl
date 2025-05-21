@@ -1,6 +1,6 @@
 import tkinter as tk
 from controllers.usuario_controller import autenticar
-from utils.check_data import check_email, check_password
+from utils.check_data import valida_todos_dados
 from gui.gestor.principal_gestor_window import PrincipalGestorWindow
 from gui.rh.principal_rh_window import PrincipalRhWindow
 from gui.consultar_solicitacoes_window import ConsultaSolicitacoesWindow
@@ -46,14 +46,17 @@ class LoginWindow(tk.Tk):
     # UC01
     def login(self):
         email = self.entry_email.get()
-        if not check_email(email):
-            tk.messagebox.showerror("Erro", "E-mail inválido!")
-            self.entry_email.delete(0, tk.END)
-            return
-        
         senha = self.entry_senha.get()
-        if not check_password(senha):
-            tk.messagebox.showerror("Erro", "Senha inválida!")
+        
+        # Valida os campos usando valida_todos_dados
+        sucesso, mensagem = valida_todos_dados(
+            email=email,
+            senha=senha
+        )
+        
+        if not sucesso:
+            tk.messagebox.showerror("Erro", mensagem)
+            self.entry_email.delete(0, tk.END)
             self.entry_senha.delete(0, tk.END)
             return
 
