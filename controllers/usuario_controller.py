@@ -137,6 +137,17 @@ def buscar_usuario_por_cpf(cpf: str) -> Usuario | None:
             return _converter_dict_para_usuario(u)
     return None
 
+def buscar_rh_por_cpf(cpf: str) -> Usuario | None:
+    for u in _carregar_usuarios():
+        if u["cpf"] == cpf and u["tipo"] == TipoUsuario.RH.value:
+            return _converter_dict_para_usuario(u)
+    return None
+
+def buscar_gestor_por_cpf(cpf: str) -> Usuario | None:
+    for u in _carregar_usuarios():
+        if u["cpf"] == cpf and u["tipo"] == TipoUsuario.Gestor.value:
+            return _converter_dict_para_usuario(u)
+    return None
 
 def excluir_usuario(cpf: str) -> bool:
     # deve ser usado apenas se o usuario logado for do tipo RH

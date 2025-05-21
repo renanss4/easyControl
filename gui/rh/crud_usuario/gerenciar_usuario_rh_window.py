@@ -1,18 +1,18 @@
 import tkinter as tk
 from controllers.usuario_controller import (
-    buscar_usuario_por_cpf,
+    buscar_rh_por_cpf,
     atualizar_usuario,
     excluir_usuario
 )
 from controllers.equipe_controller import listar_equipes
 from utils.check_data import valida_todos_dados
 
-class GerenciaUsuariosWindow(tk.Tk):
+class GerenciaUsuariosRhWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         
         # Configurações da janela
-        self.title("Gerenciar Usuários - EasyControl")
+        self.title("Gerenciar Funcionários de RH - EasyControl")
         self.geometry("900x600")
         self.configure(bg="#dcdcdc")
         self.resizable(False, False)
@@ -126,7 +126,7 @@ class GerenciaUsuariosWindow(tk.Tk):
             tk.messagebox.showerror("Erro", mensagem)
             return
             
-        usuario = buscar_usuario_por_cpf(cpf)
+        usuario = buscar_rh_por_cpf(cpf)
         
         if usuario:
             # Armazenar CPF do usuário encontrado
@@ -228,5 +228,5 @@ class GerenciaUsuariosWindow(tk.Tk):
         CadastraRhWindow().mainloop()
 
 if __name__ == "__main__":
-    app = GerenciaUsuariosWindow()
+    app = GerenciaUsuariosRhWindow()
     app.mainloop()
