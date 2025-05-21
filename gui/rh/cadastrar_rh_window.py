@@ -70,6 +70,15 @@ class CadastraRhWindow(tk.Tk):
 
         tk.Button(
             botoes_frame,
+            text="Gerenciar Usuário",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=20,
+            command=self.gerenciar_usuario
+        ).pack(side="left", padx=5)
+
+        tk.Button(
+            botoes_frame,
             text="Voltar",
             font=("Arial", 10, "bold"),
             bg="#c0c0c0",
@@ -128,6 +137,11 @@ class CadastraRhWindow(tk.Tk):
             # Se não for string, é o objeto usuário criado
             messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
             self.voltar()
+
+    def gerenciar_usuario(self):
+        self.destroy()
+        from gui.rh.crud_usuario.gerenciar_usuario_window import GerenciaUsuariosWindow
+        GerenciaUsuariosWindow()
 
     def voltar(self):
         self.destroy()

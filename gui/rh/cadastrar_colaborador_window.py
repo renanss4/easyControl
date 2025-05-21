@@ -73,6 +73,15 @@ class CadastraColaboradorWindow(tk.Tk):
 
         tk.Button(
             botoes_frame,
+            text="Gerenciar Usuário",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=20,
+            command=self.gerenciar_colaborador
+        ).pack(side="left", padx=5)
+
+        tk.Button(
+            botoes_frame,
             text="Voltar",
             font=("Arial", 10, "bold"),
             bg="#c0c0c0",
@@ -144,6 +153,11 @@ class CadastraColaboradorWindow(tk.Tk):
             # Se não for string, é o objeto colaborador criado
             messagebox.showinfo("Sucesso", "Colaborador cadastrado com sucesso!")
             self.voltar()
+
+    def gerenciar_colaborador(self):
+        self.destroy()
+        from gui.rh.crud_colaborador.gerenciar_colaborador_window import GerenciaColaboradoresWindow
+        GerenciaColaboradoresWindow()
 
     def voltar(self):
         self.destroy()

@@ -76,6 +76,16 @@ class CadastraSolicitacaoWindow(tk.Tk):
             command=self.concluir_solicitacao
         ).pack(side="left", padx=5)
 
+        # Botão de gerenciar solicitação
+        tk.Button(
+            botoes_frame,
+            text="Gerenciar Solicitação",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=20,
+            command=self.gerenciar_solicitacao
+        ).pack(side="left", padx=5)
+
         # Botão de voltar
         tk.Button(
             botoes_frame,
@@ -139,6 +149,10 @@ class CadastraSolicitacaoWindow(tk.Tk):
             self.destroy()
             self.voltar()
             
+    def gerenciar_solicitacao(self):
+        self.destroy()
+        from gui.rh.crud_solicitacao.gerenciar_solicitacao_window import GerenciaSolicitacoesWindow
+        GerenciaSolicitacoesWindow().mainloop()
 
     def voltar(self):
         self.destroy()
