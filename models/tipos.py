@@ -11,6 +11,7 @@ class StatusSolicitacao(Enum):
     PENDENTE = "pendente"
     APROVADO = "aprovado"
     REJEITADO = "rejeitado"
+    CANCELADA = "cancelada"
 
 @dataclass
 class PeriodoFerias:

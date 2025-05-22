@@ -5,6 +5,7 @@ import random
 import string
 from typing import List, Dict, Tuple
 from controllers.colaborador_controller import buscar_colaborador_por_cpf
+from controllers.usuario_controller import buscar_usuario_por_cpf
 
 ARQUIVO_SOLICITACOES = "data/solicitacoes.json"
 
@@ -69,22 +70,47 @@ def obter_solicitacoes() -> List[Dict]:
 
 
 def obter_solicitacoes_detalhadas() -> List[Dict]:
-    """Retorna as solicitações com informações adicionais do colaborador"""
+    """Retorna as solicitações com informações adicionais do colaborador/usuário"""
     solicitacoes = _carregar_solicitacoes()
     detalhadas = []
 
     for sol in solicitacoes:
+        # Buscar tanto usuário quanto colaborador
+        usuario = buscar_usuario_por_cpf(sol["cpf_colaborador"])
         colaborador = buscar_colaborador_por_cpf(sol["cpf_colaborador"])
 
+        # Se não encontrar nem usuário nem colaborador, pula
+        if not colaborador and not usuario:
+            continue
+
         sol_detalhada = sol.copy()
-        sol_detalhada["nome_colaborador"] = (
-            colaborador.nome if colaborador else "Colaborador não encontrado"
-        )
+        
+        # Determinar o nome a ser exibido (prioriza colaborador)
+        if colaborador:
+            sol_detalhada["nome_colaborador"] = colaborador.nome
+        elif usuario:
+            sol_detalhada["nome_colaborador"] = usuario.nome
+        else:
+            sol_detalhada["nome_colaborador"] = "Nome não encontrado"
 
         # Formatação de datas
-        sol_detalhada["data_inicio"] = _formatar_data(sol["data_inicio"])
-        sol_detalhada["data_fim"] = _formatar_data(sol["data_fim"])
         sol_detalhada["data_solicitacao"] = _formatar_data(sol["data_solicitacao"])
+        
+        # Lidar com diferentes formatos de período
+        if "periodos" in sol:
+            # Formato novo (parcelado)
+            periodos_formatados = []
+            for periodo in sol["periodos"]:
+                inicio = _formatar_data(periodo["data_inicio"])
+                fim = _formatar_data(periodo["data_fim"])
+                periodos_formatados.append({"data_inicio": inicio, "data_fim": fim})
+            sol_detalhada["periodos"] = periodos_formatados
+        else:
+            # Formato antigo (período único)
+            sol_detalhada["periodos"] = [{
+                "data_inicio": _formatar_data(sol["data_inicio"]),
+                "data_fim": _formatar_data(sol["data_fim"])
+            }]
 
         detalhadas.append(sol_detalhada)
 
@@ -92,24 +118,47 @@ def obter_solicitacoes_detalhadas() -> List[Dict]:
 
 
 def buscar_solicitacoes_por_cpf(cpf_colaborador: str) -> List[Dict]:
-    """Busca e retorna as solicitações de um colaborador específico (por CPF)"""
+    """Busca e retorna as solicitações de um colaborador/usuário específico (por CPF)"""
     solicitacoes = _carregar_solicitacoes()
     filtradas = [s for s in solicitacoes if s["cpf_colaborador"] == cpf_colaborador]
 
+    # Buscar informações do colaborador/usuário
+    usuario = buscar_usuario_por_cpf(cpf_colaborador)
+    colaborador = buscar_colaborador_por_cpf(cpf_colaborador)
+
+    nome_exibicao = None
+    if colaborador:
+        nome_exibicao = colaborador.nome
+    if usuario:
+        nome_exibicao = usuario.nome if not nome_exibicao else nome_exibicao
+    if not nome_exibicao:
+        nome_exibicao = "Nome não encontrado"
+
     for s in filtradas:
-        s["data_inicio"] = _formatar_data(s["data_inicio"])
-        s["data_fim"] = _formatar_data(s["data_fim"])
+        s["nome_colaborador"] = nome_exibicao
+        
+        if "periodos" in s:
+            # Para solicitações com múltiplos períodos
+            periodos_formatados = []
+            for p in s["periodos"]:
+                inicio = _formatar_data(p["data_inicio"])
+                fim = _formatar_data(p["data_fim"])
+                periodos_formatados.append(f"{inicio} a {fim}")
+            s["periodos_formatados"] = " | ".join(periodos_formatados)
+        else:
+            # Para solicitações antigas com período único
+            s["periodos_formatados"] = f"{_formatar_data(s.get('data_inicio', 'N/A'))} a {_formatar_data(s.get('data_fim', 'N/A'))}"
+        
         s["data_solicitacao"] = _formatar_data(s["data_solicitacao"])
 
     return filtradas
 
 
 def cancelar_solicitacao(protocolo: str) -> bool:
-    # deve ser usado apenas se o usuario logado for do tipo rh
     """Atualiza o status de uma solicitação para 'cancelada'"""
     solicitacoes = _carregar_solicitacoes()
     for s in solicitacoes:
-        if s["protocolo"] == protocolo:
+        if s["protocolo"] == protocolo and s["status"] == "pendente":
             s["status"] = "cancelada"
             _salvar_solicitacoes(solicitacoes)
             return True
@@ -217,12 +266,33 @@ def calcular_parcelamento(dias_totais: int) -> List[int]:
     return opcoes
 
 
+def validar_cpf_cadastrado(cpf: str) -> Tuple[bool, str]:
+    """Verifica se o CPF está cadastrado como usuário ou colaborador"""
+    from controllers.colaborador_controller import buscar_colaborador_por_cpf
+    from controllers.usuario_controller import buscar_usuario_por_cpf
+    
+    colaborador = buscar_colaborador_por_cpf(cpf)
+    usuario = buscar_usuario_por_cpf(cpf)
+    
+    if not colaborador and not usuario:
+        return False, "CPF não encontrado no sistema"
+    
+    return True, ""
+
+
 def cadastrar_solicitacao_parcelada(
-    cpf_colaborador: str, periodos: List[Tuple[date, date]], parcelamento: bool = True
+    cpf_colaborador: str, 
+    periodos: List[Tuple[date, date]], 
+    parcelamento: bool = True
 ) -> Dict:
     """
     Cadastra uma solicitação de férias parcelada.
     """
+    # Validar CPF
+    valido, mensagem = validar_cpf_cadastrado(cpf_colaborador)
+    if not valido:
+        raise ValueError(mensagem)
+
     # Validar períodos
     valido, mensagem = validar_parcelamento_ferias(periodos)
     if not valido:

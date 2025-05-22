@@ -31,3 +31,6 @@ class Solicitacao:
 
     def rejeitar(self) -> None:
         self.status = StatusSolicitacao.REJEITADO
+
+    def cancelar(self) -> None:
+        self.status = StatusSolicitacao.CANCELADA

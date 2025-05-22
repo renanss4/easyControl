@@ -80,5 +80,7 @@ class LoginWindow(tk.Tk):
 
     # UC09
     def consultar_solicitacoes(self, event=None):
-        self.destroy()
-        ConsultaSolicitacoesWindow()
+        tk.messagebox.showinfo("Consultar solicitações", "Funcionalidade consultar solicitações ainda não implementada.")
+
+        # self.destroy()
+        # ConsultaSolicitacoesWindow()
