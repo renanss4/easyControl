@@ -276,6 +276,19 @@ class CadastraSolicitacaoWindow(tk.Tk):
             messagebox.showerror("Erro", "Por favor, preencha o CPF.")
             return
 
+        # Verificar se há solicitação pendente
+        from controllers.solicitacao_controller import buscar_solicitacoes_por_cpf
+        solicitacoes = buscar_solicitacoes_por_cpf(cpf)
+        
+        # Verificar se existe alguma solicitação pendente
+        if any(sol["status"] == "pendente" for sol in solicitacoes):
+            messagebox.showerror(
+                "Erro", 
+                "Este colaborador já possui uma solicitação pendente.\n"
+                "Não é possível cadastrar uma nova solicitação."
+            )
+            return
+
         periodos = []
         for _, data_inicio, data_fim in self.periodos:
             try:
