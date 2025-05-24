@@ -6,6 +6,3 @@ from .tipos import TipoUsuario
 class Usuario(Pessoa):
     senha: str = ""
     tipo: TipoUsuario = TipoUsuario.RH
-
-    def pode_aprovar_solicitacao(self) -> bool:
-        return self.tipo in [TipoUsuario.GESTOR, TipoUsuario.RH]

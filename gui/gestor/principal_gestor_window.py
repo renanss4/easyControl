@@ -15,7 +15,7 @@ class PrincipalGestorWindow(tk.Tk):
         quadro_botoes.pack(pady=10)
 
         tk.Button(
-            quadro_botoes, text="Aprovar Solicitação", width=25, height=2, command=self.aprovar_solicitacao
+            quadro_botoes, text="Analisar Solicitação", width=25, height=2, command=self.aprovar_solicitacao
         ).grid(row=0, column=0, padx=10, pady=5)
         tk.Button(
             quadro_botoes, text="Consultar Colaboradores", width=25, height=2, command=self.consultar_lista_colaboradores

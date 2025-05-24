@@ -16,7 +16,3 @@ class Pessoa(ABC):
     def adicionar_solicitacao(self, protocolo: str) -> None:
         if protocolo not in self.solicitacoes_protocolos:
             self.solicitacoes_protocolos.append(protocolo)
-
-    @abstractmethod
-    def pode_aprovar_solicitacao(self) -> bool:
-        pass
