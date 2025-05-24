@@ -32,18 +32,5 @@
                 "data_fim": "2025-10-15"
             }
         ]
-    },
-    {
-        "protocolo": "SOL-20250524-1VC3J",
-        "cpf_colaborador": "45678912301",
-        "parcelamento": true,
-        "status": "pendente",
-        "data_solicitacao": "2025-05-24",
-        "periodos": [
-            {
-                "data_inicio": "2025-05-24",
-                "data_fim": "2025-06-02"
-            }
-        ]
     }
 ]

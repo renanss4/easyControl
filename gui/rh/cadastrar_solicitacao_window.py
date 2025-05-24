@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from controllers.solicitacao_controller import (
     cadastrar_solicitacao_parcelada,
     validar_periodo_ferias,
@@ -159,14 +159,16 @@ class CadastraSolicitacaoWindow(tk.Tk):
         datas_frame = tk.Frame(frame, bg="#dcdcdc")
         datas_frame.pack(pady=5)
 
-        # Data início
+        # Data início - com data mínima de hoje + 30 dias
         tk.Label(datas_frame, text="Início:", bg="#dcdcdc").pack(side="left", padx=5)
+        data_minima = datetime.today() + timedelta(days=30)
         data_inicio = DateEntry(
             datas_frame,
             width=12,
             background='darkblue',
             foreground='white',
-            date_pattern='yyyy-mm-dd'
+            date_pattern='yyyy-mm-dd',
+            mindate=data_minima
         )
         data_inicio.pack(side="left", padx=5)
 
@@ -177,7 +179,8 @@ class CadastraSolicitacaoWindow(tk.Tk):
             width=12,
             background='darkblue',
             foreground='white',
-            date_pattern='yyyy-mm-dd'
+            date_pattern='yyyy-mm-dd',
+            mindate=data_minima
         )
         data_fim.pack(side="left", padx=5)
 
@@ -345,17 +348,53 @@ class CadastraSolicitacaoWindow(tk.Tk):
             messagebox.showerror("Erro", str(e))
 
     def validar_periodos_sequenciais(self, periodos):
-        """Valida se os períodos estão em ordem cronológica"""
-        for i in range(len(periodos)-1):
-            if periodos[i][1] >= periodos[i+1][0]:
-                return False, "Os períodos devem ser sequenciais e não podem se sobrepor"
+        """Valida se os períodos estão em ordem cronológica e atendem às regras"""
+        for i, (inicio, fim) in enumerate(periodos):
+            # Validar dia útil no início da semana
+            dia_semana = inicio.weekday()
+            if dia_semana in [4, 5, 6]:  # 4=sexta, 5=sábado, 6=domingo
+                if dia_semana == 4:
+                    return False, "As férias não podem iniciar em uma sexta-feira"
+                else:
+                    return False, "As férias devem iniciar em um dia útil"
+                
+            # Validar antecedência mínima
+            if (inicio - date.today()).days < 30:
+                return False, "A solicitação deve ser feita com no mínimo 30 dias de antecedência"
+                
+            # Para parcelamento, validar primeiro período de 14 dias
+            if self.var_parcelamento.get() and i == 0:
+                dias = (fim - inicio).days + 1
+                if dias != 14:
+                    return False, "O primeiro período do parcelamento deve ter exatamente 14 dias"
+                
+            # Validar sequência
+            if i < len(periodos)-1:
+                if periodos[i][1] >= periodos[i+1][0]:
+                    return False, "Os períodos devem ser sequenciais e não podem se sobrepor"
+                
         return True, ""
 
     def validar_periodo_nao_parcelado(self, inicio, fim):
-        """Valida se o período único tem exatamente 30 dias"""
+        """Valida se o período único tem exatamente 30 dias e atende às regras"""
         dias = (fim - inicio).days + 1
+        
+        # Validar quantidade de dias
         if dias != 30:
             return False, "Para férias não parceladas, o período deve ser de exatamente 30 dias"
+            
+        # Validar dia útil no início da semana
+        dia_semana = inicio.weekday()
+        if dia_semana in [4, 5, 6]:  # 4=sexta, 5=sábado, 6=domingo
+            if dia_semana == 4:
+                return False, "As férias não podem iniciar em uma sexta-feira"
+            else:
+                return False, "As férias devem iniciar em um dia útil"
+            
+        # Validar antecedência
+        if (inicio - date.today()).days < 30:
+            return False, "A solicitação deve ser feita com no mínimo 30 dias de antecedência"
+            
         return True, ""
 
     def gerenciar_solicitacao(self):

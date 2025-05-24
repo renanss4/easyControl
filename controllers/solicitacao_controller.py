@@ -221,6 +221,24 @@ def validar_parcelamento_ferias(periodos: List[Tuple[date, date]]) -> Tuple[bool
     if not periodos:
         return False, "Nenhum período informado"
 
+    # Validar antecedência de 30 dias para todos os períodos
+    for inicio, _ in periodos:
+        valido, msg = validar_antecedencia_minima(inicio)
+        if not valido:
+            return False, msg
+
+    # Validar dia da semana para início das férias
+    for inicio, _ in periodos:
+        valido, msg = validar_dia_semana_inicio(inicio)
+        if not valido:
+            return False, msg
+
+    # Se for parcelado, validar primeiro período de 14 dias
+    if len(periodos) > 1:
+        valido, msg = validar_primeiro_periodo_parcelado(periodos[0][0], periodos[0][1])
+        if not valido:
+            return False, msg
+
     total_dias = sum((fim - inicio).days + 1 for inicio, fim in periodos)
     if total_dias > 30:
         return False, "Total de dias não pode exceder 30"
@@ -228,7 +246,7 @@ def validar_parcelamento_ferias(periodos: List[Tuple[date, date]]) -> Tuple[bool
     if len(periodos) > 3:
         return False, "Máximo de 3 períodos permitidos"
 
-    # Validar tamanho de cada período
+    # Validar tamanho mínimo de cada período
     for inicio, fim in periodos:
         dias = (fim - inicio).days + 1
         if dias < 5:
@@ -318,3 +336,39 @@ def cadastrar_solicitacao_parcelada(
     _salvar_solicitacoes(solicitacoes)
 
     return solicitacao
+
+
+def validar_antecedencia_minima(data_inicio: date) -> Tuple[bool, str]:
+    """Valida se a data de início tem antecedência mínima de 30 dias."""
+    hoje = date.today()
+    dias_antecedencia = (data_inicio - hoje).days
+    
+    if dias_antecedencia < 30:
+        return False, "A solicitação deve ser feita com no mínimo 30 dias de antecedência"
+    
+    return True, ""
+
+
+def validar_dia_semana_inicio(data_inicio: date) -> Tuple[bool, str]:
+    """Valida se a data de início é em um dia útil no início da semana (exceto sexta)."""
+    dia_semana = data_inicio.weekday()
+    
+    # Verifica se é fim de semana (5=sábado, 6=domingo)
+    if dia_semana in [5, 6]:
+        return False, "As férias devem iniciar em um dia útil"
+    
+    # Verifica se é sexta-feira (4)
+    if dia_semana == 4:
+        return False, "As férias não podem iniciar em uma sexta-feira"
+    
+    return True, ""
+
+
+def validar_primeiro_periodo_parcelado(data_inicio: date, data_fim: date) -> Tuple[bool, str]:
+    """Valida se o primeiro período do parcelamento tem 14 dias."""
+    dias = (data_fim - data_inicio).days + 1
+    
+    if dias != 14:
+        return False, "O primeiro período do parcelamento deve ter exatamente 14 dias"
+    
+    return True, ""
