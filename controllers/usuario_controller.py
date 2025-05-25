@@ -154,7 +154,7 @@ def buscar_rh_por_cpf(cpf: str) -> Usuario | None:
 
 def buscar_gestor_por_cpf(cpf: str) -> Usuario | None:
     for u in _carregar_usuarios():
-        if u["cpf"] == cpf and u["tipo"] == TipoUsuario.Gestor.value:
+        if u["cpf"] == cpf and u["tipo"] == TipoUsuario.GESTOR.value:
             return _converter_dict_para_usuario(u)
     return None
 

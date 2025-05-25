@@ -20,5 +20,16 @@
         "senha": "Gestor123@",
         "tipo": "rh",
         "solicitacoes_protocolos": []
+    },
+    {
+        "cpf": "12345678925",
+        "nome": "Rodrigo",
+        "cargo": "PO",
+        "equipe": "Desenvolvimento",
+        "data_admissao": "2025-05-25",
+        "email": "Rodrigo@hotmail.com",
+        "senha": "Rodrigo123",
+        "tipo": "gestor",
+        "solicitacoes_protocolos": []
     }
 ]
