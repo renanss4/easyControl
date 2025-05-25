@@ -2,7 +2,15 @@
 __pycache__/
 *.pyc
 
-# venv
+# Virtual Environment
 venv/
+ENV/
+env/
 
-data/
+# IDE
+.vscode/
+.idea/
+
+# Project specific
+/data/
+/data/*
