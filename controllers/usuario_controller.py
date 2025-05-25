@@ -127,8 +127,17 @@ def cadastrar_gestor(
     data_admissao: date,
     cargo: str = "Gestor",
     equipe: str = "Gestão",
-) -> Usuario | str:
-    pass
+) -> Usuario | str: 
+    return cadastrar_usuario(
+    nome=nome,
+    cpf=cpf,
+    email=email,
+    senha=senha,
+    data_admissao=data_admissao,
+    cargo=cargo,
+    equipe=equipe,
+    tipo=TipoUsuario.GESTOR,
+    )
 
 
 def buscar_usuario_por_cpf(cpf: str) -> Usuario | None:
@@ -145,7 +154,7 @@ def buscar_rh_por_cpf(cpf: str) -> Usuario | None:
 
 def buscar_gestor_por_cpf(cpf: str) -> Usuario | None:
     for u in _carregar_usuarios():
-        if u["cpf"] == cpf and u["tipo"] == TipoUsuario.Gestor.value:
+        if u["cpf"] == cpf and u["tipo"] == TipoUsuario.GESTOR.value:
             return _converter_dict_para_usuario(u)
     return None
 

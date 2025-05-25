@@ -29,5 +29,14 @@
         "data_admissao": "2021-09-15",
         "email": "paula.martins@empresa.com",
         "solicitacoes_protocolos": []
+    },
+    {
+        "cpf": "12345678956",
+        "nome": "Rodrigo",
+        "cargo": "Qualquer",
+        "equipe": "Desenvolvimento",
+        "data_admissao": "2025-05-25",
+        "email": "Rodrigociuffo15@hotmail.com",
+        "solicitacoes_protocolos": []
     }
 ]

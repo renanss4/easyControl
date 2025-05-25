@@ -4,6 +4,7 @@ from tkinter import messagebox
 from gui.rh.cadastrar_colaborador_window import CadastraColaboradorWindow
 from gui.rh.cadastrar_solicitacao_window import CadastraSolicitacaoWindow
 from gui.rh.cadastrar_rh_window import CadastraRhWindow
+from gui.rh.cadastrar_gestor_window import CadastraGestorWindow
 
 class PrincipalRhWindow(tk.Tk):
     def __init__(self):
@@ -71,7 +72,8 @@ class PrincipalRhWindow(tk.Tk):
     # UC05
     def cadastrar_gestor(self, event=None):
         # aqui, quando entra na tela de cadastro, deve ter botões do crud
-        messagebox.showinfo("Cadastro gestor", "Funcionalidade cadastro de gestor ainda não implementada.")
+        self.destroy()
+        CadastraGestorWindow()
 
     # UC06
     def cadastrar_rh(self, event=None):
