@@ -1,9 +1,5 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from controllers.solicitacao_controller import (
-    buscar_solicitacoes_por_cpf,
-    cancelar_solicitacao
-)
 from utils.check_data import valida_todos_dados
 
 class GerenciaSolicitacoesWindow(tk.Tk):

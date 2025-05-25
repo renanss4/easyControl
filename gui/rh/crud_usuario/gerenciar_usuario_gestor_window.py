@@ -115,7 +115,6 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
             equipes = obter_equipes_por_usuario(self.cpf_usuario_logado)
         else:
             # Fallback para todas as equipes se não houver CPF do usuário
-            from controllers.equipe_controller import listar_equipes
             equipes = listar_equipes()
         
         nomes_equipes = [equipe.nome for equipe in equipes]

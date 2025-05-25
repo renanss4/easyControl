@@ -2,11 +2,11 @@ import tkinter as tk
 
 
 class PrincipalGestorWindow(tk.Tk):
-    def __init__(self, cpf_usuario=None):
+    def __init__(self, cpf_gestor=None):
         super().__init__()
         
         # Armazenar o CPF do usuário logado
-        self.cpf_usuario = cpf_usuario
+        self.cpf_gestor = cpf_gestor
 
         self.title("Principal Gestor - EasyControl")
         self.geometry("900x600")
@@ -42,7 +42,7 @@ class PrincipalGestorWindow(tk.Tk):
     def aprovar_solicitacao(self, event=None):
         self.destroy()
         from gui.gestor.analisar_solicitacao_window import AnalisarSolicitacaoWindow
-        AnalisarSolicitacaoWindow(self.cpf_usuario).mainloop()
+        AnalisarSolicitacaoWindow(self.cpf_gestor).mainloop()
 
     # UC02
     def consultar_lista_colaboradores(self, event=None):
