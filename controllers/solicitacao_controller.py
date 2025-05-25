@@ -166,26 +166,44 @@ def cancelar_solicitacao(protocolo: str) -> bool:
 
 
 def aprovar_solicitacao(protocolo: str) -> bool:
-    # deve ser usado apenas se o usuario logado for do tipo gestor
-    """Atualiza o status de uma solicitação para 'aprovada'"""
+    """
+    Aprova uma solicitação de férias.
+    
+    Args:
+        protocolo: Protocolo da solicitação a ser aprovada
+        
+    Returns:
+        bool: True se aprovada com sucesso, False caso contrário
+    """
     solicitacoes = _carregar_solicitacoes()
-    for s in solicitacoes:
-        if s["protocolo"] == protocolo:
-            s["status"] = "aprovada"
+    
+    for sol in solicitacoes:
+        if sol.get('protocolo') == protocolo:
+            sol['status'] = 'aprovado'
             _salvar_solicitacoes(solicitacoes)
             return True
+            
     return False
 
 
 def rejeitar_solicitacao(protocolo: str) -> bool:
-    # deve ser usado apenas se o usuario logado for do tipo gestor
-    """Atualiza o status de uma solicitação para 'rejeitada'"""
+    """
+    Rejeita uma solicitação de férias.
+    
+    Args:
+        protocolo: Protocolo da solicitação a ser rejeitada
+        
+    Returns:
+        bool: True se rejeitada com sucesso, False caso contrário
+    """
     solicitacoes = _carregar_solicitacoes()
-    for s in solicitacoes:
-        if s["protocolo"] == protocolo:
-            s["status"] = "rejeitada"
+    
+    for sol in solicitacoes:
+        if sol.get('protocolo') == protocolo:
+            sol['status'] = 'rejeitado'
             _salvar_solicitacoes(solicitacoes)
             return True
+            
     return False
 
 

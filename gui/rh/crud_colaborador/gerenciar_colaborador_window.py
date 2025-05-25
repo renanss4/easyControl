@@ -10,8 +10,9 @@ from controllers.equipe_controller import listar_equipes
 from utils.check_data import valida_todos_dados
 
 class GerenciaColaboradoresWindow(tk.Tk):
-    def __init__(self):
+    def __init__(self, cpf_usuario_logado=None):
         super().__init__()
+        self.cpf_usuario_logado = cpf_usuario_logado
         
         # Configurações da janela
         self.title("Gerenciar Colaboradores - EasyControl")
@@ -125,12 +126,26 @@ class GerenciaColaboradoresWindow(tk.Tk):
             command=self.voltar
         ).pack(side="left", padx=5)
         
+        # Botão Gerenciar Usuário Gestor
+        tk.Button(
+            botoes_frame,
+            text="Gerenciar Usuário Gestor",
+            command=self.gerenciar_usuario_gestor
+        ).pack(side="left", padx=5)
+        
         # Armazenar CPF do colaborador atual
         self.cpf_atual = None
         
     def carregar_equipes(self):
-        """Carrega as equipes disponíveis no Combobox"""
-        equipes = listar_equipes()
+        """Carrega apenas as equipes do usuário logado no Combobox"""
+        from controllers.equipe_controller import obter_equipes_por_usuario
+        
+        if hasattr(self, 'cpf_usuario_logado') and self.cpf_usuario_logado:
+            equipes = obter_equipes_por_usuario(self.cpf_usuario_logado)
+        else:
+            from controllers.equipe_controller import listar_equipes
+            equipes = listar_equipes()
+        
         nomes_equipes = [equipe.nome for equipe in equipes]
         self.equipe_combo['values'] = nomes_equipes
     
@@ -252,6 +267,11 @@ class GerenciaColaboradoresWindow(tk.Tk):
         self.destroy()
         from gui.rh.cadastrar_colaborador_window import CadastraColaboradorWindow
         CadastraColaboradorWindow().mainloop()
+
+    def gerenciar_usuario_gestor(self):
+        self.destroy()
+        from gui.rh.crud_usuario.gerenciar_usuario_gestor_window import GerenciaUsuariosGestorWindow
+        GerenciaUsuariosGestorWindow(cpf_usuario_logado=self.cpf_usuario_logado)
 
 if __name__ == "__main__":
     app = GerenciaColaboradoresWindow()

@@ -162,3 +162,22 @@ def listar_colaboradores_equipe(nome_equipe: str) -> List[str]:
     if equipe:
         return equipe.colaboradores_cpf
     return []
+
+def obter_equipes_por_usuario(cpf_usuario: str) -> List[Equipe]:
+    """
+    Retorna as equipes associadas ao usuário (seja como gestor ou como membro)
+    :param cpf_usuario: CPF do usuário
+    :return: Lista de objetos Equipe
+    """
+    equipes = _carregar_equipes()
+    equipes_usuario = []
+    
+    for equipe in equipes:
+        # Verifica se o usuário é gestor da equipe
+        if equipe.get("gestor_cpf") == cpf_usuario:
+            equipes_usuario.append(equipe)
+        # Verifica se o usuário é membro da equipe
+        elif cpf_usuario in equipe.get("colaboradores_cpf", []):
+            equipes_usuario.append(equipe)
+    
+    return [_converter_dict_para_equipe(e) for e in equipes_usuario]
