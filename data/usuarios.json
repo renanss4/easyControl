@@ -1,0 +1,35 @@
+[
+    {
+        "cpf": "12345678901",
+        "nome": "Joao Silva",
+        "cargo": "Gestor de Desenvolvimento",
+        "equipe": "Desenvolvimento",
+        "data_admissao": "2020-01-15",
+        "email": "joao.silva@empresa.com",
+        "senha": "Gestor123@",
+        "tipo": "gestor",
+        "solicitacoes_protocolos": []
+    },
+    {
+        "cpf": "32165498701",
+        "nome": "Maria Santos",
+        "cargo": "Gestor de RH",
+        "equipe": "RH",
+        "data_admissao": "2019-06-20",
+        "email": "maria.santos@empresa.com",
+        "senha": "Gestor123@",
+        "tipo": "rh",
+        "solicitacoes_protocolos": []
+    },
+    {
+        "cpf": "15935785202",
+        "nome": "Monique Pereira",
+        "cargo": "Gestor do Financeiro",
+        "equipe": "Financeiro",
+        "data_admissao": "2025-05-25",
+        "email": "monique.pereira@empresa.com",
+        "senha": "Gestor123@",
+        "tipo": "gestor",
+        "solicitacoes_protocolos": []
+    }
+]

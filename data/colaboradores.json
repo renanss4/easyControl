@@ -1,0 +1,33 @@
+[
+    {
+        "cpf": "98765432101",
+        "nome": "Ana Souza",
+        "cargo": "Desenvolvedor Senior",
+        "equipe": "Desenvolvimento",
+        "data_admissao": "2021-03-10",
+        "email": "ana.souza@empresa.com",
+        "solicitacoes_protocolos": [
+            "SOL-20250519-ABC12"
+        ]
+    },
+    {
+        "cpf": "45678912301",
+        "nome": "Carlos Oliveira",
+        "cargo": "Desenvolvedor Pleno",
+        "equipe": "Desenvolvimento",
+        "data_admissao": "2022-07-05",
+        "email": "carlos.oliveira@empresa.com",
+        "solicitacoes_protocolos": [
+            "SOL-20250520-DEF34"
+        ]
+    },
+    {
+        "cpf": "65498732101",
+        "nome": "Paula Martins",
+        "cargo": "Analista de RH",
+        "equipe": "RH",
+        "data_admissao": "2021-09-15",
+        "email": "paula.martins@empresa.com",
+        "solicitacoes_protocolos": []
+    }
+]

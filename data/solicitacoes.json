@@ -1,0 +1,36 @@
+[
+    {
+        "protocolo": "SOL-20250519-ABC12",
+        "cpf_colaborador": "98765432101",
+        "data_solicitacao": "2025-05-19",
+        "data_inicio": "2025-07-01",
+        "data_fim": "2025-07-30",
+        "parcelamento": false,
+        "status": "aprovado",
+        "aprovado_por": "12345678901",
+        "data_aprovacao": "2025-05-19",
+        "periodos": [
+            {
+                "data_inicio": "2025-07-01",
+                "data_fim": "2025-07-30"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250520-DEF34",
+        "cpf_colaborador": "45678912301",
+        "data_solicitacao": "2025-05-20",
+        "parcelamento": true,
+        "status": "pendente",
+        "periodos": [
+            {
+                "data_inicio": "2025-08-01",
+                "data_fim": "2025-08-15"
+            },
+            {
+                "data_inicio": "2025-10-01",
+                "data_fim": "2025-10-15"
+            }
+        ]
+    }
+]
