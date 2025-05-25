@@ -40,13 +40,8 @@ class PrincipalGestorWindow(tk.Tk):
 
     # UC03
     def aprovar_solicitacao(self, event=None):
-        """
-        Abre a tela de análise de solicitações de férias
-        """
+        self.destroy()
         from gui.gestor.analisar_solicitacao_window import AnalisarSolicitacaoWindow
-        
-        # Abrir a tela de análise diretamente, sem verificações adicionais
-        
         AnalisarSolicitacaoWindow(self.cpf_usuario).mainloop()
 
     # UC02

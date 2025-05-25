@@ -1,14 +1,12 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from tkcalendar import DateEntry  # Adicionar esta importação
+from tkcalendar import DateEntry
 from controllers.colaborador_controller import criar_colaborador
-from controllers.equipe_controller import listar_equipes
 from utils.check_data import valida_todos_dados
 
 class CadastraColaboradorWindow(tk.Tk): 
-    def __init__(self, cpf_usuario_logado=None):
+    def __init__(self):
         super().__init__()
-        self.cpf_usuario_logado = cpf_usuario_logado
         
         # Configurações da janela
         self.title("Cadastro de Colaborador")

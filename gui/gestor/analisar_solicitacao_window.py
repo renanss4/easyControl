@@ -8,7 +8,6 @@ from controllers.solicitacao_controller import (
     rejeitar_solicitacao as rejeitar_sol
 )
 from controllers.equipe_controller import listar_equipes, listar_colaboradores_equipe
-from controllers.usuario_controller import _carregar_usuarios
 
 
 class AnalisarSolicitacaoWindow(tk.Tk):
@@ -21,7 +20,7 @@ class AnalisarSolicitacaoWindow(tk.Tk):
         
         # Configurações da janela
         self.title("Analisar Solicitação")
-        self.geometry("700x500")
+        self.geometry("900x600")
         self.configure(bg="#dcdcdc")
         self.resizable(True, True)
         

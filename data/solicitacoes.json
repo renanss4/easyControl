@@ -21,7 +21,7 @@
         "cpf_colaborador": "45678912301",
         "data_solicitacao": "2025-05-20",
         "parcelamento": true,
-        "status": "aprovado",
+        "status": "pendente",
         "periodos": [
             {
                 "data_inicio": "2025-08-01",
@@ -30,62 +30,6 @@
             {
                 "data_inicio": "2025-10-01",
                 "data_fim": "2025-10-15"
-            }
-        ]
-    },
-    {
-        "protocolo": "SOL-20250525-OQS6Z",
-        "cpf_colaborador": "98765432101",
-        "parcelamento": true,
-        "status": "rejeitado",
-        "data_solicitacao": "2025-05-25",
-        "periodos": [
-            {
-                "data_inicio": "2025-08-13",
-                "data_fim": "2025-08-26"
-            },
-            {
-                "data_inicio": "2025-09-10",
-                "data_fim": "2025-09-15"
-            }
-        ]
-    },
-    {
-        "protocolo": "SOL-20250525-3TDKE",
-        "cpf_colaborador": "32165498701",
-        "parcelamento": false,
-        "status": "aprovado",
-        "data_solicitacao": "2025-05-25",
-        "periodos": [
-            {
-                "data_inicio": "2025-08-04",
-                "data_fim": "2025-09-02"
-            }
-        ]
-    },
-    {
-        "protocolo": "SOL-20250525-ATM6O",
-        "cpf_colaborador": "12345678956",
-        "parcelamento": false,
-        "status": "cancelada",
-        "data_solicitacao": "2025-05-25",
-        "periodos": [
-            {
-                "data_inicio": "2025-07-31",
-                "data_fim": "2025-08-29"
-            }
-        ]
-    },
-    {
-        "protocolo": "SOL-20250525-Y1KYH",
-        "cpf_colaborador": "98765432101",
-        "parcelamento": false,
-        "status": "rejeitado",
-        "data_solicitacao": "2025-05-25",
-        "periodos": [
-            {
-                "data_inicio": "2025-07-31",
-                "data_fim": "2025-08-29"
             }
         ]
     }
