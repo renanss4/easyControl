@@ -2,8 +2,11 @@ import tkinter as tk
 
 
 class PrincipalGestorWindow(tk.Tk):
-    def __init__(self):
+    def __init__(self, cpf_usuario=None):
         super().__init__()
+        
+        # Armazenar o CPF do usuário logado
+        self.cpf_usuario = cpf_usuario
 
         self.title("Principal Gestor - EasyControl")
         self.geometry("900x600")
@@ -37,9 +40,14 @@ class PrincipalGestorWindow(tk.Tk):
 
     # UC03
     def aprovar_solicitacao(self, event=None):
-        # nessa tela não vai só a aprovação, mas também a consulta, a reprovação etc
-        # tem que funcionar as regras de negócio como avisar se a equipe vai ficar desfalcada
-        tk.messagebox.showinfo("Aprovar solicitação de férias", "Funcionalidade aprovar solicitação de férias ainda não implementada.")
+        """
+        Abre a tela de análise de solicitações de férias
+        """
+        from gui.gestor.analisar_solicitacao_window import AnalisarSolicitacaoWindow
+        
+        # Abrir a tela de análise diretamente, sem verificações adicionais
+        
+        AnalisarSolicitacaoWindow(self.cpf_usuario).mainloop()
 
     # UC02
     def consultar_lista_colaboradores(self, event=None):

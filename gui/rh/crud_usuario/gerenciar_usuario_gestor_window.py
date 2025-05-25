@@ -107,8 +107,17 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
         self.cpf_atual = None
         
     def carregar_equipes(self):
-        """Carrega as equipes disponíveis no Combobox"""
-        equipes = listar_equipes()
+        """Carrega apenas as equipes do usuário logado no Combobox"""
+        from controllers.equipe_controller import obter_equipes_por_usuario
+        
+        # Obter CPF do usuário logado (você precisará passar isso para a classe)
+        if hasattr(self, 'cpf_usuario_logado') and self.cpf_usuario_logado:
+            equipes = obter_equipes_por_usuario(self.cpf_usuario_logado)
+        else:
+            # Fallback para todas as equipes se não houver CPF do usuário
+            from controllers.equipe_controller import listar_equipes
+            equipes = listar_equipes()
+        
         nomes_equipes = [equipe.nome for equipe in equipes]
         self.equipe_combo['values'] = nomes_equipes
     

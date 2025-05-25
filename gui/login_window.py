@@ -61,6 +61,7 @@ class LoginWindow(tk.Tk):
             return
 
         usuario = autenticar(email, senha)
+
         if usuario:
             tk.messagebox.showinfo("Sucesso", "Login bem-sucedido!")
             self.destroy()
@@ -69,7 +70,7 @@ class LoginWindow(tk.Tk):
             if usuario.tipo.value == "rh":
                 window = PrincipalRhWindow()
             else:  # Gestor
-                window = PrincipalGestorWindow()
+                window = PrincipalGestorWindow(usuario.cpf)
             
             window.mainloop()
         else:

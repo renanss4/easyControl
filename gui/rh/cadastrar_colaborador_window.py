@@ -6,8 +6,9 @@ from controllers.equipe_controller import listar_equipes
 from utils.check_data import valida_todos_dados
 
 class CadastraColaboradorWindow(tk.Tk): 
-    def __init__(self):
+    def __init__(self, cpf_usuario_logado=None):
         super().__init__()
+        self.cpf_usuario_logado = cpf_usuario_logado
         
         # Configurações da janela
         self.title("Cadastro de Colaborador")
@@ -90,8 +91,15 @@ class CadastraColaboradorWindow(tk.Tk):
         ).pack(side="left", padx=5)
 
     def carregar_equipes(self):
-        """Carrega as equipes disponíveis no Combobox"""
-        equipes = listar_equipes()
+        """Carrega apenas as equipes do usuário logado no Combobox"""
+        from controllers.equipe_controller import obter_equipes_por_usuario
+        
+        if hasattr(self, 'cpf_usuario_logado') and self.cpf_usuario_logado:
+            equipes = obter_equipes_por_usuario(self.cpf_usuario_logado)
+        else:
+            from controllers.equipe_controller import listar_equipes
+            equipes = listar_equipes()
+        
         nomes_equipes = [equipe.nome for equipe in equipes]
         self.equipe_combo['values'] = nomes_equipes
         if nomes_equipes:

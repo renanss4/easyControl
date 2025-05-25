@@ -200,3 +200,23 @@ def atualizar_usuario(
     if atualizado:
         _salvar_usuarios(usuarios)
     return atualizado
+
+
+def verificar_permissao_gestor(cpf_usuario: str) -> bool:
+    """
+    Verifica se o usuário tem permissão de gestor para aprovar/reprovar solicitações.
+    
+    Args:
+        cpf_usuario: CPF do usuário a verificar
+        
+    Returns:
+        bool: True se o usuário for um gestor, False caso contrário
+    """
+    usuarios = _carregar_usuarios()
+    
+    for u in usuarios:
+        if u.get("cpf") == cpf_usuario:
+            # Verificar se o tipo é "gestor" (string)
+            return u.get("tipo") == "gestor"
+    
+    return False
