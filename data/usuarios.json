@@ -1,7 +1,7 @@
 [
     {
         "cpf": "12345678901",
-        "nome": "João Silva",
+        "nome": "Jo\u00c3\u00a3o Silva",
         "cargo": "Gestor de Desenvolvimento",
         "equipe": "Desenvolvimento",
         "data_admissao": "2020-01-15",

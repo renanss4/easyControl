@@ -7,7 +7,7 @@ from controllers.usuario_controller import (
 from controllers.equipe_controller import listar_equipes
 from utils.check_data import valida_todos_dados
 
-class GerenciaUsuariosRhWindow(tk.Tk):
+class GerenciaUsuariosGestorWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         
