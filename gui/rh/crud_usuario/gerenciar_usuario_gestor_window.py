@@ -23,7 +23,7 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
         
         tk.Label(
             search_frame, 
-            text="CPF do usuário:",
+            text="CPF do Gestor:",
             bg="#dcdcdc"
         ).pack(side="left", padx=(0, 10))
         self.cpf_entry = tk.Entry(search_frame, width=15)
@@ -90,7 +90,7 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
         
         self.btn_excluir = tk.Button(
             botoes_frame,
-            text="Excluir Usuário",
+            text="Excluir Gestor",
             command=self.excluir_usuario,
             state="disabled"
         )
@@ -103,18 +103,18 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
             command=self.voltar
         ).pack(side="left", padx=5)
         
-        # Armazenar CPF do usuário atual
+        # Armazenar CPF do gestor atual
         self.cpf_atual = None
         
     def carregar_equipes(self):
-        """Carrega apenas as equipes do usuário logado no Combobox"""
+        """Carrega apenas as equipes do gestor logado no Combobox"""
         from controllers.equipe_controller import obter_equipes_por_usuario
         
-        # Obter CPF do usuário logado (você precisará passar isso para a classe)
+        # Obter CPF do gestor logado (você precisará passar isso para a classe)
         if hasattr(self, 'cpf_usuario_logado') and self.cpf_usuario_logado:
             equipes = obter_equipes_por_usuario(self.cpf_usuario_logado)
         else:
-            # Fallback para todas as equipes se não houver CPF do usuário
+            # Fallback para todas as equipes se não houver CPF do gestor
             equipes = listar_equipes()
         
         nomes_equipes = [equipe.nome for equipe in equipes]
@@ -132,7 +132,7 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
         usuario = buscar_gestor_por_cpf(cpf)
         
         if usuario:
-            # Armazenar CPF do usuário encontrado
+            # Armazenar CPF do gestor encontrado
             self.cpf_atual = cpf
             
             # Habilitar campos
@@ -140,7 +140,7 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
                 campo.config(state="normal")
             self.equipe_combo.config(state="readonly")
             
-            # Preencher campos com dados do usuário
+            # Preencher campos com dados do gestor
             self.campos["nome"].delete(0, tk.END)
             self.campos["nome"].insert(0, usuario.nome)
             
@@ -158,7 +158,7 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
             self.btn_excluir.config(state="normal")
             
         else:
-            tk.messagebox.showerror("Erro", "Usuário não encontrado!")
+            tk.messagebox.showerror("Erro", "Gestor não encontrado!")
             self.limpar_campos()
     
     def salvar_edicao(self):
@@ -195,22 +195,22 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
         )
         
         if resultado:
-            tk.messagebox.showinfo("Sucesso", "Usuário atualizado com sucesso!")
+            tk.messagebox.showinfo("Sucesso", "Gestor atualizado com sucesso!")
             self.limpar_campos()
         else:
-            tk.messagebox.showerror("Erro", "Não foi possível atualizar o usuário.")
+            tk.messagebox.showerror("Erro", "Não foi possível atualizar o gestor.")
     
     def excluir_usuario(self):
         if not self.cpf_atual:
             return
             
-        if tk.messagebox.askyesno("Confirmar", "Deseja realmente excluir este usuário?"):
+        if tk.messagebox.askyesno("Confirmar", "Deseja realmente excluir este gestor?"):
             if excluir_usuario(self.cpf_atual):
                 atualizar_equipe(self.equipe_combo.get(), None, "")
-                tk.messagebox.showinfo("Sucesso", "Usuário excluído com sucesso!")
+                tk.messagebox.showinfo("Sucesso", "Gestor excluído com sucesso!")
                 self.limpar_campos()
             else:
-                tk.messagebox.showerror("Erro", "Não foi possível excluir o usuário.")
+                tk.messagebox.showerror("Erro", "Não foi possível excluir o gestor.")
     
     def limpar_campos(self):
         self.cpf_atual = None
