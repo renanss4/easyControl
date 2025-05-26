@@ -196,7 +196,9 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
         
         if resultado:
             tk.messagebox.showinfo("Sucesso", "Gestor atualizado com sucesso!")
-            self.limpar_campos()
+            from gui.rh.principal_rh_window import PrincipalRhWindow
+            self.destroy()
+            PrincipalRhWindow().mainloop()
         else:
             tk.messagebox.showerror("Erro", "Não foi possível atualizar o gestor.")
     
@@ -211,6 +213,9 @@ class GerenciaUsuariosGestorWindow(tk.Tk):
                 self.limpar_campos()
             else:
                 tk.messagebox.showerror("Erro", "Não foi possível excluir o gestor.")
+        else:
+            tk.messagebox.showinfo("Operação cancelada", "A operação de exclusão foi cancelada.")
+            self.limpar_campos()
     
     def limpar_campos(self):
         self.cpf_atual = None
