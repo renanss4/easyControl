@@ -302,3 +302,5 @@ class AnalisarSolicitacaoWindow(tk.Tk):
     
     def voltar(self):
         self.destroy()
+        from gui.gestor.principal_gestor_window import PrincipalGestorWindow
+        PrincipalGestorWindow().mainloop()
