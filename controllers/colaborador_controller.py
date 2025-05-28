@@ -60,6 +60,23 @@ def criar_colaborador(nome, cpf, email, data_admissao, cargo, equipe):
     with open(CAMINHO_ARQUIVO, "w") as f:
         json.dump(colaboradores, f, indent=4)
 
+    # Adicionar o CPF do colaborador à equipe correspondente
+    if equipe:
+        ARQUIVO_EQUIPES = "data/equipes.json"
+        if os.path.exists(ARQUIVO_EQUIPES):
+            with open(ARQUIVO_EQUIPES, "r") as f:
+                try:
+                    equipes = json.load(f)
+                    for e in equipes:
+                        if e.get("nome") == equipe:
+                            if cpf not in e.get("colaboradores_cpf", []):
+                                e["colaboradores_cpf"].append(cpf)
+                                with open(ARQUIVO_EQUIPES, "w") as f_write:
+                                    json.dump(equipes, f_write, indent=4)
+                            break
+                except json.JSONDecodeError:
+                    pass  # Não foi possível ler o arquivo de equipes
+
     return novo_colaborador
 
 
