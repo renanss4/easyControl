@@ -32,5 +32,35 @@
                 "data_fim": "2025-10-15"
             }
         ]
+    },
+    {
+        "protocolo": "SOL-20250526-XMEQE",
+        "cpf_colaborador": "98765432101",
+        "parcelamento": false,
+        "status": "cancelada",
+        "data_solicitacao": "2025-05-26",
+        "periodos": [
+            {
+                "data_inicio": "2025-06-25",
+                "data_fim": "2025-07-24"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250526-D09VR",
+        "cpf_colaborador": "98765432101",
+        "parcelamento": true,
+        "status": "cancelada",
+        "data_solicitacao": "2025-05-26",
+        "periodos": [
+            {
+                "data_inicio": "2025-06-25",
+                "data_fim": "2025-07-08"
+            },
+            {
+                "data_inicio": "2025-07-09",
+                "data_fim": "2025-07-22"
+            }
+        ]
     }
 ]

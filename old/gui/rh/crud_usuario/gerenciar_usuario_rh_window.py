@@ -1,9 +1,5 @@
 import tkinter as tk
-from controllers.usuario_controller import (
-    buscar_rh_por_cpf,
-    atualizar_usuario,
-    excluir_usuario
-)
+from controllers import usuario_controller
 from controllers.equipe_controller import listar_equipes
 from utils.check_data import valida_todos_dados
 
@@ -126,7 +122,7 @@ class GerenciaUsuariosRhWindow(tk.Tk):
             tk.messagebox.showerror("Erro", mensagem)
             return
             
-        usuario = buscar_rh_por_cpf(cpf)
+        usuario = usuario_controller.buscar_rh_por_cpf(cpf)
         
         if usuario:
             # Armazenar CPF do usuário encontrado
@@ -182,7 +178,7 @@ class GerenciaUsuariosRhWindow(tk.Tk):
             return
         
         # Chamar controller para atualizar
-        resultado = atualizar_usuario(
+        resultado = usuario_controller.atualizar_usuario(
             self.cpf_atual,
             nome=dados["nome"],
             email=dados["email"],
@@ -201,7 +197,7 @@ class GerenciaUsuariosRhWindow(tk.Tk):
             return
             
         if tk.messagebox.askyesno("Confirmar", "Deseja realmente excluir este usuário?"):
-            if excluir_usuario(self.cpf_atual):
+            if usuario_controller.excluir_usuario(self.cpf_atual):
                 tk.messagebox.showinfo("Sucesso", "Usuário excluído com sucesso!")
                 self.limpar_campos()
             else:

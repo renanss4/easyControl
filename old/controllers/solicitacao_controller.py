@@ -42,7 +42,7 @@ def gerar_protocolo() -> str:
 
 
 def cadastrar_solicitacao(
-    cpf_colaborador: str, data_inicio: date, data_fim: date, parcelamento: bool = False
+    cpf_colaborador: str, data_inicio: date, data_fim: date
 ) -> Dict:
     # deve ser usado apenas se o usuario logado for do tipo rh
     """Cadastra uma nova solicitação de férias"""
@@ -52,7 +52,7 @@ def cadastrar_solicitacao(
         "cpf_colaborador": cpf_colaborador,
         "data_inicio": data_inicio.strftime("%Y-%m-%d"),
         "data_fim": data_fim.strftime("%Y-%m-%d"),
-        "parcelamento": parcelamento,
+        "parcelamento": False,
         "status": "pendente",
         "data_solicitacao": datetime.now().strftime("%Y-%m-%d"),
     }
@@ -84,7 +84,7 @@ def obter_solicitacoes_detalhadas() -> List[Dict]:
             continue
 
         sol_detalhada = sol.copy()
-        
+
         # Determinar o nome a ser exibido (prioriza colaborador)
         if colaborador:
             sol_detalhada["nome_colaborador"] = colaborador.nome
@@ -95,7 +95,7 @@ def obter_solicitacoes_detalhadas() -> List[Dict]:
 
         # Formatação de datas
         sol_detalhada["data_solicitacao"] = _formatar_data(sol["data_solicitacao"])
-        
+
         # Lidar com diferentes formatos de período
         if "periodos" in sol:
             # Formato novo (parcelado)
@@ -107,10 +107,12 @@ def obter_solicitacoes_detalhadas() -> List[Dict]:
             sol_detalhada["periodos"] = periodos_formatados
         else:
             # Formato antigo (período único)
-            sol_detalhada["periodos"] = [{
-                "data_inicio": _formatar_data(sol["data_inicio"]),
-                "data_fim": _formatar_data(sol["data_fim"])
-            }]
+            sol_detalhada["periodos"] = [
+                {
+                    "data_inicio": _formatar_data(sol["data_inicio"]),
+                    "data_fim": _formatar_data(sol["data_fim"]),
+                }
+            ]
 
         detalhadas.append(sol_detalhada)
 
@@ -136,7 +138,7 @@ def buscar_solicitacoes_por_cpf(cpf_colaborador: str) -> List[Dict]:
 
     for s in filtradas:
         s["nome_colaborador"] = nome_exibicao
-        
+
         if "periodos" in s:
             # Para solicitações com múltiplos períodos
             periodos_formatados = []
@@ -147,8 +149,10 @@ def buscar_solicitacoes_por_cpf(cpf_colaborador: str) -> List[Dict]:
             s["periodos_formatados"] = " | ".join(periodos_formatados)
         else:
             # Para solicitações antigas com período único
-            s["periodos_formatados"] = f"{_formatar_data(s.get('data_inicio', 'N/A'))} a {_formatar_data(s.get('data_fim', 'N/A'))}"
-        
+            s["periodos_formatados"] = (
+                f"{_formatar_data(s.get('data_inicio', 'N/A'))} a {_formatar_data(s.get('data_fim', 'N/A'))}"
+            )
+
         s["data_solicitacao"] = _formatar_data(s["data_solicitacao"])
 
     return filtradas
@@ -168,42 +172,42 @@ def cancelar_solicitacao(protocolo: str) -> bool:
 def aprovar_solicitacao(protocolo: str) -> bool:
     """
     Aprova uma solicitação de férias.
-    
+
     Args:
         protocolo: Protocolo da solicitação a ser aprovada
-        
+
     Returns:
         bool: True se aprovada com sucesso, False caso contrário
     """
     solicitacoes = _carregar_solicitacoes()
-    
+
     for sol in solicitacoes:
-        if sol.get('protocolo') == protocolo:
-            sol['status'] = 'aprovado'
+        if sol.get("protocolo") == protocolo:
+            sol["status"] = "aprovado"
             _salvar_solicitacoes(solicitacoes)
             return True
-            
+
     return False
 
 
 def rejeitar_solicitacao(protocolo: str) -> bool:
     """
     Rejeita uma solicitação de férias.
-    
+
     Args:
         protocolo: Protocolo da solicitação a ser rejeitada
-        
+
     Returns:
         bool: True se rejeitada com sucesso, False caso contrário
     """
     solicitacoes = _carregar_solicitacoes()
-    
+
     for sol in solicitacoes:
-        if sol.get('protocolo') == protocolo:
-            sol['status'] = 'rejeitado'
+        if sol.get("protocolo") == protocolo:
+            sol["status"] = "rejeitado"
             _salvar_solicitacoes(solicitacoes)
             return True
-            
+
     return False
 
 
@@ -306,21 +310,19 @@ def validar_cpf_cadastrado(cpf: str) -> Tuple[bool, str]:
     """Verifica se o CPF está cadastrado como usuário ou colaborador"""
     from controllers.colaborador_controller import buscar_colaborador_por_cpf
     from controllers.usuario_controller import buscar_usuario_por_cpf
-    
+
     colaborador = buscar_colaborador_por_cpf(cpf)
     usuario = buscar_usuario_por_cpf(cpf)
-    
+
     if not colaborador and not usuario:
         return False, "CPF não encontrado no sistema"
-    
+
     return True, ""
 
 
 def cadastrar_solicitacao_parcelada(
-    cpf_colaborador: str, 
-    periodos: List[Tuple[date, date]], 
-    parcelamento: bool = True
-) -> Dict:
+    cpf_colaborador: str, periodos: list[tuple[date, date]], parcelamento: bool = True
+) -> list[dict] | bool:
     """
     Cadastra uma solicitação de férias parcelada.
     """
@@ -360,33 +362,38 @@ def validar_antecedencia_minima(data_inicio: date) -> Tuple[bool, str]:
     """Valida se a data de início tem antecedência mínima de 30 dias."""
     hoje = date.today()
     dias_antecedencia = (data_inicio - hoje).days
-    
+
     if dias_antecedencia < 30:
-        return False, "A solicitação deve ser feita com no mínimo 30 dias de antecedência"
-    
+        return (
+            False,
+            "A solicitação deve ser feita com no mínimo 30 dias de antecedência",
+        )
+
     return True, ""
 
 
 def validar_dia_semana_inicio(data_inicio: date) -> Tuple[bool, str]:
     """Valida se a data de início é em um dia útil no início da semana (exceto sexta)."""
     dia_semana = data_inicio.weekday()
-    
+
     # Verifica se é fim de semana (5=sábado, 6=domingo)
     if dia_semana in [5, 6]:
         return False, "As férias devem iniciar em um dia útil"
-    
+
     # Verifica se é sexta-feira (4)
     if dia_semana == 4:
         return False, "As férias não podem iniciar em uma sexta-feira"
-    
+
     return True, ""
 
 
-def validar_primeiro_periodo_parcelado(data_inicio: date, data_fim: date) -> Tuple[bool, str]:
+def validar_primeiro_periodo_parcelado(
+    data_inicio: date, data_fim: date
+) -> Tuple[bool, str]:
     """Valida se o primeiro período do parcelamento tem 14 dias."""
     dias = (data_fim - data_inicio).days + 1
-    
+
     if dias != 14:
         return False, "O primeiro período do parcelamento deve ter exatamente 14 dias"
-    
+
     return True, ""

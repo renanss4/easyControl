@@ -29,6 +29,11 @@ def _converter_dict_para_equipe(e: Dict) -> Equipe:
         colaboradores_cpf=e.get("colaboradores_cpf", [])  # pode ser lista vazia
     )
 
+
+
+
+
+
 def criar_equipe(nome: str, gestor_cpf: Optional[str] = None) -> Equipe | str:
     """
     Cria uma nova equipe.
