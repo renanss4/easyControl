@@ -1,0 +1,37 @@
+[
+    {
+        "cpf": "11111111111",
+        "nome": "Pedro Oliveira",
+        "cargo": "Desenvolvedor Frontend",
+        "data_admissao": "2023-05-10",
+        "email": "pedro.oliveira@empresa.com"
+    },
+    {
+        "cpf": "22222222222",
+        "nome": "Fernanda Rodrigues",
+        "cargo": "Desenvolvedora Backend",
+        "data_admissao": "2023-04-15",
+        "email": "fernanda.rodrigues@empresa.com"
+    },
+    {
+        "cpf": "33333333333",
+        "nome": "Lucas Pereira",
+        "cargo": "Analista de Vendas",
+        "data_admissao": "2023-07-20",
+        "email": "lucas.pereira@empresa.com"
+    },
+    {
+        "cpf": "44444444444",
+        "nome": "Mariana Alves",
+        "cargo": "Designer UX/UI",
+        "data_admissao": "2023-02-28",
+        "email": "mariana.alves@empresa.com"
+    },
+    {
+        "cpf": "55555555555",
+        "nome": "Rafael Souza",
+        "cargo": "Analista de Marketing",
+        "data_admissao": "2023-06-12",
+        "email": "rafael.souza@empresa.com"
+    }
+]

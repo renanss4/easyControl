@@ -1,0 +1,91 @@
+[
+    {
+        "protocolo": "SOL-2024-001",
+        "pessoa": {
+            "cpf": "11111111111",
+            "nome": "Pedro Oliveira",
+            "cargo": "Desenvolvedor Frontend",
+            "data_admissao": "2023-05-10",
+            "email": "pedro.oliveira@empresa.com"
+        },
+        "data_solicitacao": "2024-01-15",
+        "periodos": [
+            {
+                "DATA_INICIO": "2024-02-01",
+                "DATA_FIM": "2024-02-15"
+            }
+        ],
+        "parcelamento": false,
+        "status": "PENDENTE"
+    },
+    {
+        "protocolo": "SOL-2024-002",
+        "pessoa": {
+            "cpf": "22222222222",
+            "nome": "Fernanda Rodrigues",
+            "cargo": "Desenvolvedora Backend",
+            "data_admissao": "2023-04-15",
+            "email": "fernanda.rodrigues@empresa.com"
+        },
+        "data_solicitacao": "2024-01-20",
+        "periodos": [
+            {
+                "DATA_INICIO": "2024-03-01",
+                "DATA_FIM": "2024-03-10"
+            },
+            {
+                "DATA_INICIO": "2024-06-15",
+                "DATA_FIM": "2024-06-25"
+            }
+        ],
+        "parcelamento": true,
+        "status": "APROVADA"
+    },
+    {
+        "protocolo": "SOL-2024-003",
+        "pessoa": {
+            "cpf": "12345678901",
+            "nome": "Maria Silva",
+            "email": "maria.silva@empresa.com",
+            "data_admissao": "2023-01-15",
+            "cargo": "Analista de Recursos Humanos",
+            "senha": "AnalistaRH123"
+        },
+        "data_solicitacao": "2024-01-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2024-04-01",
+                "DATA_FIM": "2024-04-30"
+            }
+        ],
+        "parcelamento": false,
+        "status": "REJEITADA"
+    },
+    {
+        "protocolo": "SOL-2024-004",
+        "pessoa": {
+            "cpf": "33333333333",
+            "nome": "Lucas Pereira",
+            "cargo": "Analista de Vendas",
+            "data_admissao": "2023-07-20",
+            "email": "lucas.pereira@empresa.com"
+        },
+        "data_solicitacao": "2024-02-01",
+        "periodos": [
+            {
+                "DATA_INICIO": "2024-05-01",
+                "DATA_FIM": "2024-05-07"
+            },
+            {
+                "DATA_INICIO": "2024-08-01",
+                "DATA_FIM": "2024-08-07"
+            },
+            {
+                "DATA_INICIO": "2024-12-20",
+                "DATA_FIM": "2024-12-31"
+            }
+        ],
+        "parcelamento": true,
+        "status": "PENDENTE"
+    }
+]

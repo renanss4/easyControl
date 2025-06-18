@@ -1,0 +1,84 @@
+[
+    {
+        "nome": "Equipe de TI",
+        "gestor": {
+            "cpf": "11122233344",
+            "nome": "Carlos Mendes",
+            "email": "carlos.mendes@empresa.com",
+            "data_admissao": "2021-03-20",
+            "cargo": "Gestor de TI",
+            "senha": "GestorTI789"
+        },
+        "colaboradores": [
+            {
+                "cpf": "11111111111",
+                "nome": "Pedro Oliveira",
+                "cargo": "Desenvolvedor Frontend",
+                "data_admissao": "2023-05-10",
+                "email": "pedro.oliveira@empresa.com"
+            },
+            {
+                "cpf": "22222222222",
+                "nome": "Fernanda Rodrigues",
+                "cargo": "Desenvolvedora Backend",
+                "data_admissao": "2023-04-15",
+                "email": "fernanda.rodrigues@empresa.com"
+            },
+            {
+                "cpf": "44444444444",
+                "nome": "Mariana Alves",
+                "cargo": "Designer UX/UI",
+                "data_admissao": "2023-02-28",
+                "email": "mariana.alves@empresa.com"
+            }
+        ]
+    },
+    {
+        "nome": "Equipe de Vendas",
+        "gestor": {
+            "cpf": "55566677788",
+            "nome": "Ana Paula Costa",
+            "email": "ana.costa@empresa.com",
+            "data_admissao": "2020-08-05",
+            "cargo": "Gestora de Vendas",
+            "senha": "GestoraVendas321"
+        },
+        "colaboradores": [
+            {
+                "cpf": "33333333333",
+                "nome": "Lucas Pereira",
+                "cargo": "Analista de Vendas",
+                "data_admissao": "2023-07-20",
+                "email": "lucas.pereira@empresa.com"
+            }
+        ]
+    },
+    {
+        "nome": "Equipe de Marketing",
+        "gestor": {
+            "cpf": "99988877766",
+            "nome": "Roberto Lima",
+            "email": "roberto.lima@empresa.com",
+            "data_admissao": "2019-11-12",
+            "cargo": "Gestor de Marketing",
+            "senha": "GestorMkt654"
+        },
+        "colaboradores": [
+            {
+                "cpf": "55555555555",
+                "nome": "Rafael Souza",
+                "cargo": "Analista de Marketing",
+                "data_admissao": "2023-06-12",
+                "email": "rafael.souza@empresa.com"
+            },
+            {
+                "cpf": "12345678901",
+                "nome": "Maria Silva",
+                "email": "maria.silva@empresa.com",
+                "data_admissao": "2023-01-15",
+                "cargo": "Analista de Recursos Humanos",
+                "senha": "AnalistaRH123"
+            }
+        ]
+    }
+]
