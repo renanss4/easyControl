@@ -84,6 +84,7 @@ class TelaRH(tk.Tk):
         try:
             # Destroy this window first
             self.destroy()
+            self.__controlador_funcionario_rh._ControladorFuncionarioRH__tela_funcionario_rh = None
             self.__controlador_funcionario_rh.abrir_tela_colaborador()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de colaborador: {e}")
