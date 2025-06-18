@@ -21,11 +21,15 @@ class ControladorGestor:
         return self.__tela_gestor
 
     def abrir_tela_gestor(self):
-        if self.__tela_gestor is None:
-            from telas.tela_gestor import TelaGestor
+        from telas.tela_gestor import TelaGestor
 
-            self.__tela_gestor = TelaGestor(self)
+        self.__tela_gestor = TelaGestor(self)
         return self.__tela_gestor
+
+    def voltar_tela_funcionario_rh(self):
+        """Volta para a tela do funcionário RH"""
+        self.__tela_gestor = None
+        return self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
 
     def converter_dict_para_gestor(self, gestor_dict: dict) -> Gestor | bool:
         try:
@@ -62,9 +66,11 @@ class ControladorGestor:
         pass
 
     def abrir_tela_solicitacao(self):
-        # TODO: Implementar lógica para abrir a tela de solicitação
-        pass
+        """Abre a tela de solicitação através do sistema"""
+        return (
+            self.__controlador_sistema.controlador_solicitacao.abrir_tela_solicitacao()
+        )
 
     def abrir_tela_equipe(self):
-        # TODO: Implementar lógica para abrir a tela de equipe
-        pass
+        """Abre a tela de equipe através do sistema"""
+        return self.__controlador_sistema.controlador_equipe.abrir_tela_equipe()

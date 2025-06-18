@@ -20,11 +20,20 @@ class ControladorEquipe:
         return self.__tela_equipe
 
     def abrir_tela_equipe(self):
-        if self.__tela_equipe is None:
-            from telas.tela_equipe import TelaEquipe
+        from telas.tela_equipe import TelaEquipe
 
-            self.__tela_equipe = TelaEquipe(self)
+        self.__tela_equipe = TelaEquipe(self)
         return self.__tela_equipe
+
+    def voltar_tela_funcionario_rh(self):
+        """Volta para a tela do funcionário RH"""
+        self.__tela_equipe = None
+        return self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
+
+    def voltar_tela_gestor(self):
+        """Volta para a tela do gestor"""
+        self.__tela_equipe = None
+        return self.__controlador_sistema.controlador_gestor.abrir_tela_gestor()
 
     def converter_dict_para_equipe(self, equipe_dict: dict) -> Equipe | bool:
         try:

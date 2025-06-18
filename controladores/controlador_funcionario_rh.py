@@ -9,14 +9,14 @@ class ControladorFuncionarioRH:
         self.__tela_funcionario_rh = None
 
     def abrir_tela_funcionario_rh(self):
-        if self.__tela_funcionario_rh is None:
-            from telas.tela_funcionario_rh import TelaRH
+        from telas.tela_funcionario_rh import TelaRH
 
-            self.__tela_funcionario_rh = TelaRH(self)
+        self.__tela_funcionario_rh = TelaRH(self)
         return self.__tela_funcionario_rh
 
     def voltar_para_tela_sistema(self):
         """Retorna para a tela principal do sistema"""
+        self.__tela_funcionario_rh = None
         self.__controlador_sistema.abrir_tela_sistema()
 
     def converter_dict_para_funcionario_rh(

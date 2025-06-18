@@ -21,11 +21,20 @@ class ControladorSolicitacao:
         return self.__tela_solicitacao
 
     def abrir_tela_solicitacao(self):
-        if self.__tela_solicitacao is None:
-            from telas.tela_solicitacao import TelaSolicitacao
+        from telas.tela_solicitacao import TelaSolicitacao
 
-            self.__tela_solicitacao = TelaSolicitacao(self)
+        self.__tela_solicitacao = TelaSolicitacao(self)
         return self.__tela_solicitacao
+
+    def voltar_tela_funcionario_rh(self):
+        """Volta para a tela do funcionário RH"""
+        self.__tela_solicitacao = None
+        return self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
+
+    def voltar_tela_gestor(self):
+        """Volta para a tela do gestor"""
+        self.__tela_solicitacao = None
+        return self.__controlador_sistema.controlador_gestor.abrir_tela_gestor()
 
     def converter_dict_para_solicitacao(
         self, solicitacao_dict: dict
