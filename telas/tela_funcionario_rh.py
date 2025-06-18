@@ -5,10 +5,10 @@ from tkinter import messagebox
 class TelaRH(tk.Tk):
     def __init__(self, controlador_funcionario_rh):
         super().__init__()
-        self.controlador_funcionario_rh = controlador_funcionario_rh
+        self.__controlador_funcionario_rh = controlador_funcionario_rh
 
         self.title("RH - EasyControl")
-        self.geometry("800x600")
+        self.geometry("800x700")
         self.configure(bg="#dcdcdc")
 
         # Centraliza a janela
@@ -82,49 +82,61 @@ class TelaRH(tk.Tk):
     def abrir_cadastro_colaborador(self):
         """Abre a tela de cadastro de colaborador"""
         try:
-            self.controlador_funcionario_rh.abrir_tela_cadastro_colaborador()
+            # Destroy this window first
+            self.destroy()
+            self.__controlador_funcionario_rh.abrir_tela_colaborador()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de colaborador: {e}")
+            # If there's an error, reopen this window
+            TelaRH(self.__controlador_funcionario_rh)
 
     def abrir_cadastro_gestor(self):
         """Abre a tela de cadastro de gestor"""
         try:
-            self.controlador_funcionario_rh.abrir_tela_cadastro_gestor()
+            # Destroy this window first
+            self.destroy()
+            self.__controlador_funcionario_rh.abrir_tela_gestor()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de gestor: {e}")
+            # If there's an error, reopen this window
+            TelaRH(self.__controlador_funcionario_rh)
 
     def abrir_cadastro_funcionario_rh(self):
         """Abre a tela de cadastro de funcionário RH"""
         try:
-            self.controlador_funcionario_rh.abrir_tela_cadastro_funcionario_rh()
+            # Destroy this window first
+            self.destroy()
+            CadastraRH(self.__controlador_funcionario_rh)
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de RH: {e}")
+            # If there's an error, reopen this window
+            TelaRH(self.__controlador_funcionario_rh)
 
     def abrir_cadastro_solicitacao(self):
         """Abre a tela de cadastro de solicitação"""
         try:
-            self.controlador_funcionario_rh.abrir_tela_solicitacao()
+            # Destroy this window first
+            self.destroy()
+            self.__controlador_funcionario_rh.abrir_tela_solicitacao()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de solicitação: {e}")
+            # If there's an error, reopen this window
+            TelaRH(self.__controlador_funcionario_rh)
 
     def abrir_cadastro_equipe(self):
         """Abre a tela de cadastro de equipe"""
         try:
-            self.controlador_funcionario_rh.abrir_tela_equipe()
+            # Destroy this window first
+            self.destroy()
+            self.__controlador_funcionario_rh.abrir_tela_equipe()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de equipe: {e}")
-
-    def consultar_lista_colaboradores(self):
-        """Abre a consulta de colaboradores"""
-        try:
-            self.controlador_funcionario_rh.consultar_lista_colaboradores()
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao consultar colaboradores: {e}")
+            # If there's an error, reopen this window
+            TelaRH(self.__controlador_funcionario_rh)
 
     def gerar_relatorio_ferias(self):
         """Gera relatório de férias"""
         try:
-            self.controlador_funcionario_rh.gerar_relatorio_ferias()
             messagebox.showinfo(
                 "Info", "Funcionalidade de relatório ainda não implementada"
             )
@@ -135,5 +147,298 @@ class TelaRH(tk.Tk):
         confirm = messagebox.askyesno("Sair", "Deseja realmente sair?")
         if confirm:
             self.destroy()
-            # Volta para a tela de login através do controlador sistema
-            self.controlador_funcionario_rh.controlador_sistema.abre_tela_sistema()
+            self.__controlador_funcionario_rh.voltar_para_tela_sistema()
+
+
+class CadastraRH(tk.Tk):
+    def __init__(self, controlador_funcionario_rh):
+        super().__init__()
+        self.__controlador_funcionario_rh = controlador_funcionario_rh
+        self.title("Cadastrar Funcionário RH")
+        self.geometry("800x700")
+        self.configure(bg="#dcdcdc")
+
+        # Center frame within the larger window
+        frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=20, pady=20)
+        frame.place(relx=0.5, rely=0.5, anchor="center")
+
+        # Título
+        label_title = tk.Label(
+            frame, text="Cadastro de RH", font=("Arial", 16, "bold"), bg="#dcdcdc"
+        )
+        label_title.pack(pady=(0, 20))
+
+        # Campos de entrada
+        self.campos = [
+            ("nome", "Nome"),
+            ("cpf", "CPF"),
+            ("email", "Email"),
+            ("senha", "Senha"),
+            ("cargo", "Cargo"),
+        ]
+
+        # Dicionário para armazenar as entries
+        self.entries = {}
+
+        # Criar campos
+        for campo_id, label in self.campos:
+            # Se for o campo de senha, criar com máscara
+            if campo_id == "senha":
+                self.entries[campo_id] = self.create_label_and_entry(
+                    frame, label, show="*"
+                )
+            else:
+                self.entries[campo_id] = self.create_label_and_entry(frame, label)
+
+        # Frame para os botões
+        botoes_frame = tk.Frame(frame, bg="#dcdcdc")
+        botoes_frame.pack(pady=(20, 0))
+
+        # Botões
+        tk.Button(
+            botoes_frame,
+            text="Cadastrar",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=15,
+            command=self.concluir_cadastro,
+        ).pack(side="left", padx=5)
+
+        tk.Button(
+            botoes_frame,
+            text="Gerenciar RH",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=15,
+            command=self.gerenciar_usuario_rh,
+        ).pack(side="left", padx=5)
+
+        tk.Button(
+            botoes_frame,
+            text="Voltar",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=15,
+            command=self.voltar,
+        ).pack(side="left", padx=5)
+
+    def create_label_and_entry(self, parent, text, show=None):
+        """Cria um par de label e entry e retorna o entry."""
+        tk.Label(parent, text=text, bg="#dcdcdc").pack(anchor="w", pady=(5, 0))
+        entry = tk.Entry(parent, width=30, show=show)
+        entry.pack(pady=(0, 10))
+        return entry
+
+    def concluir_cadastro(self):
+        # Coletar dados dos campos
+        dados = {
+            campo_id: self.entries[campo_id].get().strip()
+            for campo_id, _ in self.campos
+        }
+
+        if not all(dados.values()):
+            messagebox.showerror(
+                "Erro de Validação",
+                "Todos os campos são obrigatórios e devem ser preenchidos",
+            )
+            return
+
+        try:
+            # Chamar o controller para criar o usuário RH
+            self.__controlador_funcionario_rh.cadastrar_funcionario_rh(
+                nome=dados["nome"],
+                cpf=dados["cpf"],
+                email=dados["email"],
+                senha=dados["senha"],
+                cargo=dados["cargo"],
+            )
+            messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
+            self.voltar()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao cadastrar: {str(e)}")
+
+    def gerenciar_usuario_rh(self):
+        # Destroy this window first, then open the management window
+        self.destroy()
+        GerenciaRH(self.__controlador_funcionario_rh)
+
+    def voltar(self):
+        # Destroy this window and return to the RH main screen
+        self.destroy()
+        TelaRH(self.__controlador_funcionario_rh)
+
+
+class GerenciaRH(tk.Tk):
+    def __init__(self, controlador_funcionario_rh):
+        super().__init__()
+        self.__controlador_funcionario_rh = controlador_funcionario_rh
+        self.title("Gerenciar Funcionários de RH - EasyControl")
+        self.geometry("800x700")
+        self.configure(bg="#dcdcdc")
+
+        # Frame principal
+        main_frame = tk.Frame(self, bg="#dcdcdc", padx=20, pady=20)
+        main_frame.pack(fill="both", expand=True)
+
+        # Frame de busca
+        search_frame = tk.Frame(main_frame, bg="#dcdcdc")
+        search_frame.pack(fill="x", pady=(0, 20))
+
+        tk.Label(search_frame, text="CPF do usuário:", bg="#dcdcdc").pack(
+            side="left", padx=(0, 10)
+        )
+
+        self.cpf_entry = tk.Entry(search_frame, width=15)
+        self.cpf_entry.pack(side="left", padx=(0, 10))
+
+        tk.Button(search_frame, text="Buscar", command=self.buscar_usuario).pack(
+            side="left"
+        )
+
+        # Frame dos campos
+        self.campos_frame = tk.Frame(main_frame, bg="#dcdcdc")
+        self.campos_frame.pack(fill="both", expand=True)
+
+        # Criar campos de edição (inicialmente desabilitados)
+        self.campos = {}
+        self.campos_labels = [
+            ("nome", "Nome"),
+            ("email", "Email"),
+            ("cargo", "Cargo"),
+        ]
+
+        for campo_id, label in self.campos_labels:
+            tk.Label(self.campos_frame, text=label, bg="#dcdcdc").pack(
+                anchor="w", pady=(5, 0)
+            )
+
+            entry = tk.Entry(self.campos_frame, width=40)
+            entry.pack(pady=(0, 10))
+            entry.config(state="disabled")
+            self.campos[campo_id] = entry
+
+        # Frame dos botões
+        botoes_frame = tk.Frame(main_frame, bg="#dcdcdc")
+        botoes_frame.pack(pady=20)
+
+        self.btn_editar = tk.Button(
+            botoes_frame,
+            text="Salvar Alterações",
+            command=self.salvar_edicao,
+            state="disabled",
+        )
+        self.btn_editar.pack(side="left", padx=5)
+
+        self.btn_excluir = tk.Button(
+            botoes_frame,
+            text="Excluir Usuário",
+            command=self.excluir_usuario,
+            state="disabled",
+        )
+        self.btn_excluir.pack(side="left", padx=5)
+
+        # Botão Voltar
+        tk.Button(botoes_frame, text="Voltar", command=self.voltar).pack(
+            side="left", padx=5
+        )
+
+        # Armazenar CPF do usuário atual
+        self.cpf_atual = None
+
+    def buscar_usuario(self):
+        cpf = self.cpf_entry.get().strip()
+
+        if not cpf:
+            messagebox.showerror("Erro", "Digite um CPF para buscar")
+            return
+
+        try:
+            # Implementar no controlador
+            usuario = self.__controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(
+                cpf
+            )
+
+            if usuario:
+                # Armazenar CPF do usuário encontrado
+                self.cpf_atual = cpf
+
+                # Habilitar campos
+                for campo in self.campos.values():
+                    campo.config(state="normal")
+
+                # Preencher campos com dados do usuário
+                self.campos["nome"].delete(0, tk.END)
+                self.campos["nome"].insert(0, usuario.nome)
+
+                self.campos["email"].delete(0, tk.END)
+                self.campos["email"].insert(0, usuario.email)
+
+                self.campos["cargo"].delete(0, tk.END)
+                self.campos["cargo"].insert(0, usuario.cargo)
+
+                # Habilitar botões
+                self.btn_editar.config(state="normal")
+                self.btn_excluir.config(state="normal")
+            else:
+                messagebox.showerror("Erro", "Usuário não encontrado!")
+                self.limpar_campos()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao buscar usuário: {str(e)}")
+
+    def salvar_edicao(self):
+        if not self.cpf_atual:
+            return
+
+        # Coletar dados dos campos
+        dados = {campo: entry.get().strip() for campo, entry in self.campos.items()}
+
+        # Validar dados
+        if not all(dados.values()):
+            messagebox.showerror(
+                "Erro de Validação",
+                "Todos os campos são obrigatórios e devem ser preenchidos",
+            )
+            return
+
+        try:
+            # Implementar no controlador
+            self.__controlador_funcionario_rh.atualizar_funcionario_rh(
+                self.cpf_atual,
+                nome=dados["nome"],
+                email=dados["email"],
+                cargo=dados["cargo"],
+            )
+            messagebox.showinfo("Sucesso", "Usuário atualizado com sucesso!")
+            self.limpar_campos()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao atualizar usuário: {str(e)}")
+
+    def excluir_usuario(self):
+        if not self.cpf_atual:
+            return
+
+        if messagebox.askyesno("Confirmar", "Deseja realmente excluir este usuário?"):
+            try:
+                # Implementar no controlador
+                self.__controlador_funcionario_rh.excluir_funcionario_rh(self.cpf_atual)
+                messagebox.showinfo("Sucesso", "Usuário excluído com sucesso!")
+                self.limpar_campos()
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao excluir usuário: {str(e)}")
+
+    def limpar_campos(self):
+        self.cpf_atual = None
+        self.cpf_entry.delete(0, tk.END)
+
+        for entry in self.campos.values():
+            entry.config(state="normal")
+            entry.delete(0, tk.END)
+            entry.config(state="disabled")
+
+        self.btn_editar.config(state="disabled")
+        self.btn_excluir.config(state="disabled")
+
+    def voltar(self):
+        # Destroy this window and return to the cadastro RH screen
+        self.destroy()
+        CadastraRH(self.__controlador_funcionario_rh)
