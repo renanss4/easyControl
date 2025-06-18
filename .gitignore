@@ -14,3 +14,5 @@ env/
 # Project specific
 /data/
 /data/*
+
+__init__.py
