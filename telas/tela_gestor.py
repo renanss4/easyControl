@@ -5,9 +5,9 @@ class TelaGestor(tk.Tk):
     def __init__(self, controlador_gestor):
         super().__init__()
         self.title("Gestor - EasyControl")
-        self.geometry("800x600")
+        self.geometry("800x700")
         self.configure(bg="#dcdcdc")
-        self.controlador_gestor = controlador_gestor
+        self.__controlador_gestor = controlador_gestor
 
         # Centraliza a janela
         self.transient()
@@ -50,7 +50,7 @@ class TelaGestor(tk.Tk):
             pass
 
     # UC03
-    def aprovar_solicitacao(self):
+    def abrir_tela_analisar_solicitacao(self):
         pass
 
     # UC02

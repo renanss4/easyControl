@@ -4,21 +4,28 @@ from datetime import date
 
 class ControladorSolicitacao:
     def __init__(self, controlador_sistema):
-        self.controlador_sistema = controlador_sistema
-        self.solicitacao = Solicitacao()
-        self.tela_solicitacao = None
+        self.__controlador_sistema = controlador_sistema
+        self.__solicitacao = Solicitacao()
+        self.__tela_solicitacao = None
+
+    @property
+    def controlador_sistema(self):
+        return self.__controlador_sistema
+
+    @property
+    def solicitacao(self):
+        return self.__solicitacao
+
+    @property
+    def tela_solicitacao(self):
+        return self.__tela_solicitacao
 
     def abrir_tela_solicitacao(self):
-        if self.tela_solicitacao is None:
+        if self.__tela_solicitacao is None:
             from telas.tela_solicitacao import TelaSolicitacao
 
-            self.tela_solicitacao = TelaSolicitacao(self)
-        return self.tela_solicitacao
-
-    def fechar_tela_solicitacao(self):
-        if self.tela_solicitacao is not None:
-            self.tela_solicitacao.destroy()
-            self.tela_solicitacao = None
+            self.__tela_solicitacao = TelaSolicitacao(self)
+        return self.__tela_solicitacao
 
     def converter_dict_para_solicitacao(
         self, solicitacao_dict: dict
@@ -31,23 +38,23 @@ class ControladorSolicitacao:
 
                 # Tenta converter usando os diferentes controladores
                 # Primeiro tenta colaborador
-                pessoa_obj = self.controlador_sistema.controlador_colaborador.converter_dict_para_colaborador(
+                pessoa_obj = self.__controlador_sistema.controlador_colaborador.converter_dict_para_colaborador(
                     pessoa_data
                 )
 
                 # Se não conseguiu, tenta funcionário RH
                 if not pessoa_obj and hasattr(
-                    self.controlador_sistema, "controlador_funcionario_rh"
+                    self.__controlador_sistema, "controlador_funcionario_rh"
                 ):
-                    pessoa_obj = self.controlador_sistema.controlador_funcionario_rh.converter_dict_para_funcionario_rh(
+                    pessoa_obj = self.__controlador_sistema.controlador_funcionario_rh.converter_dict_para_funcionario_rh(
                         pessoa_data
                     )
 
                 # Se não conseguiu, tenta gestor
                 if not pessoa_obj and hasattr(
-                    self.controlador_sistema, "controlador_gestor"
+                    self.__controlador_sistema, "controlador_gestor"
                 ):
-                    pessoa_obj = self.controlador_sistema.controlador_gestor.converter_dict_para_gestor(
+                    pessoa_obj = self.__controlador_sistema.controlador_gestor.converter_dict_para_gestor(
                         pessoa_data
                     )
 
@@ -86,26 +93,26 @@ class ControladorSolicitacao:
         except (KeyError, ValueError, TypeError):
             return False
 
-    def aprovar_solicitacao():
+    def aprovar_solicitacao(self):
         pass
 
-    def rejeitar_solicitacao():
+    def rejeitar_solicitacao(self):
         pass
 
-    def cancelar_solicitacao():
+    def cancelar_solicitacao(self):
         pass
 
-    def cadastrar_solicitacao():
+    def cadastrar_solicitacao(self):
         pass
 
-    def cadastrar_solicitacao_parcelada():
+    def cadastrar_solicitacao_parcelada(self):
         pass
 
-    def buscar_pessoa():
+    def buscar_pessoa(self):
         pass
 
-    def buscar_solicitacao_por_protocolo():
+    def buscar_solicitacao_por_protocolo(self):
         pass
 
-    def buscar_solicitacoes():
+    def buscar_solicitacoes(self):
         pass

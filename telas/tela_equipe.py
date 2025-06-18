@@ -5,9 +5,9 @@ class TelaEquipe(tk.Tk):
     def __init__(self, controlador_equipe):
         super().__init__()
         self.title("Equipe - EasyControl")
-        self.geometry("800x600")
+        self.geometry("800x700")
         self.configure(bg="#f0f0f0")
-        self.controlador_equipe = controlador_equipe
+        self.__controlador_equipe = controlador_equipe
 
         # Centraliza a janela
         self.transient()
