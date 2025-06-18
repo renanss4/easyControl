@@ -4,23 +4,34 @@ from datetime import date
 
 class ControladorColaborador:
     def __init__(self, controlador_sistema):
-        self.controlador_sistema = controlador_sistema
-        self.colaborador = Colaborador()
-        self.tela_colaborador = None
+        self.__controlador_sistema = controlador_sistema
+        self.__colaborador = Colaborador()
+        self.__tela_colaborador = None
+
+    @property
+    def controlador_sistema(self):
+        return self.__controlador_sistema
+
+    @property
+    def colaborador(self):
+        return self.__colaborador
+
+    @property
+    def tela_colaborador(self):
+        return self.__tela_colaborador
 
     def abrir_tela_colaborador(self):
-        if self.tela_colaborador is None:
-            from telas.tela_colaborador import TelaColaborador
+        from telas.tela_colaborador import TelaColaborador
 
-            self.tela_colaborador = TelaColaborador(self)
-        return self.tela_colaborador
+        self.__tela_colaborador = TelaColaborador(self)
+        return self.__tela_colaborador
 
-    def fechar_tela_colaborador(self):
-        if self.tela_colaborador is not None:
-            self.tela_colaborador.destroy()
-            self.tela_colaborador = None
+    def voltar_tela_funcionario_rh(self):
+        self.__tela_colaborador = None
+        return self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
 
-    def converter_dict_para_colaborador(self, colaborador_dict: dict) -> Colaborador | bool:
+    @staticmethod
+    def converter_dict_para_colaborador(colaborador_dict: dict) -> Colaborador | bool:
         try:
             return Colaborador(
                 cpf=colaborador_dict["cpf"],
@@ -32,17 +43,111 @@ class ControladorColaborador:
         except (KeyError, ValueError):
             return False
 
-    def cadastrar_colaborador():
-        pass
+    def cadastrar_colaborador(self, dados: dict) -> bool:
+        """
+        ESTE é o método que efetivamente cadastra o colaborador
+        Chamado pela tela do colaborador quando o usuário clica em 'Cadastrar'
+        """
+        try:
+            campos_obrigatorios = ["cpf", "nome", "cargo", "email"]
 
-    def atualizar_colaborador():
-        pass
+            # Verificar se todos os campos obrigatórios estão presentes
+            for campo in campos_obrigatorios:
+                if campo not in dados or not dados[campo]:
+                    return False
 
-    def excluir_colaborador():
-        pass
+            # Validar formato do CPF (11 dígitos)
+            cpf = dados["cpf"].replace(".", "").replace("-", "")
+            if len(cpf) != 11 or not cpf.isdigit():
+                return False
 
-    def buscar_colaborador_por_cpf():
-        pass
+            # Validar email básico
+            email = dados["email"]
+            if "@" not in email or "." not in email:
+                return False
 
-    def buscar_colaboradores():
-        pass
+            # Carregar colaboradores existentes
+            colaboradores = self.__colaborador.carregar_colaboradores()
+
+            # Verificar se CPF já existe
+            for col in colaboradores:
+                if col.get("cpf") == dados["cpf"]:
+                    return False  # CPF já existe
+
+            # Criar novo colaborador
+            novo_colaborador = {
+                "cpf": dados["cpf"],
+                "nome": dados["nome"],
+                "cargo": dados["cargo"],
+                "data_admissao": dados.get("data_admissao", date.today().isoformat()),
+                "email": dados["email"],
+            }
+
+            colaboradores.append(novo_colaborador)
+            return self.__colaborador.salvar_colaboradores(colaboradores)
+
+        except Exception as e:
+            print(f"Erro ao cadastrar colaborador: {e}")
+            return False
+
+    def buscar_por_cpf(self, cpf: str) -> Colaborador | None:
+        """Busca colaborador por CPF"""
+        try:
+            colaboradores = self.__colaborador.carregar_colaboradores()
+            for col_dict in colaboradores:
+                if col_dict.get("cpf") == cpf:
+                    return self.converter_dict_para_colaborador(col_dict)
+            return None
+        except Exception as e:
+            print(f"Erro ao buscar colaborador: {e}")
+            return None
+
+    def atualizar_colaborador(self, cpf: str, dados: dict) -> bool:
+        """Atualiza dados de um colaborador"""
+        try:
+            campos_obrigatorios = ["cpf", "nome", "cargo", "email"]
+
+            # Verificar se todos os campos obrigatórios estão presentes
+            for campo in campos_obrigatorios:
+                if campo not in dados or not dados[campo]:
+                    return False
+
+            # Validar formato do CPF (11 dígitos)
+            cpf = dados["cpf"].replace(".", "").replace("-", "")
+            if len(cpf) != 11 or not cpf.isdigit():
+                return False
+
+            # Validar email básico
+            email = dados["email"]
+            if "@" not in email or "." not in email:
+                return False
+
+            colaboradores = self.__colaborador.carregar_colaboradores()
+
+            for i, col in enumerate(colaboradores):
+                if col.get("cpf") == cpf:
+                    colaboradores[i].update(dados)
+                    return self.__colaborador.salvar_colaboradores(colaboradores)
+
+            return False  # CPF não encontrado
+
+        except Exception as e:
+            print(f"Erro ao atualizar colaborador: {e}")
+            return False
+
+    def excluir_colaborador(self, cpf: str) -> bool:
+        """Exclui um colaborador"""
+        try:
+            colaboradores = self.__colaborador.carregar_colaboradores()
+            colaboradores_filtrados = [
+                col for col in colaboradores if col.get("cpf") != cpf
+            ]
+
+            if len(colaboradores) == len(colaboradores_filtrados):
+                return False  # CPF não encontrado
+
+            return self.__colaborador.salvar_colaboradores(colaboradores_filtrados)
+
+        except Exception as e:
+            print(f"Erro ao excluir colaborador: {e}")
+            return False

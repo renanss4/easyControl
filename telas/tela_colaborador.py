@@ -1,532 +1,306 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import messagebox
 
 
 class TelaColaborador(tk.Tk):
     def __init__(self, controlador_colaborador):
         super().__init__()
-        self.controlador_colaborador = controlador_colaborador
-
-        # Configurações da janela
-        self.title("Colaborador - EasyControl")
+        self.__controlador_colaborador = controlador_colaborador
+        self.title("Cadastrar Colaborador")
         self.geometry("800x700")
-        self.configure(bg="#f0f0f0")
-        self.resizable(False, False)
+        self.configure(bg="#dcdcdc")
 
-        # Centraliza a janela
-        self.center_window()
-
-        # Variáveis de controle
-        self.modo_atual = "menu"  # menu, cadastro, gerenciamento
-        self.colaborador_atual = None
-
-        # Criar interface
-        self.criar_interface()
-
-    def center_window(self):
-        """Centraliza a janela na tela"""
-        self.update_idletasks()
-        width = self.winfo_width()
-        height = self.winfo_height()
-        x = (self.winfo_screenwidth() // 2) - (width // 2)
-        y = (self.winfo_screenheight() // 2) - (height // 2)
-        self.geometry(f"{width}x{height}+{x}+{y}")
-
-    def criar_interface(self):
-        """Cria a interface principal"""
-        # Frame principal que será limpo e recriado conforme o modo
-        self.main_frame = tk.Frame(self, bg="#f0f0f0", padx=20, pady=20)
-        self.main_frame.pack(fill="both", expand=True)
-
-        # Mostrar menu inicial
-        self.mostrar_menu()
-
-    def limpar_tela(self):
-        """Limpa todos os widgets da tela"""
-        for widget in self.main_frame.winfo_children():
-            widget.destroy()
-
-    def mostrar_menu(self):
-        """Mostra o menu principal"""
-        self.modo_atual = "menu"
-        self.limpar_tela()
+        # Center frame within the larger window
+        frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=20, pady=20)
+        frame.place(relx=0.5, rely=0.5, anchor="center")
 
         # Título
-        tk.Label(
-            self.main_frame,
-            text="Área do Colaborador",
-            font=("Arial", 20, "bold"),
-            bg="#f0f0f0",
-        ).pack(pady=(20, 40))
-
-        # Frame dos botões
-        botoes_frame = tk.Frame(self.main_frame, bg="#f0f0f0")
-        botoes_frame.pack(expand=True)
-
-        # Botões do menu
-        tk.Button(
-            botoes_frame,
-            text="Cadastrar Colaborador",
-            font=("Arial", 12, "bold"),
-            bg="#4CAF50",
-            fg="white",
-            width=25,
-            height=2,
-            command=self.mostrar_cadastro,
-        ).pack(pady=15)
-
-        tk.Button(
-            botoes_frame,
-            text="Gerenciar Colaboradores",
-            font=("Arial", 12, "bold"),
-            bg="#2196F3",
-            fg="white",
-            width=25,
-            height=2,
-            command=self.mostrar_gerenciamento,
-        ).pack(pady=15)
-
-        tk.Button(
-            botoes_frame,
-            text="Sair",
-            font=("Arial", 12),
-            bg="#f44336",
-            fg="white",
-            width=25,
-            height=2,
-            command=self.destroy,
-        ).pack(pady=15)
-
-    def mostrar_cadastro(self):
-        """Mostra a tela de cadastro"""
-        self.modo_atual = "cadastro"
-        self.limpar_tela()
-
-        # Título
-        tk.Label(
-            self.main_frame,
+        label_title = tk.Label(
+            frame,
             text="Cadastro de Colaborador",
-            font=("Arial", 18, "bold"),
-            bg="#f0f0f0",
-        ).pack(pady=(10, 30))
+            font=("Arial", 16, "bold"),
+            bg="#dcdcdc",
+        )
+        label_title.pack(pady=(0, 20))
 
-        # Frame do formulário
-        form_frame = tk.Frame(self.main_frame, bg="#f0f0f0")
-        form_frame.pack(expand=True)
-
-        # Criar campos
-        self.entries = {}
-        campos = [
+        # Campos de entrada
+        self.campos = [
             ("nome", "Nome"),
             ("cpf", "CPF"),
             ("cargo", "Cargo"),
             ("email", "Email"),
         ]
 
-        for campo_id, label in campos:
-            self.entries[campo_id] = self.criar_campo(form_frame, label)
+        # Dicionário para armazenar as entries
+        self.entries = {}
 
-        # Campo de equipe
-        tk.Label(form_frame, text="Equipe", bg="#f0f0f0").pack(anchor="w", pady=(5, 5))
-        self.equipe_combo = ttk.Combobox(form_frame, width=37, state="readonly")
-        self.equipe_combo.pack(pady=(0, 20))
+        # Criar campos
+        for campo_id, label in self.campos:
+            self.entries[campo_id] = self.create_label_and_entry(frame, label)
 
-        # Carregar equipes
-        self.carregar_equipes()
+        # Frame para os botões
+        botoes_frame = tk.Frame(frame, bg="#dcdcdc")
+        botoes_frame.pack(pady=(20, 0))
 
         # Botões
-        botoes_frame = tk.Frame(form_frame, bg="#f0f0f0")
-        botoes_frame.pack(pady=20)
-
         tk.Button(
             botoes_frame,
             text="Cadastrar",
-            font=("Arial", 11, "bold"),
-            bg="#4CAF50",
-            fg="white",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
             width=15,
-            command=self.cadastrar_colaborador,
-        ).pack(side="left", padx=10)
+            command=self.concluir_cadastro,
+        ).pack(side="left", padx=5)
 
         tk.Button(
             botoes_frame,
-            text="Limpar",
-            font=("Arial", 11),
-            bg="#FF9800",
-            fg="white",
-            width=15,
-            command=self.limpar_campos_cadastro,
-        ).pack(side="left", padx=10)
-
-        tk.Button(
-            botoes_frame,
-            text="Voltar ao Menu",
-            font=("Arial", 11),
-            bg="#9E9E9E",
-            fg="white",
-            width=15,
-            command=self.mostrar_menu,
-        ).pack(side="left", padx=10)
-
-    def mostrar_gerenciamento(self):
-        """Mostra a tela de gerenciamento"""
-        self.modo_atual = "gerenciamento"
-        self.limpar_tela()
-
-        # Título
-        tk.Label(
-            self.main_frame,
             text="Gerenciar Colaboradores",
-            font=("Arial", 18, "bold"),
-            bg="#f0f0f0",
-        ).pack(pady=(10, 20))
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=15,
+            command=self.gerenciar_colaborador,
+        ).pack(side="left", padx=5)
+
+        tk.Button(
+            botoes_frame,
+            text="Voltar",
+            font=("Arial", 10, "bold"),
+            bg="#c0c0c0",
+            width=15,
+            command=self.voltar,
+        ).pack(side="left", padx=5)
+
+    def create_label_and_entry(self, parent, text):
+        """Cria um par de label e entry e retorna o entry."""
+        tk.Label(parent, text=text, bg="#dcdcdc").pack(anchor="w", pady=(5, 0))
+        entry = tk.Entry(parent, width=30)
+        entry.pack(pady=(0, 10))
+        return entry
+
+    def concluir_cadastro(self):
+        """Conclui o cadastro do colaborador"""
+        # Coletar dados dos campos
+        dados = {
+            campo_id: self.entries[campo_id].get().strip()
+            for campo_id, _ in self.campos
+        }
+
+        if not all(dados.values()):
+            messagebox.showerror(
+                "Erro de Validação",
+                "Todos os campos são obrigatórios e devem ser preenchidos",
+            )
+            return
+
+        try:
+            # Chamar o controlador para cadastrar o colaborador
+            resultado = self.__controlador_colaborador.cadastrar_colaborador(dados)
+            if resultado:
+                messagebox.showinfo("Sucesso", "Colaborador cadastrado com sucesso!")
+                # Limpar campos após o cadastro bem-sucedido
+                for entry in self.entries.values():
+                    entry.delete(0, tk.END)
+            else:
+                messagebox.showerror("Erro", "Não foi possível cadastrar o colaborador")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao cadastrar: {str(e)}")
+
+    def gerenciar_colaborador(self):
+        """Abre a tela de gerenciamento de colaboradores"""
+        self.destroy()
+        GerenciaColaborador(self.__controlador_colaborador)
+
+    def voltar(self):
+        """Volta para a tela do RH"""
+        try:
+            self.destroy()
+            self.__controlador_colaborador.voltar_tela_funcionario_rh()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao voltar para tela de rh: {e}")
+
+
+class GerenciaColaborador(tk.Tk):
+    def __init__(self, controlador_colaborador):
+        super().__init__()
+        self.__controlador_colaborador = controlador_colaborador
+        self.title("Gerenciar Colaboradores - EasyControl")
+        self.geometry("800x700")
+        self.configure(bg="#dcdcdc")
+
+        # Frame principal
+        main_frame = tk.Frame(self, bg="#dcdcdc", padx=20, pady=20)
+        main_frame.pack(fill="both", expand=True)
 
         # Frame de busca
-        search_frame = tk.Frame(self.main_frame, bg="#f0f0f0")
+        search_frame = tk.Frame(main_frame, bg="#dcdcdc")
         search_frame.pack(fill="x", pady=(0, 20))
 
-        tk.Label(
-            search_frame, text="CPF do colaborador:", bg="#f0f0f0", font=("Arial", 10)
-        ).pack(side="left", padx=(0, 10))
-        self.cpf_entry = tk.Entry(search_frame, width=20, font=("Arial", 10))
+        tk.Label(search_frame, text="CPF do colaborador:", bg="#dcdcdc").pack(
+            side="left", padx=(0, 10)
+        )
+
+        self.cpf_entry = tk.Entry(search_frame, width=15)
         self.cpf_entry.pack(side="left", padx=(0, 10))
 
-        tk.Button(
-            search_frame,
-            text="Buscar",
-            bg="#2196F3",
-            fg="white",
-            font=("Arial", 10),
-            command=self.buscar_colaborador,
-        ).pack(side="left")
+        tk.Button(search_frame, text="Buscar", command=self.buscar_colaborador).pack(
+            side="left"
+        )
 
-        # Frame do formulário
-        form_frame = tk.Frame(self.main_frame, bg="#f0f0f0")
-        form_frame.pack(expand=True, fill="both")
+        # Frame dos campos
+        self.campos_frame = tk.Frame(main_frame, bg="#dcdcdc")
+        self.campos_frame.pack(fill="both", expand=True)
 
-        # Criar campos de edição
-        self.entries_edit = {}
-        campos = [("nome", "Nome"), ("email", "Email"), ("cargo", "Cargo")]
+        # Criar campos de edição (inicialmente desabilitados)
+        self.campos = {}
+        self.campos_labels = [
+            ("nome", "Nome"),
+            ("email", "Email"),
+            ("cargo", "Cargo"),
+        ]
 
-        for campo_id, label in campos:
-            tk.Label(form_frame, text=label, bg="#f0f0f0").pack(
-                anchor="w", pady=(10, 5)
+        for campo_id, label in self.campos_labels:
+            tk.Label(self.campos_frame, text=label, bg="#dcdcdc").pack(
+                anchor="w", pady=(5, 0)
             )
-            entry = tk.Entry(form_frame, width=40, state="disabled", font=("Arial", 10))
+
+            entry = tk.Entry(self.campos_frame, width=40)
             entry.pack(pady=(0, 10))
-            self.entries_edit[campo_id] = entry
+            entry.config(state="disabled")
+            self.campos[campo_id] = entry
 
-        # Campo de equipe
-        tk.Label(form_frame, text="Equipe", bg="#f0f0f0").pack(anchor="w", pady=(10, 5))
-        self.equipe_combo_edit = ttk.Combobox(form_frame, width=37, state="disabled")
-        self.equipe_combo_edit.pack(pady=(0, 20))
-
-        # Carregar equipes
-        self.carregar_equipes_edit()
-
-        # Botões
-        botoes_frame = tk.Frame(form_frame, bg="#f0f0f0")
+        # Frame dos botões
+        botoes_frame = tk.Frame(main_frame, bg="#dcdcdc")
         botoes_frame.pack(pady=20)
 
-        self.btn_salvar = tk.Button(
+        self.btn_editar = tk.Button(
             botoes_frame,
             text="Salvar Alterações",
-            bg="#4CAF50",
-            fg="white",
-            font=("Arial", 10),
-            command=self.salvar_alteracoes,
+            command=self.salvar_edicao,
             state="disabled",
         )
-        self.btn_salvar.pack(side="left", padx=5)
+        self.btn_editar.pack(side="left", padx=5)
 
         self.btn_excluir = tk.Button(
             botoes_frame,
-            text="Excluir",
-            bg="#f44336",
-            fg="white",
-            font=("Arial", 10),
+            text="Excluir Colaborador",
             command=self.excluir_colaborador,
             state="disabled",
         )
         self.btn_excluir.pack(side="left", padx=5)
 
-        tk.Button(
-            botoes_frame,
-            text="Limpar",
-            bg="#FF9800",
-            fg="white",
-            font=("Arial", 10),
-            command=self.limpar_campos_gerenciamento,
-        ).pack(side="left", padx=5)
+        # Botão Voltar
+        tk.Button(botoes_frame, text="Voltar", command=self.voltar).pack(
+            side="left", padx=5
+        )
 
-        tk.Button(
-            botoes_frame,
-            text="Voltar ao Menu",
-            bg="#9E9E9E",
-            fg="white",
-            font=("Arial", 10),
-            command=self.mostrar_menu,
-        ).pack(side="left", padx=5)
-
-    def criar_campo(self, parent, label):
-        """Cria um campo de entrada com label"""
-        tk.Label(parent, text=label, bg="#f0f0f0").pack(anchor="w", pady=(10, 5))
-        entry = tk.Entry(parent, width=40, font=("Arial", 10))
-        entry.pack(pady=(0, 10))
-        return entry
-
-    def carregar_equipes(self):
-        """Carrega as equipes disponíveis para cadastro"""
-        try:
-            if self.controlador_colaborador:
-                # Usar método do controlador para obter equipes
-                equipes = []  # self.controlador_colaborador.obter_equipes()
-                nomes_equipes = (
-                    [equipe.nome for equipe in equipes]
-                    if equipes
-                    else ["Equipe Padrão", "Equipe Alpha", "Equipe Beta"]
-                )
-            else:
-                nomes_equipes = ["Equipe Padrão", "Equipe Alpha", "Equipe Beta"]
-
-            self.equipe_combo["values"] = nomes_equipes
-            if nomes_equipes:
-                self.equipe_combo.set(nomes_equipes[0])
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar equipes: {e}")
-
-    def carregar_equipes_edit(self):
-        """Carrega as equipes disponíveis para edição"""
-        try:
-            if self.controlador_colaborador:
-                # Usar método do controlador para obter equipes
-                equipes = []  # self.controlador_colaborador.obter_equipes()
-                nomes_equipes = (
-                    [equipe.nome for equipe in equipes]
-                    if equipes
-                    else ["Equipe Padrão", "Equipe Alpha", "Equipe Beta"]
-                )
-            else:
-                nomes_equipes = ["Equipe Padrão", "Equipe Alpha", "Equipe Beta"]
-
-            self.equipe_combo_edit["values"] = nomes_equipes
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar equipes: {e}")
-
-    def cadastrar_colaborador(self):
-        """Realiza o cadastro do colaborador"""
-        try:
-            # Coletar dados
-            dados = {}
-            for campo, entry in self.entries.items():
-                    dados[campo] = entry.get().strip()
-
-            dados["equipe"] = self.equipe_combo.get()
-
-            # Validar campos obrigatórios
-            if not all(dados.values()):
-                messagebox.showerror("Erro", "Todos os campos são obrigatórios!")
-                return
-
-            # Chamar controlador para cadastrar
-            if self.controlador_colaborador:
-                resultado = self.controlador_colaborador.cadastrar_colaborador(dados)
-                if resultado:
-                    messagebox.showinfo(
-                        "Sucesso", "Colaborador cadastrado com sucesso!"
-                    )
-                    self.limpar_campos_cadastro()
-                else:
-                    messagebox.showerror("Erro", "Erro ao cadastrar colaborador!")
-            else:
-                messagebox.showinfo("Info", f"Dados coletados: {dados}")
-                self.limpar_campos_cadastro()
-
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro no cadastro: {e}")
-
-    def limpar_campos_cadastro(self):
-        """Limpa os campos de cadastro"""
-        for entry in self.entries.values():
-            if hasattr(entry, "delete"):
-                entry.delete(0, tk.END)
-            else:
-                entry.set_date(None)
-
-        if hasattr(self, "equipe_combo"):
-            self.equipe_combo.set("")
+        # Armazenar CPF do colaborador atual
+        self.cpf_atual = None
 
     def buscar_colaborador(self):
-        """Busca colaborador por CPF"""
+        """Busca um colaborador pelo CPF"""
         cpf = self.cpf_entry.get().strip()
 
         if not cpf:
-            messagebox.showerror("Erro", "Digite um CPF para buscar!")
+            messagebox.showerror("Erro", "Digite um CPF para buscar")
             return
 
         try:
-            if self.controlador_colaborador:
-                colaborador = self.controlador_colaborador.buscar_por_cpf(cpf)
-                if colaborador:
-                    self.preencher_campos_edicao(colaborador)
-                    self.habilitar_edicao()
-                else:
-                    messagebox.showinfo("Info", "Colaborador não encontrado!")
-                    self.limpar_campos_gerenciamento()
+            # Buscar colaborador pelo CPF usando o controlador
+            colaborador = self.__controlador_colaborador.buscar_por_cpf(cpf)
+
+            if colaborador:
+                # Armazenar CPF do colaborador encontrado
+                self.cpf_atual = cpf
+
+                # Habilitar campos
+                for campo in self.campos.values():
+                    campo.config(state="normal")
+
+                # Preencher campos com dados do colaborador
+                self.campos["nome"].delete(0, tk.END)
+                self.campos["nome"].insert(0, colaborador.nome)
+
+                self.campos["email"].delete(0, tk.END)
+                self.campos["email"].insert(0, colaborador.email)
+
+                self.campos["cargo"].delete(0, tk.END)
+                self.campos["cargo"].insert(0, colaborador.cargo)
+
+                # Habilitar botões
+                self.btn_editar.config(state="normal")
+                self.btn_excluir.config(state="normal")
             else:
-                # Simulação para teste
-                colaborador_fake = {
-                    "nome": "João Silva",
-                    "email": "joao@email.com",
-                    "cargo": "Desenvolvedor",
-                    "data_admissao": "2023-01-15",
-                    "equipe": "Equipe Alpha",
-                }
-                self.preencher_campos_edicao(colaborador_fake)
-                self.habilitar_edicao()
-                messagebox.showinfo("Info", "Colaborador encontrado (simulação)!")
-
+                messagebox.showerror("Erro", "Colaborador não encontrado!")
+                self.limpar_campos()
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro na busca: {e}")
+            messagebox.showerror("Erro", f"Erro ao buscar colaborador: {str(e)}")
 
-    def preencher_campos_edicao(self, colaborador):
-        """Preenche os campos com dados do colaborador"""
-        self.colaborador_atual = colaborador
+    def salvar_edicao(self):
+        """Salva as alterações feitas no colaborador"""
+        if not self.cpf_atual:
+            return
 
-        # Se for um objeto, usar atributos; se for dict, usar chaves
-        if hasattr(colaborador, "nome"):
-            # É um objeto
-            dados = {
-                "nome": colaborador.nome,
-                "email": colaborador.email,
-                "cargo": colaborador.cargo,
-                "data_admissao": colaborador.data_admissao,
-                "equipe": colaborador.equipe,
-            }
-        else:
-            # É um dict
-            dados = colaborador
+        # Coletar dados dos campos
+        dados = {campo: entry.get().strip() for campo, entry in self.campos.items()}
+        dados["cpf"] = self.cpf_atual  # Incluir o CPF nos dados para o controlador
 
-        # Preencher campos
-        for campo, valor in dados.items():
-            if campo in self.entries_edit:
-                entry = self.entries_edit[campo]
-                entry.config(state="normal")
-                entry.delete(0, tk.END)
-                entry.insert(0, valor)
-            elif campo == "data_admissao":
-                self.data_admissao_edit.config(state="normal")
-                if isinstance(valor, str):
-                    from datetime import datetime
-
-                    data = datetime.strptime(valor, "%Y-%m-%d").date()
-                    self.data_admissao_edit.set_date(data)
-                else:
-                    self.data_admissao_edit.set_date(valor)
-            elif campo == "equipe":
-                self.equipe_combo_edit.config(state="readonly")
-                self.equipe_combo_edit.set(valor)
-
-    def habilitar_edicao(self):
-        """Habilita os campos para edição"""
-        for entry in self.entries_edit.values():
-            entry.config(state="normal")
-
-        self.equipe_combo_edit.config(state="readonly")
-
-        self.btn_salvar.config(state="normal")
-        self.btn_excluir.config(state="normal")
-
-    def limpar_campos_gerenciamento(self):
-        """Limpa todos os campos de gerenciamento"""
-        self.colaborador_atual = None
-
-        for entry in self.entries_edit.values():
-            entry.config(state="normal")
-            entry.delete(0, tk.END)
-            entry.config(state="disabled")
-
-        self.equipe_combo_edit.set("")
-        self.equipe_combo_edit.config(state="disabled")
-
-        self.btn_salvar.config(state="disabled")
-        self.btn_excluir.config(state="disabled")
-
-        # Limpar campo de busca
-        self.cpf_entry.delete(0, tk.END)
-
-    def salvar_alteracoes(self):
-        """Salva as alterações do colaborador"""
-        if not self.colaborador_atual:
+        # Validar dados
+        if not all(dados.values()):
+            messagebox.showerror(
+                "Erro de Validação",
+                "Todos os campos são obrigatórios e devem ser preenchidos",
+            )
             return
 
         try:
-            # Coletar dados
-            dados = {
-                campo: entry.get().strip() for campo, entry in self.entries_edit.items()
-            }
-            dados["equipe"] = self.equipe_combo_edit.get()
-
-            # Validar campos
-            if not all(dados.values()):
-                messagebox.showerror("Erro", "Todos os campos são obrigatórios!")
-                return
-
             # Chamar controlador para atualizar
-            if self.controlador_colaborador:
-                cpf = (
-                    self.colaborador_atual.cpf
-                    if hasattr(self.colaborador_atual, "cpf")
-                    else self.cpf_entry.get()
-                )
-                resultado = self.controlador_colaborador.atualizar_colaborador(
-                    cpf, dados
-                )
-                if resultado:
-                    messagebox.showinfo(
-                        "Sucesso", "Colaborador atualizado com sucesso!"
-                    )
-                    self.limpar_campos_gerenciamento()
-                else:
-                    messagebox.showerror("Erro", "Erro ao atualizar colaborador!")
+            resultado = self.__controlador_colaborador.atualizar_colaborador(
+                self.cpf_atual, dados
+            )
+            if resultado:
+                messagebox.showinfo("Sucesso", "Colaborador atualizado com sucesso!")
+                self.limpar_campos()
             else:
-                messagebox.showinfo("Info", f"Dados atualizados: {dados}")
-                self.limpar_campos_gerenciamento()
-
+                messagebox.showerror("Erro", "Não foi possível atualizar o colaborador")
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao salvar: {e}")
+            messagebox.showerror("Erro", f"Erro ao atualizar: {str(e)}")
 
     def excluir_colaborador(self):
-        """Exclui o colaborador atual"""
-        if not self.colaborador_atual:
+        """Exclui um colaborador"""
+        if not self.cpf_atual:
             return
 
         if messagebox.askyesno(
             "Confirmar", "Deseja realmente excluir este colaborador?"
         ):
             try:
-                if self.controlador_colaborador:
-                    cpf = (
-                        self.colaborador_atual.cpf
-                        if hasattr(self.colaborador_atual, "cpf")
-                        else self.cpf_entry.get()
-                    )
-                    resultado = self.controlador_colaborador.excluir_colaborador(cpf)
-                    if resultado:
-                        messagebox.showinfo(
-                            "Sucesso", "Colaborador excluído com sucesso!"
-                        )
-                        self.limpar_campos_gerenciamento()
-                    else:
-                        messagebox.showerror("Erro", "Erro ao excluir colaborador!")
+                resultado = self.__controlador_colaborador.excluir_colaborador(
+                    self.cpf_atual
+                )
+                if resultado:
+                    messagebox.showinfo("Sucesso", "Colaborador excluído com sucesso!")
+                    self.limpar_campos()
                 else:
-                    messagebox.showinfo("Info", "Colaborador excluído (simulação)!")
-                    self.limpar_campos_gerenciamento()
-
+                    messagebox.showerror(
+                        "Erro", "Não foi possível excluir o colaborador"
+                    )
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao excluir: {e}")
+                messagebox.showerror("Erro", f"Erro ao excluir: {str(e)}")
 
+    def limpar_campos(self):
+        """Limpa os campos do formulário"""
+        self.cpf_atual = None
+        self.cpf_entry.delete(0, tk.END)
 
-if __name__ == "__main__":
-    app = TelaColaborador()
-    app.mainloop()
+        for entry in self.campos.values():
+            entry.config(state="normal")
+            entry.delete(0, tk.END)
+            entry.config(state="disabled")
+
+        self.btn_editar.config(state="disabled")
+        self.btn_excluir.config(state="disabled")
+
+    def voltar(self):
+        """Volta para a tela de cadastro de colaborador"""
+        self.destroy()
+        TelaColaborador(self.__controlador_colaborador)
