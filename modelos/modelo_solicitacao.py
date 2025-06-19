@@ -106,22 +106,24 @@ class Solicitacao:
             return True
         return False
 
-    @staticmethod
-    def carregar_solicitacoes() -> list:
+    def carregar_solicitacoes(self) -> list[dict]:
+        """Carrega as solicitações do arquivo JSON"""
         if not os.path.exists(CAMINHO_ARQUIVO):
             return []
+
         try:
-            with open(CAMINHO_ARQUIVO, "r") as f:
-                return json.load(f)
-        except json.JSONDecodeError:
+            with open(CAMINHO_ARQUIVO, "r", encoding="utf-8") as file:
+                return json.load(file)
+        except (json.JSONDecodeError, FileNotFoundError):
             return []
 
-    @staticmethod
-    def salvar_solicitacoes(solicitacoes: list) -> bool:
-        os.makedirs(os.path.dirname(CAMINHO_ARQUIVO), exist_ok=True)
+    def salvar_solicitacoes(self, solicitacoes: list[dict]) -> bool:
+        """Salva as solicitações no arquivo JSON"""
         try:
-            with open(CAMINHO_ARQUIVO, "w") as f:
-                json.dump(solicitacoes, f, indent=4)
+            os.makedirs(os.path.dirname(CAMINHO_ARQUIVO), exist_ok=True)
+            with open(CAMINHO_ARQUIVO, "w", encoding="utf-8") as file:
+                json.dump(solicitacoes, file, indent=2, ensure_ascii=False)
             return True
-        except IOError:
+        except Exception as e:
+            print(f"Erro ao salvar solicitações: {e}")
             return False
