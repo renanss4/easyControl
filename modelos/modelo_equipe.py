@@ -73,21 +73,22 @@ class Equipe:
         return False
 
     @staticmethod
-    def carregar_equipes() -> list:
+    def carregar_equipes() -> list[dict]:
         if not os.path.exists(CAMINHO_ARQUIVO):
             return []
         try:
-            with open(CAMINHO_ARQUIVO, "r") as f:
-                return json.load(f)
-        except json.JSONDecodeError:
+            with open(CAMINHO_ARQUIVO, "r", encoding="utf-8") as file:
+                return json.load(file)
+        except (json.JSONDecodeError, FileNotFoundError):
             return []
 
     @staticmethod
-    def salvar_equipes(equipes: list) -> bool:
-        os.makedirs(os.path.dirname(CAMINHO_ARQUIVO), exist_ok=True)
+    def salvar_equipes(equipes: list[dict]) -> bool:
         try:
-            with open(CAMINHO_ARQUIVO, "w") as f:
-                json.dump(equipes, f, indent=4)
+            os.makedirs(os.path.dirname(CAMINHO_ARQUIVO), exist_ok=True)
+            with open(CAMINHO_ARQUIVO, "w", encoding="utf-8") as file:
+                json.dump(equipes, file, indent=4, ensure_ascii=False)
             return True
-        except IOError:
+        except Exception as e:
+            print(f"Erro ao salvar equipes: {e}")
             return False

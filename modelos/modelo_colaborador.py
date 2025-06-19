@@ -19,21 +19,22 @@ class Colaborador(Pessoa):
         super().__init__(cpf, nome, cargo, data_admissao, email)
 
     @staticmethod
-    def carregar_colaboradores() -> list:
+    def carregar_colaboradores() -> list[dict]:
         if not os.path.exists(CAMINHO_ARQUIVO):
             return []
         try:
-            with open(CAMINHO_ARQUIVO, "r") as f:
-                return json.load(f)
-        except json.JSONDecodeError:
+            with open(CAMINHO_ARQUIVO, "r", encoding="utf-8") as file:
+                return json.load(file)
+        except (json.JSONDecodeError, FileNotFoundError):
             return []
 
     @staticmethod
-    def salvar_colaboradores(colaboradores: list) -> bool:
-        os.makedirs(os.path.dirname(CAMINHO_ARQUIVO), exist_ok=True)
+    def salvar_colaboradores(colaboradores: list[dict]) -> bool:
         try:
-            with open(CAMINHO_ARQUIVO, "w") as f:
-                json.dump(colaboradores, f, indent=4)
+            os.makedirs(os.path.dirname(CAMINHO_ARQUIVO), exist_ok=True)
+            with open(CAMINHO_ARQUIVO, "w", encoding="utf-8") as file:
+                json.dump(colaboradores, file, indent=4, ensure_ascii=False)
             return True
-        except IOError:
+        except Exception as e:
+            print(f"Erro ao salvar colaboradores: {e}")
             return False
