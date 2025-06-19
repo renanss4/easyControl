@@ -8,17 +8,6 @@ class ControladorFuncionarioRH:
         self.__funcionario_rh = FuncionarioRH()
         self.__tela_funcionario_rh = None
 
-    def abrir_tela_funcionario_rh(self):
-        from telas.tela_funcionario_rh import TelaRH
-
-        self.__tela_funcionario_rh = TelaRH(self)
-        return self.__tela_funcionario_rh
-
-    def voltar_para_tela_sistema(self):
-        """Retorna para a tela principal do sistema"""
-        self.__tela_funcionario_rh = None
-        self.__controlador_sistema.abrir_tela_sistema()
-
     def converter_dict_para_funcionario_rh(
         self, funcionario_rh_dict: dict
     ) -> FuncionarioRH | bool:
@@ -34,7 +23,32 @@ class ControladorFuncionarioRH:
         except (KeyError, ValueError):
             return False
 
+    # Navegação entre telas
+    def abrir_tela_funcionario_rh(self):
+        from telas.tela_funcionario_rh import TelaRH
+
+        self.__tela_funcionario_rh = TelaRH(self)
+        return self.__tela_funcionario_rh
+
+    def voltar_para_tela_sistema(self):
+        # Logout
+        self.__tela_funcionario_rh = None
+        self.__controlador_sistema.abrir_tela_sistema()
+
+    def abrir_tela_colaborador(self):
+        self.__controlador_sistema.controlador_colaborador.abrir_tela_colaborador()
+
+    def abrir_tela_gestor(self):
+        self.__controlador_sistema.controlador_gestor.abrir_tela_gestor()
+
+    def abrir_tela_solicitacao(self):
+        self.__controlador_sistema.controlador_solicitacao.abrir_tela_solicitacao()
+
+    def abrir_tela_equipe(self):
+        self.__controlador_sistema.controlador_equipe.abrir_tela_equipe()
+
     def autenticar(self, email: str, senha: str) -> FuncionarioRH | None:
+        # login
         for funcionario_rh_dict in self.__funcionario_rh.carregar_funcionarios_rh():
             if (
                 funcionario_rh_dict["email"] == email
@@ -43,30 +57,10 @@ class ControladorFuncionarioRH:
                 return self.converter_dict_para_funcionario_rh(funcionario_rh_dict)
         return None
 
-    def abrir_tela_colaborador(self):
-        """Abre a tela de cadastro de colaborador através do sistema"""
-        return (
-            self.__controlador_sistema.controlador_colaborador.abrir_tela_colaborador()
-        )
-
-    def abrir_tela_gestor(self):
-        """Abre a tela de cadastro de gestor através do sistema"""
-        return self.__controlador_sistema.controlador_gestor.abrir_tela_gestor()
-
-    def abrir_tela_solicitacao(self):
-        """Abre a tela de solicitação através do sistema"""
-        return (
-            self.__controlador_sistema.controlador_solicitacao.abrir_tela_solicitacao()
-        )
-
-    def abrir_tela_equipe(self):
-        """Abre a tela de equipe através do sistema"""
-        return self.__controlador_sistema.controlador_equipe.abrir_tela_equipe()
-
+    # CRUD de Funcionário RH
     def cadastrar_funcionario_rh(
         self, nome: str, cpf: str, email: str, senha: str, cargo: str
     ) -> bool:
-        """Cadastra um novo funcionário RH"""
         try:
             # Validar dados
             if not all([nome, cpf, email, senha, cargo]):
@@ -110,8 +104,18 @@ class ControladorFuncionarioRH:
             print(f"Erro ao cadastrar funcionário RH: {e}")
             return False
 
+    def buscar_funcionarios_rh(self) -> list:
+        try:
+            funcionarios = self.__funcionario_rh.carregar_funcionarios_rh()
+            return [
+                self.converter_dict_para_funcionario_rh(func_dict)
+                for func_dict in funcionarios
+            ]
+        except Exception as e:
+            print(f"Erro ao buscar funcionários RH: {e}")
+            return []
+
     def buscar_funcionario_rh_por_cpf(self, cpf: str) -> FuncionarioRH | None:
-        """Busca funcionário RH por CPF"""
         try:
             funcionarios = self.__funcionario_rh.carregar_funcionarios_rh()
             for func_dict in funcionarios:
@@ -123,7 +127,6 @@ class ControladorFuncionarioRH:
             return None
 
     def atualizar_funcionario_rh(self, cpf: str, dados: dict) -> bool:
-        """Atualiza dados de um funcionário RH"""
         try:
             # Validar dados obrigatórios
             if (
@@ -164,7 +167,6 @@ class ControladorFuncionarioRH:
             return False
 
     def excluir_funcionario_rh(self, cpf: str) -> bool:
-        """Exclui um funcionário RH"""
         try:
             funcionarios = self.__funcionario_rh.carregar_funcionarios_rh()
             funcionarios_filtrados = [

@@ -20,16 +20,6 @@ class ControladorColaborador:
     def tela_colaborador(self):
         return self.__tela_colaborador
 
-    def abrir_tela_colaborador(self):
-        from telas.tela_colaborador import TelaColaborador
-
-        self.__tela_colaborador = TelaColaborador(self)
-        return self.__tela_colaborador
-
-    def voltar_tela_funcionario_rh(self):
-        self.__tela_colaborador = None
-        return self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
-
     @staticmethod
     def converter_dict_para_colaborador(colaborador_dict: dict) -> Colaborador | bool:
         try:
@@ -43,11 +33,19 @@ class ControladorColaborador:
         except (KeyError, ValueError):
             return False
 
+    # Navegação entre telas
+    def abrir_tela_colaborador(self):
+        from telas.tela_colaborador import TelaColaborador
+
+        self.__tela_colaborador = TelaColaborador(self)
+        return self.__tela_colaborador
+
+    def voltar_tela_funcionario_rh(self):
+        self.__tela_colaborador = None
+        self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
+
+    # CRUD de Colaborador
     def cadastrar_colaborador(self, dados: dict) -> bool:
-        """
-        ESTE é o método que efetivamente cadastra o colaborador
-        Chamado pela tela do colaborador quando o usuário clica em 'Cadastrar'
-        """
         try:
             campos_obrigatorios = ["cpf", "nome", "cargo", "email"]
 
@@ -90,8 +88,15 @@ class ControladorColaborador:
             print(f"Erro ao cadastrar colaborador: {e}")
             return False
 
-    def buscar_por_cpf(self, cpf: str) -> Colaborador | None:
-        """Busca colaborador por CPF"""
+    def buscar_colaboradores(self) -> list[Colaborador]:
+        try:
+            colaboradores = self.__colaborador.carregar_colaboradores()
+            return [self.converter_dict_para_colaborador(col) for col in colaboradores]
+        except Exception as e:
+            print(f"Erro ao buscar colaboradores: {e}")
+            return []
+
+    def buscar_colaborador_por_cpf(self, cpf: str) -> Colaborador | None:
         try:
             colaboradores = self.__colaborador.carregar_colaboradores()
             for col_dict in colaboradores:
@@ -103,7 +108,6 @@ class ControladorColaborador:
             return None
 
     def atualizar_colaborador(self, cpf: str, dados: dict) -> bool:
-        """Atualiza dados de um colaborador"""
         try:
             campos_obrigatorios = ["cpf", "nome", "cargo", "email"]
 
@@ -136,7 +140,6 @@ class ControladorColaborador:
             return False
 
     def excluir_colaborador(self, cpf: str) -> bool:
-        """Exclui um colaborador"""
         try:
             colaboradores = self.__colaborador.carregar_colaboradores()
             colaboradores_filtrados = [

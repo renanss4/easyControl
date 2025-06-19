@@ -53,9 +53,6 @@ class ControladorSistema:
         self.__tela_sistema.mainloop()
 
     def autenticar_usuario(self, email: str, senha: str) -> object | bool:
-        """
-        Autentica um usuário (RH ou Gestor) através dos controladores específicos
-        """
         # Tenta autenticar como RH
         usuario_rh = self.__controlador_funcionario_rh.autenticar(email, senha)
         if usuario_rh:

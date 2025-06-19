@@ -20,29 +20,6 @@ class ControladorGestor:
     def tela_gestor(self):
         return self.__tela_gestor
 
-    def abrir_tela_gestor(self):
-        from telas.tela_gestor import TelaGestor
-
-        self.__tela_gestor = TelaGestor(self)
-        return self.__tela_gestor
-
-    def abrir_tela_gestor_logado(self):
-        """Abre a tela do gestor logado (para gestores que fizeram login)"""
-        from telas.tela_gestor import TelaGestorLogado
-
-        self.__tela_gestor = TelaGestorLogado(self)
-        return self.__tela_gestor
-
-    def voltar_tela_funcionario_rh(self):
-        """Volta para a tela do funcionário RH"""
-        self.__tela_gestor = None
-        return self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
-
-    def voltar_para_tela_sistema(self):
-        """Retorna para a tela principal do sistema"""
-        self.__tela_gestor = None
-        self.__controlador_sistema.abrir_tela_sistema()
-
     def converter_dict_para_gestor(self, gestor_dict: dict) -> Gestor | bool:
         try:
             return Gestor(
@@ -56,16 +33,43 @@ class ControladorGestor:
         except (KeyError, ValueError):
             return False
 
+    # Navegação entre telas
+    def abrir_tela_gestor(self):
+        from telas.tela_gestor import TelaGestor
+
+        self.__tela_gestor = TelaGestor(self)
+        return self.__tela_gestor
+
+    def abrir_tela_gestor_logado(self):
+        from telas.tela_gestor import TelaGestorLogado
+
+        self.__tela_gestor = TelaGestorLogado(self)
+        return self.__tela_gestor
+
+    def voltar_tela_funcionario_rh(self):
+        # Volta para a tela do funcionário RH
+        self.__tela_gestor = None
+        self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
+
+    def voltar_para_tela_sistema(self):
+        # Logout
+        self.__tela_gestor = None
+        self.__controlador_sistema.abrir_tela_sistema()
+
+    def abrir_tela_solicitacao(self):
+        # abre tela para aprovar ou reprovar solicitações
+
+        self.__controlador_sistema.controlador_solicitacao.abrir_tela_solicitacao()
+
     def autenticar(self, email: str, senha: str) -> Gestor | None:
+        # login
         for gestor_dict in self.__gestor.carregar_gestores():
             if gestor_dict["email"] == email and gestor_dict["senha"] == senha:
                 return self.converter_dict_para_gestor(gestor_dict)
         return None
 
+    # CRUD de Gestor
     def cadastrar_gestor(self, dados: dict) -> bool:
-        """
-        Cadastra um novo gestor
-        """
         try:
             campos_obrigatorios = ["cpf", "nome", "cargo", "email", "senha"]
 
@@ -108,8 +112,15 @@ class ControladorGestor:
             print(f"Erro ao cadastrar gestor: {e}")
             return False
 
-    def buscar_por_cpf(self, cpf: str) -> Gestor | None:
-        """Busca gestor por CPF"""
+    def buscar_gestores(self) -> list[Gestor]:
+        try:
+            gestores = self.__gestor.carregar_gestores()
+            return [self.converter_dict_para_gestor(gest) for gest in gestores]
+        except Exception as e:
+            print(f"Erro ao buscar gestores: {e}")
+            return []
+
+    def buscar_gestor_por_cpf(self, cpf: str) -> Gestor | None:
         try:
             gestores = self.__gestor.carregar_gestores()
             for gest_dict in gestores:
@@ -121,7 +132,6 @@ class ControladorGestor:
             return None
 
     def atualizar_gestor(self, cpf: str, dados: dict) -> bool:
-        """Atualiza dados de um gestor"""
         try:
             # Validar dados obrigatórios
             if (
@@ -162,7 +172,6 @@ class ControladorGestor:
             return False
 
     def excluir_gestor(self, cpf: str) -> bool:
-        """Exclui um gestor"""
         try:
             gestores = self.__gestor.carregar_gestores()
             gestores_filtrados = [gest for gest in gestores if gest.get("cpf") != cpf]
@@ -175,16 +184,3 @@ class ControladorGestor:
         except Exception as e:
             print(f"Erro ao excluir gestor: {e}")
             return False
-
-    def buscar_gestores(self):
-        pass
-
-    def abrir_tela_solicitacao(self):
-        """Abre a tela de solicitação através do sistema"""
-        return (
-            self.__controlador_sistema.controlador_solicitacao.abrir_tela_solicitacao()
-        )
-
-    def abrir_tela_equipe(self):
-        """Abre a tela de equipe através do sistema"""
-        return self.__controlador_sistema.controlador_equipe.abrir_tela_equipe()
