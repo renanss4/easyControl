@@ -305,6 +305,7 @@ class GerenciaRH(tk.Tk):
         self.campos_labels = [
             ("nome", "Nome"),
             ("email", "Email"),
+            ("senha", "Senha"),
             ("cargo", "Cargo"),
         ]
 
@@ -313,7 +314,12 @@ class GerenciaRH(tk.Tk):
                 anchor="w", pady=(5, 0)
             )
 
-            entry = tk.Entry(self.campos_frame, width=40)
+            # Se for o campo de senha, criar com máscara
+            if campo_id == "senha":
+                entry = tk.Entry(self.campos_frame, width=40, show="*")
+            else:
+                entry = tk.Entry(self.campos_frame, width=40)
+
             entry.pack(pady=(0, 10))
             entry.config(state="disabled")
             self.campos[campo_id] = entry
@@ -374,6 +380,10 @@ class GerenciaRH(tk.Tk):
                 self.campos["email"].delete(0, tk.END)
                 self.campos["email"].insert(0, usuario.email)
 
+                # Deixar o campo senha vazio para permitir alteração
+                self.campos["senha"].delete(0, tk.END)
+                self.campos["senha"].insert(0, "")  # Vazio para segurança
+
                 self.campos["cargo"].delete(0, tk.END)
                 self.campos["cargo"].insert(0, usuario.cargo)
 
@@ -394,20 +404,27 @@ class GerenciaRH(tk.Tk):
         dados = {campo: entry.get().strip() for campo, entry in self.campos.items()}
 
         # Validar dados
-        if not all(dados.values()):
+        if not dados["nome"] or not dados["email"] or not dados["cargo"]:
             messagebox.showerror(
                 "Erro de Validação",
-                "Todos os campos são obrigatórios e devem ser preenchidos",
+                "Nome, email e cargo são obrigatórios",
             )
+            return
+
+        # Validar email básico
+        if "@" not in dados["email"] or "." not in dados["email"]:
+            messagebox.showerror("Erro", "Email inválido!")
+            return
+
+        # Validar senha se foi fornecida
+        if dados["senha"] and len(dados["senha"]) < 6:
+            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
             return
 
         try:
             # Implementar no controlador
             self.__controlador_funcionario_rh.atualizar_funcionario_rh(
-                self.cpf_atual,
-                nome=dados["nome"],
-                email=dados["email"],
-                cargo=dados["cargo"],
+                self.cpf_atual, dados
             )
             messagebox.showinfo("Sucesso", "Usuário atualizado com sucesso!")
             self.limpar_campos()

@@ -123,7 +123,7 @@ class TelaGestor(tk.Tk):
                 messagebox.showinfo("Sucesso", "Gestor cadastrado com sucesso!")
                 # Limpar campos após o cadastro bem-sucedido
                 for entry in self.entries.values():
-                    if hasattr(entry, 'delete'):
+                    if hasattr(entry, "delete"):
                         entry.delete(0, tk.END)
             else:
                 messagebox.showerror("Erro", "Não foi possível cadastrar o gestor")
@@ -146,6 +146,7 @@ class TelaGestor(tk.Tk):
 
 class TelaGestorLogado(tk.Tk):
     """Tela para o gestor que fez login - funcionalidades do gestor"""
+
     def __init__(self, controlador_gestor):
         super().__init__()
         self.title("Gestor - EasyControl")
@@ -173,7 +174,7 @@ class TelaGestorLogado(tk.Tk):
             height=2,
             command=self.abrir_tela_analisar_solicitacao,
         ).grid(row=0, column=0, padx=10, pady=5)
-        
+
         tk.Button(
             quadro_botoes,
             text="Consultar Colaboradores",
@@ -248,6 +249,7 @@ class GerenciaGestor(tk.Tk):
         self.campos_labels = [
             ("nome", "Nome"),
             ("email", "Email"),
+            ("senha", "Senha"),
             ("cargo", "Cargo"),
         ]
 
@@ -256,7 +258,12 @@ class GerenciaGestor(tk.Tk):
                 anchor="w", pady=(5, 0)
             )
 
-            entry = tk.Entry(self.campos_frame, width=40)
+            # Se for o campo de senha, criar com máscara
+            if campo_id == "senha":
+                entry = tk.Entry(self.campos_frame, width=40, show="*")
+            else:
+                entry = tk.Entry(self.campos_frame, width=40)
+
             entry.pack(pady=(0, 10))
             entry.config(state="disabled")
             self.campos[campo_id] = entry
@@ -322,6 +329,10 @@ class GerenciaGestor(tk.Tk):
                 self.campos["email"].delete(0, tk.END)
                 self.campos["email"].insert(0, gestor.email)
 
+                # Deixar o campo senha vazio para permitir alteração
+                self.campos["senha"].delete(0, tk.END)
+                self.campos["senha"].insert(0, "")  # Vazio para segurança
+
                 self.campos["cargo"].delete(0, tk.END)
                 self.campos["cargo"].insert(0, gestor.cargo)
 
@@ -344,16 +355,21 @@ class GerenciaGestor(tk.Tk):
         dados["cpf"] = self.cpf_atual  # Incluir o CPF nos dados para o controlador
 
         # Validar dados
-        if not all(dados.values()):
+        if not dados["nome"] or not dados["email"] or not dados["cargo"]:
             messagebox.showerror(
                 "Erro de Validação",
-                "Todos os campos são obrigatórios e devem ser preenchidos",
+                "Nome, email e cargo são obrigatórios",
             )
             return
 
         # Validar email básico
         if "@" not in dados["email"] or "." not in dados["email"]:
             messagebox.showerror("Erro", "Email inválido!")
+            return
+
+        # Validar senha se foi fornecida
+        if dados["senha"] and len(dados["senha"]) < 6:
+            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
             return
 
         try:

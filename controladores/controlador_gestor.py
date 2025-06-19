@@ -123,23 +123,36 @@ class ControladorGestor:
     def atualizar_gestor(self, cpf: str, dados: dict) -> bool:
         """Atualiza dados de um gestor"""
         try:
-            campos_obrigatorios = ["cpf", "nome", "cargo", "email"]
-
-            # Verificar se todos os campos obrigatórios estão presentes
-            for campo in campos_obrigatorios:
-                if campo not in dados or not dados[campo]:
-                    return False
+            # Validar dados obrigatórios
+            if (
+                not dados.get("nome")
+                or not dados.get("email")
+                or not dados.get("cargo")
+            ):
+                return False
 
             # Validar email básico
             email = dados["email"]
             if "@" not in email or "." not in email:
                 return False
 
+            # Validar senha se foi fornecida
+            if dados.get("senha") and len(dados["senha"]) < 6:
+                return False
+
             gestores = self.__gestor.carregar_gestores()
 
             for i, gest in enumerate(gestores):
                 if gest.get("cpf") == cpf:
-                    gestores[i].update(dados)
+                    # Atualizar apenas os campos fornecidos
+                    gestores[i]["nome"] = dados["nome"]
+                    gestores[i]["email"] = dados["email"]
+                    gestores[i]["cargo"] = dados["cargo"]
+
+                    # Só atualizar senha se foi fornecida
+                    if dados.get("senha"):
+                        gestores[i]["senha"] = dados["senha"]
+
                     return self.__gestor.salvar_gestores(gestores)
 
             return False  # CPF não encontrado
