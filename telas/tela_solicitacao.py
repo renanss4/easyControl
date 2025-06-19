@@ -71,17 +71,17 @@ class TelaSolicitacao(tk.Tk):
     def abrir_cadastro_solicitacao(self):
         """Abre a tela de cadastro de solicitação (RH)"""
         self.destroy()
-        CadastraSolicitacao(self.__controlador_solicitacao)
+        TelaCadastraSolicitacao(self.__controlador_solicitacao)
 
     def abrir_gerenciar_solicitacoes(self):
         """Abre a tela de gerenciamento de solicitações (RH)"""
         self.destroy()
-        GerenciaSolicitacoes(self.__controlador_solicitacao)
+        TelaGerenciaSolicitacoes(self.__controlador_solicitacao)
 
     def abrir_analisar_solicitacoes(self):
         """Abre a tela de análise de solicitações (Gestor)"""
         self.destroy()
-        AnalisarSolicitacao(self.__controlador_solicitacao)
+        TelaAnalisarSolicitacao(self.__controlador_solicitacao)
 
     def voltar(self):
         """Volta para a tela anterior baseado no tipo de usuário"""
@@ -99,7 +99,7 @@ class TelaSolicitacao(tk.Tk):
             self.__controlador_solicitacao.voltar_tela_gestor()
 
 
-class CadastraSolicitacao(tk.Tk):
+class TelaCadastraSolicitacao(tk.Tk):
     """Tela de cadastro de solicitação de férias (RH)"""
 
     def __init__(self, controlador_solicitacao):
@@ -408,7 +408,7 @@ class CadastraSolicitacao(tk.Tk):
     def gerenciar_solicitacao(self):
         """Abre a tela de gerenciamento de solicitações"""
         self.destroy()
-        GerenciaSolicitacoes(self.__controlador_solicitacao)
+        TelaGerenciaSolicitacoes(self.__controlador_solicitacao)
 
     def voltar(self):
         """Volta para a tela do funcionário RH"""
@@ -416,7 +416,7 @@ class CadastraSolicitacao(tk.Tk):
         self.__controlador_solicitacao.voltar_tela_funcionario_rh()
 
 
-class GerenciaSolicitacoes(tk.Tk):
+class TelaGerenciaSolicitacoes(tk.Tk):
     """Tela de gerenciamento de solicitações (RH)"""
 
     def __init__(self, controlador_solicitacao):
@@ -655,10 +655,10 @@ class GerenciaSolicitacoes(tk.Tk):
     def voltar(self):
         """Volta para a tela de cadastro de solicitação"""
         self.destroy()
-        CadastraSolicitacao(self.__controlador_solicitacao)
+        TelaCadastraSolicitacao(self.__controlador_solicitacao)
 
 
-class AnalisarSolicitacao(tk.Tk):
+class TelaAnalisarSolicitacao(tk.Tk):
     """Tela de análise de solicitações (Gestor)"""
 
     def __init__(self, controlador_solicitacao):

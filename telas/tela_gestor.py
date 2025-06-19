@@ -133,7 +133,7 @@ class TelaGestor(tk.Tk):
     def gerenciar_gestor(self):
         """Abre a tela de gerenciamento de gestores"""
         self.destroy()
-        GerenciaGestor(self.__controlador_gestor)
+        TelaGerenciaGestor(self.__controlador_gestor)
 
     def voltar(self):
         """Volta para a tela do RH"""
@@ -213,7 +213,7 @@ class TelaGestorLogado(tk.Tk):
             messagebox.showerror("Erro", f"Erro ao consultar colaboradores: {e}")
 
 
-class GerenciaGestor(tk.Tk):
+class TelaGerenciaGestor(tk.Tk):
     def __init__(self, controlador_gestor):
         super().__init__()
         self.__controlador_gestor = controlador_gestor

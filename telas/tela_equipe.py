@@ -369,7 +369,7 @@ class TelaEquipe(tk.Tk):
     def gerenciar_equipe(self):
         """Abre a tela de gerenciamento de equipes"""
         self.destroy()
-        GerenciaEquipe(self.__controlador_equipe)
+        TelaGerenciaEquipe(self.__controlador_equipe)
 
     def voltar(self):
         """Volta para a tela do RH"""
@@ -380,7 +380,7 @@ class TelaEquipe(tk.Tk):
             messagebox.showerror("Erro", f"Erro ao voltar para tela de RH: {e}")
 
 
-class GerenciaEquipe(tk.Tk):
+class TelaGerenciaEquipe(tk.Tk):
     """Tela de gerenciamento de equipes"""
 
     def __init__(self, controlador_equipe):

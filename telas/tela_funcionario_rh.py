@@ -107,7 +107,7 @@ class TelaRH(tk.Tk):
         try:
             # Destroy this window first
             self.destroy()
-            CadastraRH(self.__controlador_funcionario_rh)
+            TelaCadastraRH(self.__controlador_funcionario_rh)
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de RH: {e}")
             # If there's an error, reopen this window
@@ -151,7 +151,7 @@ class TelaRH(tk.Tk):
             self.__controlador_funcionario_rh.voltar_para_tela_sistema()
 
 
-class CadastraRH(tk.Tk):
+class TelaCadastraRH(tk.Tk):
     def __init__(self, controlador_funcionario_rh):
         super().__init__()
         self.__controlador_funcionario_rh = controlador_funcionario_rh
@@ -261,7 +261,7 @@ class CadastraRH(tk.Tk):
     def gerenciar_usuario_rh(self):
         # Destroy this window first, then open the management window
         self.destroy()
-        GerenciaRH(self.__controlador_funcionario_rh)
+        TelaGerenciaRH(self.__controlador_funcionario_rh)
 
     def voltar(self):
         # Destroy this window and return to the RH main screen
@@ -269,7 +269,7 @@ class CadastraRH(tk.Tk):
         TelaRH(self.__controlador_funcionario_rh)
 
 
-class GerenciaRH(tk.Tk):
+class TelaGerenciaRH(tk.Tk):
     def __init__(self, controlador_funcionario_rh):
         super().__init__()
         self.__controlador_funcionario_rh = controlador_funcionario_rh
@@ -459,4 +459,4 @@ class GerenciaRH(tk.Tk):
     def voltar(self):
         # Destroy this window and return to the cadastro RH screen
         self.destroy()
-        CadastraRH(self.__controlador_funcionario_rh)
+        TelaCadastraRH(self.__controlador_funcionario_rh)

@@ -70,7 +70,7 @@ class TelaColaborador(tk.Tk):
             command=self.voltar,
         ).pack(side="left", padx=5)
 
-    def create_label_and_entry(self, parent, text):
+    def gerar_campos_entrada(self, parent, text):
         """Cria um par de label e entry e retorna o entry."""
         tk.Label(parent, text=text, bg="#dcdcdc").pack(anchor="w", pady=(5, 0))
         entry = tk.Entry(parent, width=30)
@@ -108,7 +108,7 @@ class TelaColaborador(tk.Tk):
     def gerenciar_colaborador(self):
         """Abre a tela de gerenciamento de colaboradores"""
         self.destroy()
-        GerenciaColaborador(self.__controlador_colaborador)
+        TelaGerenciaColaborador(self.__controlador_colaborador)
 
     def voltar(self):
         """Volta para a tela do RH"""
@@ -119,7 +119,7 @@ class TelaColaborador(tk.Tk):
             messagebox.showerror("Erro", f"Erro ao voltar para tela de rh: {e}")
 
 
-class GerenciaColaborador(tk.Tk):
+class TelaGerenciaColaborador(tk.Tk):
     def __init__(self, controlador_colaborador):
         super().__init__()
         self.__controlador_colaborador = controlador_colaborador
