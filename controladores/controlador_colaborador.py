@@ -8,18 +8,6 @@ class ControladorColaborador:
         self.__colaborador = Colaborador()
         self.__tela_colaborador = None
 
-    @property
-    def controlador_sistema(self):
-        return self.__controlador_sistema
-
-    @property
-    def colaborador(self):
-        return self.__colaborador
-
-    @property
-    def tela_colaborador(self):
-        return self.__tela_colaborador
-
     @staticmethod
     def converter_dict_para_colaborador(colaborador_dict: dict) -> Colaborador | bool:
         try:

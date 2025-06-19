@@ -8,18 +8,6 @@ class ControladorGestor:
         self.__gestor = Gestor()
         self.__tela_gestor = None
 
-    @property
-    def controlador_sistema(self):
-        return self.__controlador_sistema
-
-    @property
-    def gestor(self):
-        return self.__gestor
-
-    @property
-    def tela_gestor(self):
-        return self.__tela_gestor
-
     def converter_dict_para_gestor(self, gestor_dict: dict) -> Gestor | bool:
         try:
             return Gestor(
