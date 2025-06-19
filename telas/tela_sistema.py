@@ -66,15 +66,17 @@ class TelaSistema(tk.Tk):
 
         if isinstance(usuario, (Gestor, FuncionarioRH)):
             messagebox.showinfo("Sucesso", "Login bem-sucedido!")
+            self.destroy()
 
+            # Direcionar para a tela correta baseado no tipo de usuário
             if isinstance(usuario, FuncionarioRH):
                 self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
-                self.destroy()
-            else:
-                self.__controlador_sistema.controlador_gestor.abrir_tela_gestor()
-                self.destroy()
+            elif isinstance(usuario, Gestor):
+                self.__controlador_sistema.controlador_gestor.abrir_tela_gestor_logado()
         else:
-            messagebox.showerror("Erro", "E-mail ou senha inválidos!")
+            messagebox.showerror("Erro", "E-mail ou senha incorretos!")
+            self.entry_email.delete(0, tk.END)
+            self.entry_senha.delete(0, tk.END)
 
     def consultar_solicitacoes(self, event=None):
         messagebox.showinfo(
