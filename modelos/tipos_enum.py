@@ -3,10 +3,10 @@ from enum import Enum
 
 
 class StatusSolicitacao(Enum):
-    PENDENTE = "pendente"
-    APROVADA = "aprovada"
-    REJEITADA = "rejeitada"
-    CANCELADA = "cancelada"
+    PENDENTE = "PENDENTE"
+    APROVADA = "APROVADA"
+    REJEITADA = "REJEITADA"
+    CANCELADA = "CANCELADA"
 
 
 class PeriodoFerias(Enum):
