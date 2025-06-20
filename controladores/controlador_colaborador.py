@@ -33,8 +33,15 @@ class ControladorColaborador:
         self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
 
     # CRUD de Colaborador
-    def cadastrar_colaborador(self, dados: dict) -> bool:
+    def cadastrar_colaborador(self, cpf, nome, cargo, email) -> bool:
         try:
+            dados = {
+                "cpf": cpf.strip(),
+                "nome": nome.strip(),
+                "cargo": cargo.strip(),
+                "email": email.strip(),
+            }
+
             campos_obrigatorios = ["cpf", "nome", "cargo", "email"]
 
             # Verificar se todos os campos obrigatórios estão presentes
@@ -95,22 +102,20 @@ class ControladorColaborador:
             print(f"Erro ao buscar colaborador: {e}")
             return None
 
-    def atualizar_colaborador(self, cpf: str, dados: dict) -> bool:
+    def atualizar_colaborador(
+        self, cpf: str, nome: str, cargo: str, email: str
+    ) -> bool:
         try:
-            campos_obrigatorios = ["cpf", "nome", "cargo", "email"]
-
             # Verificar se todos os campos obrigatórios estão presentes
-            for campo in campos_obrigatorios:
-                if campo not in dados or not dados[campo]:
-                    return False
+            if not all([cpf, nome, cargo, email]):
+                return False
 
             # Validar formato do CPF (11 dígitos)
-            cpf = dados["cpf"].replace(".", "").replace("-", "")
+            cpf = cpf.replace(".", "").replace("-", "")
             if len(cpf) != 11 or not cpf.isdigit():
                 return False
 
             # Validar email básico
-            email = dados["email"]
             if "@" not in email or "." not in email:
                 return False
 
@@ -118,7 +123,9 @@ class ControladorColaborador:
 
             for i, col in enumerate(colaboradores):
                 if col.get("cpf") == cpf:
-                    colaboradores[i].update(dados)
+                    colaboradores[i]["nome"] = nome
+                    colaboradores[i]["cargo"] = cargo
+                    colaboradores[i]["email"] = email
                     return self.__colaborador.salvar_colaboradores(colaboradores)
 
             return False  # CPF não encontrado

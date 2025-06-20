@@ -107,7 +107,7 @@ class TelaRH(tk.Tk):
         try:
             # Destroy this window first
             self.destroy()
-            TelaCadastraRH(self.__controlador_funcionario_rh)
+            TelaCadastrarRH(self.__controlador_funcionario_rh)
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de RH: {e}")
             # If there's an error, reopen this window
@@ -151,7 +151,7 @@ class TelaRH(tk.Tk):
             self.__controlador_funcionario_rh.voltar_para_tela_sistema()
 
 
-class TelaCadastraRH(tk.Tk):
+class TelaCadastrarRH(tk.Tk):
     def __init__(self, controlador_funcionario_rh):
         super().__init__()
         self.__controlador_funcionario_rh = controlador_funcionario_rh
@@ -223,7 +223,7 @@ class TelaCadastraRH(tk.Tk):
             command=self.voltar,
         ).pack(side="left", padx=5)
 
-    def create_label_and_entry(self, parent, text, show=None):
+    def gerar_campos_entradas(self, parent, text, show=None):
         """Cria um par de label e entry e retorna o entry."""
         tk.Label(parent, text=text, bg="#dcdcdc").pack(anchor="w", pady=(5, 0))
         entry = tk.Entry(parent, width=30, show=show)
@@ -261,7 +261,7 @@ class TelaCadastraRH(tk.Tk):
     def gerenciar_usuario_rh(self):
         # Destroy this window first, then open the management window
         self.destroy()
-        TelaGerenciaRH(self.__controlador_funcionario_rh)
+        TelaGerenciarRH(self.__controlador_funcionario_rh)
 
     def voltar(self):
         # Destroy this window and return to the RH main screen
@@ -269,7 +269,7 @@ class TelaCadastraRH(tk.Tk):
         TelaRH(self.__controlador_funcionario_rh)
 
 
-class TelaGerenciaRH(tk.Tk):
+class TelaGerenciarRH(tk.Tk):
     def __init__(self, controlador_funcionario_rh):
         super().__init__()
         self.__controlador_funcionario_rh = controlador_funcionario_rh
@@ -459,4 +459,4 @@ class TelaGerenciaRH(tk.Tk):
     def voltar(self):
         # Destroy this window and return to the cadastro RH screen
         self.destroy()
-        TelaCadastraRH(self.__controlador_funcionario_rh)
+        TelaCadastrarRH(self.__controlador_funcionario_rh)

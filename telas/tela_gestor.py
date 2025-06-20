@@ -77,7 +77,7 @@ class TelaGestor(tk.Tk):
             command=self.voltar,
         ).pack(side="left", padx=5)
 
-    def create_label_and_entry(self, parent, text, show=None):
+    def gerar_campos_entrada(self, parent, text, show=None):
         """Cria um par de label e entry e retorna o entry."""
         tk.Label(parent, text=text, bg="#dcdcdc").pack(anchor="w", pady=(5, 0))
         entry = tk.Entry(parent, width=30, show=show)
@@ -133,7 +133,7 @@ class TelaGestor(tk.Tk):
     def gerenciar_gestor(self):
         """Abre a tela de gerenciamento de gestores"""
         self.destroy()
-        TelaGerenciaGestor(self.__controlador_gestor)
+        TelaGerenciarGestor(self.__controlador_gestor)
 
     def voltar(self):
         """Volta para a tela do RH"""
@@ -213,7 +213,7 @@ class TelaGestorLogado(tk.Tk):
             messagebox.showerror("Erro", f"Erro ao consultar colaboradores: {e}")
 
 
-class TelaGerenciaGestor(tk.Tk):
+class TelaGerenciarGestor(tk.Tk):
     def __init__(self, controlador_gestor):
         super().__init__()
         self.__controlador_gestor = controlador_gestor

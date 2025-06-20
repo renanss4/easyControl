@@ -71,12 +71,12 @@ class TelaSolicitacao(tk.Tk):
     def abrir_cadastro_solicitacao(self):
         """Abre a tela de cadastro de solicitação (RH)"""
         self.destroy()
-        TelaCadastraSolicitacao(self.__controlador_solicitacao)
+        TelaCadastrarSolicitacao(self.__controlador_solicitacao)
 
     def abrir_gerenciar_solicitacoes(self):
         """Abre a tela de gerenciamento de solicitações (RH)"""
         self.destroy()
-        TelaGerenciaSolicitacoes(self.__controlador_solicitacao)
+        TelaGerenciarSolicitacoes(self.__controlador_solicitacao)
 
     def abrir_analisar_solicitacoes(self):
         """Abre a tela de análise de solicitações (Gestor)"""
@@ -99,7 +99,7 @@ class TelaSolicitacao(tk.Tk):
             self.__controlador_solicitacao.voltar_tela_gestor()
 
 
-class TelaCadastraSolicitacao(tk.Tk):
+class TelaCadastrarSolicitacao(tk.Tk):
     """Tela de cadastro de solicitação de férias (RH)"""
 
     def __init__(self, controlador_solicitacao):
@@ -234,7 +234,7 @@ class TelaCadastraSolicitacao(tk.Tk):
         # Bind mousewheel
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
 
-    def _on_mousewheel(self, event):
+    def on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def toggle_parcelamento(self):
@@ -408,7 +408,7 @@ class TelaCadastraSolicitacao(tk.Tk):
     def gerenciar_solicitacao(self):
         """Abre a tela de gerenciamento de solicitações"""
         self.destroy()
-        TelaGerenciaSolicitacoes(self.__controlador_solicitacao)
+        TelaGerenciarSolicitacoes(self.__controlador_solicitacao)
 
     def voltar(self):
         """Volta para a tela do funcionário RH"""
@@ -416,7 +416,7 @@ class TelaCadastraSolicitacao(tk.Tk):
         self.__controlador_solicitacao.voltar_tela_funcionario_rh()
 
 
-class TelaGerenciaSolicitacoes(tk.Tk):
+class TelaGerenciarSolicitacoes(tk.Tk):
     """Tela de gerenciamento de solicitações (RH)"""
 
     def __init__(self, controlador_solicitacao):
@@ -655,7 +655,7 @@ class TelaGerenciaSolicitacoes(tk.Tk):
     def voltar(self):
         """Volta para a tela de cadastro de solicitação"""
         self.destroy()
-        TelaCadastraSolicitacao(self.__controlador_solicitacao)
+        TelaCadastrarSolicitacao(self.__controlador_solicitacao)
 
 
 class TelaAnalisarSolicitacao(tk.Tk):

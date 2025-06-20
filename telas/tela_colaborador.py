@@ -108,7 +108,7 @@ class TelaColaborador(tk.Tk):
     def gerenciar_colaborador(self):
         """Abre a tela de gerenciamento de colaboradores"""
         self.destroy()
-        TelaGerenciaColaborador(self.__controlador_colaborador)
+        TelaGerenciarColaborador(self.__controlador_colaborador)
 
     def voltar(self):
         """Volta para a tela do RH"""
@@ -119,7 +119,7 @@ class TelaColaborador(tk.Tk):
             messagebox.showerror("Erro", f"Erro ao voltar para tela de rh: {e}")
 
 
-class TelaGerenciaColaborador(tk.Tk):
+class TelaGerenciarColaborador(tk.Tk):
     def __init__(self, controlador_colaborador):
         super().__init__()
         self.__controlador_colaborador = controlador_colaborador

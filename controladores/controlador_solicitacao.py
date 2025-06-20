@@ -36,6 +36,7 @@ class ControladorSolicitacao:
 
     def cadastrar_solicitacao(self, dados: dict) -> bool:
         try:
+            print(dados)
             # Validar CPF
             cpf = dados.get("cpf_colaborador", "").strip()
             if not cpf:
