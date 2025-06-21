@@ -601,7 +601,7 @@ class TelaGerenciarSolicitacoes(tk.Tk):
                         values=(
                             sol.get("protocolo", "N/A"),
                             sol.get("nome_colaborador", "Nome não encontrado"),
-                            sol.get("cpf_colaborador", "N/A"),
+                            sol.get("pessoa")["cpf"],
                             sol.get("data_solicitacao", "N/A"),
                             periodos,
                             sol.get("status", "N/A"),

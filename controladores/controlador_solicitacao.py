@@ -35,105 +35,119 @@ class ControladorSolicitacao:
         self.__controlador_sistema.controlador_gestor.abrir_tela_gestor_logado()
 
     def cadastrar_solicitacao(self, dados: dict) -> tuple[bool, str]:
-        try:
-            # Limpeza e validação básica do CPF
-            cpf = dados.get("cpf_colaborador", "").strip().replace(".", "").replace("-", "")
-            if not (cpf and len(cpf) == 11 and cpf.isdigit()):
-                return False, "CPF inválido."
+        # Limpeza e validação básica do CPF
+        cpf = dados.get("cpf_colaborador", "").strip().replace(".", "").replace("-", "")
+        if not (cpf and len(cpf) == 11 and cpf.isdigit()):
+            return False, "CPF inválido."
 
-            # Busca do colaborador em diferentes categorias
-            pessoa = (
-                self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf)
-                or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(cpf)
-                or self.__controlador_sistema.controlador_gestor.buscar_gestor_por_cpf(cpf)
+        # Busca do colaborador em diferentes categorias
+        pessoa = (
+            self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
+                cpf
             )
-            if not pessoa:
-                return False, "Colaborador não encontrado."
+            or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(
+                cpf
+            )
+            or self.__controlador_sistema.controlador_gestor.buscar_gestor_por_cpf(cpf)
+        )
+        if not pessoa:
+            return False, "Colaborador não encontrado."
 
-            # Verificação de tempo de admissão
-            if pessoa.data_admissao:
-                meses_admissao = (date.today() - pessoa.data_admissao).days / 30.44
-                if meses_admissao < 12:
-                    return False, "Colaborador deve ter pelo menos 12 meses de admissão."
+        # Verificação de tempo de admissão
+        if pessoa.data_admissao:
+            meses_admissao = (date.today() - pessoa.data_admissao).days / 30.44
+            if meses_admissao < 12:
+                return False, "Colaborador deve ter pelo menos 12 meses de admissão."
 
-            # Verificação se há solicitação pendente para o mesmo CPF
-            if any(sol.get("status") == "PENDENTE" for sol in self.buscar_solicitacoes_por_cpf(cpf)):
-                return False, "Já existe uma solicitação pendente para este colaborador (pelo CPF informado)."
+        # Verificação se há solicitação pendente para o mesmo CPF
+        if any(
+            sol.get("status") == "PENDENTE"
+            for sol in self.buscar_solicitacoes_por_cpf(cpf)
+        ):
+            return (
+                False,
+                "Já existe uma solicitação pendente para este colaborador (pelo CPF informado).",
+            )
 
-            # Nova validação: verificar se já existe solicitação pendente para a pessoa (mesmo que o CPF mude)
-            solicitacoes = self.__solicitacao.carregar_solicitacoes()
-            for sol in solicitacoes:
-                pessoa_sol = sol.get("pessoa", {})
-                if pessoa_sol.get("cpf") == pessoa.cpf and sol.get("status") == "PENDENTE":
-                    return False, "Esta pessoa já possui uma solicitação pendente."
+        # Nova validação: verificar se já existe solicitação pendente para a pessoa (mesmo que o CPF mude)
+        solicitacoes = self.__solicitacao.carregar_solicitacoes()
+        for sol in solicitacoes:
+            pessoa_sol = sol.get("pessoa", {})
+            if pessoa_sol.get("cpf") == pessoa.cpf and sol.get("status") == "PENDENTE":
+                return False, "Esta pessoa já possui uma solicitação pendente."
 
-            # Validação dos períodos
-            periodos = dados.get("periodos", [])
-            if not periodos or not all(isinstance(inicio, date) and isinstance(fim, date) for inicio, fim in periodos):
-                return False, "Períodos inválidos ou não informados."
+        # Validação dos períodos
+        periodos = dados.get("periodos", [])
+        if not periodos or not all(
+            isinstance(inicio, date) and isinstance(fim, date)
+            for inicio, fim in periodos
+        ):
+            return False, "Períodos inválidos ou não informados."
 
-            hoje = date.today()
+        hoje = date.today()
 
-            for inicio, fim in periodos:
-                if (inicio - hoje).days < 30:
-                    return False, "Os períodos precisam ser solicitados com no mínimo 30 dias de antecedência."
-                if inicio.weekday() in [4, 5, 6]:
-                    return False, "As férias não podem iniciar em sexta, sábado ou domingo."
-                if fim <= inicio:
-                    return False, "Data final do período deve ser posterior à data inicial."
+        for inicio, fim in periodos:
+            if (inicio - hoje).days < 30:
+                return (
+                    False,
+                    "Os períodos precisam ser solicitados com no mínimo 30 dias de antecedência.",
+                )
+            if inicio.weekday() in [4, 5, 6]:
+                return False, "As férias não podem iniciar em sexta, sábado ou domingo."
+            if fim <= inicio:
+                return False, "Data final do período deve ser posterior à data inicial."
 
-            # Validação do parcelamento
-            parcelamento = dados.get("parcelamento", False)
-            total_dias = sum((fim - inicio).days + 1 for inicio, fim in periodos)
-            if parcelamento:
-                if len(periodos) not in [2, 3] or total_dias != 30:
-                    return False, "Parcelamento inválido: deve ter 2 ou 3 períodos totalizando 30 dias."
-                if (periodos[0][1] - periodos[0][0]).days + 1 != 14:
-                    return False, "O primeiro período do parcelamento deve conter 14 dias."
-            else:
-                if len(periodos) != 1 or total_dias != 30:
-                    return False, "Período único inválido: deve conter 30 dias contínuos."
+        # Validação do parcelamento
+        parcelamento = dados.get("parcelamento", False)
+        total_dias = sum((fim - inicio).days + 1 for inicio, fim in periodos)
+        if parcelamento:
+            if (periodos[0][1] - periodos[0][0]).days + 1 != 14:
+                return False, "O primeiro período do parcelamento deve conter 14 dias."
+            if len(periodos) not in [2, 3] or total_dias != 30:
+                return (
+                    False,
+                    "Parcelamento inválido: deve ter 2 ou 3 períodos totalizando 30 dias.",
+                )
+        else:
+            if len(periodos) != 1 or total_dias != 30:
+                return False, "Período único inválido: deve conter 30 dias contínuos."
 
-            # Garantir que os períodos não sejam sobrepostos
-            for i in range(len(periodos) - 1):
-                if periodos[i][1] >= periodos[i + 1][0]:
-                    return False, "Os períodos não podem se sobrepor."
+        # Garantir que os períodos não sejam sobrepostos
+        for i in range(len(periodos) - 1):
+            if periodos[i][1] >= periodos[i + 1][0]:
+                return False, "Os períodos não podem se sobrepor."
 
-            # Geração de protocolo único
-            protocolo = f"SOL-{hoje.strftime('%Y%m%d')}-{''.join(random.choices(string.ascii_uppercase + string.digits, k=5))}"
+        # Geração de protocolo único
+        protocolo = f"SOL-{hoje.strftime('%Y%m%d')}-{''.join(random.choices(string.ascii_uppercase + string.digits, k=5))}"
 
-            pessoa_json = {
-                "cpf": pessoa.cpf,
-                "nome": pessoa.nome,
-                "cargo": pessoa.cargo,
-                "data_admissao": pessoa.data_admissao.strftime("%Y-%m-%d"),
-                "email": pessoa.email,
-            }
+        pessoa_json = {
+            "cpf": pessoa.cpf,
+            "nome": pessoa.nome,
+            "cargo": pessoa.cargo,
+            "data_admissao": pessoa.data_admissao.strftime("%Y-%m-%d"),
+            "email": pessoa.email,
+        }
 
-            nova_solicitacao = {
-                "protocolo": protocolo,
-                "pessoa": pessoa_json,
-                "parcelamento": parcelamento,
-                "status": "PENDENTE",
-                "data_solicitacao": hoje.strftime("%Y-%m-%d"),
-                "periodos": [
-                    {"DATA_INICIO": inicio.strftime("%Y-%m-%d"), "DATA_FIM": fim.strftime("%Y-%m-%d")}
-                    for inicio, fim in periodos
-                ],
-            }
+        nova_solicitacao = {
+            "protocolo": protocolo,
+            "pessoa": pessoa_json,
+            "parcelamento": parcelamento,
+            "status": "PENDENTE",
+            "data_solicitacao": hoje.strftime("%Y-%m-%d"),
+            "periodos": [
+                {
+                    "DATA_INICIO": inicio.strftime("%Y-%m-%d"),
+                    "DATA_FIM": fim.strftime("%Y-%m-%d"),
+                }
+                for inicio, fim in periodos
+            ],
+        }
 
-            # Salvar a nova solicitação
-            solicitacoes.append(nova_solicitacao)
-            self.__solicitacao.adicionar_pessoa(pessoa)
-            if self.__solicitacao.salvar_solicitacoes(solicitacoes):
-                return True, f"Solicitação cadastrada com sucesso. Protocolo: {protocolo}"
-            else:
-                return False, "Erro ao salvar a solicitação."
-
-        except Exception as e:
-            print(f"Erro ao cadastrar solicitação: {e}")
-            return False, "Erro inesperado ao cadastrar solicitação."
-
+        # Salvar a nova solicitação
+        solicitacoes.append(nova_solicitacao)
+        self.__solicitacao.adicionar_pessoa(pessoa)
+        self.__solicitacao.salvar_solicitacoes(solicitacoes)
+        return True, f"Solicitação cadastrada com sucesso. Protocolo: {protocolo}"
 
     def buscar_solicitacoes(self) -> list:
         try:
@@ -141,10 +155,18 @@ class ControladorSolicitacao:
 
             # Enriquecer com dados do colaborador
             for sol in solicitacoes:
-                cpf = sol.get("cpf_colaborador")
+                cpf = sol.get("pessoa")["cpf"]
                 if cpf:
-                    colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
-                        cpf
+                    colaborador = (
+                        self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
+                            cpf
+                        )
+                        or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(
+                            cpf
+                        )
+                        or self.__controlador_sistema.controlador_gestor.buscar_gestor_por_cpf(
+                            cpf
+                        )
                     )
                     if colaborador:
                         sol["nome_colaborador"] = colaborador.nome
@@ -161,7 +183,7 @@ class ControladorSolicitacao:
     def buscar_solicitacoes_por_cpf(self, cpf: str) -> list:
         try:
             todas_solicitacoes = self.buscar_solicitacoes()
-            return [s for s in todas_solicitacoes if s.get("cpf_colaborador") == cpf]
+            return [s for s in todas_solicitacoes if s.get("pessoa")["cpf"] == cpf]
         except Exception as e:
             print(f"Erro ao buscar solicitações por CPF: {e}")
             return []
