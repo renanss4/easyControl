@@ -447,7 +447,7 @@ class TelaGerenciarSolicitacoes(tk.Tk):
         self.cpf_entry = tk.Entry(search_frame, width=15)
         self.cpf_entry.pack(side="left", padx=(0, 10))
 
-        tk.Button(search_frame, text="Buscar", command=self.buscar_solicitacoes).pack(
+        tk.Button(search_frame, text="Buscar", command=self.__controlador_solicitacao.buscar_solicitacoes_equipe).pack(
             side="left"
         )
 
@@ -687,7 +687,7 @@ class TelaAnalisarSolicitacao(tk.Tk):
         self.cpf_entry = tk.Entry(busca_frame, width=15)
         self.cpf_entry.pack(side="left", padx=5)
 
-        tk.Button(busca_frame, text="Buscar", command=self.buscar_solicitacoes).pack(
+        tk.Button(busca_frame, text="Buscar", command=self.__controlador_solicitacao.buscar_solicitacoes_equipe).pack(
             side="left", padx=5
         )
 
@@ -732,7 +732,7 @@ class TelaAnalisarSolicitacao(tk.Tk):
         # Vincular evento de seleção
         self.tabela.bind("<<TreeviewSelect>>", self.selecionar_solicitacao)
 
-        # Frame para informações da equipe
+        # FRAME PARA PORCENTAGEM DE FÉRIAS
         info_equipe_frame = tk.Frame(
             self, bg="#dcdcdc", padx=10, pady=10, relief="groove", bd=1
         )
@@ -740,7 +740,7 @@ class TelaAnalisarSolicitacao(tk.Tk):
 
         self.info_equipe_label = tk.Label(
             info_equipe_frame,
-            text="Informações da equipe carregadas",
+            text="Carregando informações da equipe...",
             bg="#dcdcdc",
             font=("Arial", 11, "bold"),
         )
@@ -770,8 +770,120 @@ class TelaAnalisarSolicitacao(tk.Tk):
             side="left", padx=10
         )
 
-        # Carregar dados iniciais AUTOMATICAMENTE
+        # Carregar dados iniciais
         self.mostrar_todas_solicitacoes()
+        self.atualizar_info_equipe()
+
+    def atualizar_info_equipe(self, periodo_inicio=None, periodo_fim=None):
+        """Atualiza informações da equipe incluindo porcentagem de férias para período específico"""
+        try:
+            if not self.cpf_gestor:
+                self.info_equipe_label.config(text="CPF do gestor não encontrado")
+                return
+            
+            # Calcular porcentagem para período específico ou atual
+            if periodo_inicio and periodo_fim:
+                porcentagem, pode_aprovar = self.__controlador_solicitacao.calcular_porcentagem_ferias_equipe(
+                    self.cpf_gestor, periodo_inicio, periodo_fim
+                )
+                periodo_texto = f" (período: {periodo_inicio} a {periodo_fim})"
+            else:
+                # Calcular porcentagem atual (hoje)
+                porcentagem, pode_aprovar = self.__controlador_solicitacao.calcular_porcentagem_ferias_equipe(
+                    self.cpf_gestor
+                )
+                periodo_texto = " (atual)"
+            
+            # Definir cor baseada na porcentagem
+            if porcentagem > 50:
+                cor = "red"
+                status_text = " (LIMITE EXCEDIDO)"
+            elif porcentagem > 40:
+                cor = "orange"
+                status_text = " (PRÓXIMO DO LIMITE)"
+            else:
+                cor = "black"
+                status_text = ""
+            
+            texto = f"Porcentagem de colaboradores da equipe em férias: {porcentagem:.1f}%{status_text}{periodo_texto}"
+            self.info_equipe_label.config(text=texto, fg=cor)
+            
+        except Exception as e:
+            self.info_equipe_label.config(text="Erro ao carregar informações da equipe")
+            print(f"Erro ao atualizar info da equipe: {e}")
+
+    def selecionar_solicitacao(self, event):
+        """Ação ao selecionar uma solicitação na tabela"""
+        selecionados = self.tabela.selection()
+
+        if selecionados:
+            item = self.tabela.item(selecionados[0])
+            status = item["values"][5] if len(item["values"]) > 5 else ""
+            protocolo = item["values"][0] if len(item["values"]) > 0 else ""
+
+            # OBTER PERÍODO DA SOLICITAÇÃO SELECIONADA
+            periodo_inicio = None
+            periodo_fim = None
+            
+            try:
+                # Buscar a solicitação completa pelo protocolo
+                solicitacao = self.__controlador_solicitacao.buscar_solicitacao_por_protocolo(protocolo)
+                if solicitacao and solicitacao.get("periodos"):
+                    periodos = solicitacao["periodos"]
+                    # Usar primeiro e último período para calcular intervalo completo
+                    periodo_inicio = periodos[0]["DATA_INICIO"]
+                    periodo_fim = periodos[-1]["DATA_FIM"]
+            except Exception as e:
+                print(f"Erro ao obter período da solicitação: {e}")
+
+            # ATUALIZAR PORCENTAGEM BASEADA NO PERÍODO DA SOLICITAÇÃO SELECIONADA
+            self.atualizar_info_equipe(periodo_inicio, periodo_fim)
+
+            # Habilitar/desabilitar botões apenas se status for pendente
+            if status.lower() == "pendente":
+                self.btn_reprovar.config(state="normal")
+                
+                # VERIFICAR SE PODE APROVAR BASEADO NA PORCENTAGEM DO PERÍODO
+                if self.cpf_gestor and protocolo and periodo_inicio and periodo_fim:
+                    _, pode_aprovar = self.__controlador_solicitacao.calcular_porcentagem_ferias_equipe(
+                        self.cpf_gestor, periodo_inicio, periodo_fim, protocolo
+                    )
+                    self.btn_aprovar.config(state="normal" if pode_aprovar else "disabled")
+                else:
+                    self.btn_aprovar.config(state="normal")
+            else:
+                self.btn_aprovar.config(state="disabled")
+                self.btn_reprovar.config(state="disabled")
+        else:
+            self.btn_aprovar.config(state="disabled")
+            self.btn_reprovar.config(state="disabled")
+            # Voltar para porcentagem atual quando nada selecionado
+            self.atualizar_info_equipe()
+
+    def aprovar_solicitacao(self):
+        """Aprova a solicitação selecionada com validação de porcentagem baseada no período"""
+        selecionados = self.tabela.selection()
+        if not selecionados:
+            return
+
+        item = self.tabela.item(selecionados[0])
+        protocolo = item["values"][0]
+
+        if messagebox.askyesno(
+            "Confirmar", "Deseja realmente APROVAR esta solicitação de férias?"
+        ):
+            # Chamar controlador COM CPF DO GESTOR para validação
+            sucesso, mensagem = self.__controlador_solicitacao.aprovar_solicitacao(
+                protocolo, self.cpf_gestor
+            )
+
+            if sucesso:
+                messagebox.showinfo("Sucesso", mensagem)
+                self.mostrar_todas_solicitacoes()
+                # Atualizar porcentagem para o período atual após aprovação
+                self.atualizar_info_equipe()
+            else:
+                messagebox.showerror("Erro", mensagem)
 
     def mostrar_todas_solicitacoes(self):
         """Mostra todas as solicitações da equipe do gestor"""
@@ -791,28 +903,34 @@ class TelaAnalisarSolicitacao(tk.Tk):
                 )
 
             self.preencher_tabela(solicitacoes)
+            self.atualizar_info_equipe()  # Mostrar porcentagem atual (sem período específico)
 
         except Exception as e:
             print(f"Erro ao carregar solicitações: {e}")
             messagebox.showerror("Erro", f"Erro ao carregar solicitações: {e}")
 
-    def buscar_solicitacoes(self):
-        """Busca solicitações de um colaborador específico - SEM VALIDAÇÃO"""
-        cpf = self.cpf_entry.get().strip()
-
-        if not cpf:
-            messagebox.showerror("Erro", "Digite um CPF para buscar")
+    def reprovar_solicitacao(self):
+        """Reprova a solicitação selecionada"""
+        selecionados = self.tabela.selection()
+        if not selecionados:
             return
 
-        self.limpar_tabela()
+        item = self.tabela.item(selecionados[0])
+        protocolo = item["values"][0]
 
-        try:
-            solicitacoes = self.__controlador_solicitacao.buscar_solicitacoes_por_cpf(
-                cpf
+        if messagebox.askyesno(
+            "Confirmar", "Deseja realmente REPROVAR esta solicitação de férias?"
+        ):
+            sucesso, mensagem = self.__controlador_solicitacao.rejeitar_solicitacao(
+                protocolo
             )
-            self.preencher_tabela(solicitacoes)
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao buscar solicitações: {e}")
+
+            if sucesso:
+                messagebox.showinfo("Sucesso", mensagem)
+                self.mostrar_todas_solicitacoes()
+                self.atualizar_info_equipe()  # Atualizar porcentagem após reprovação
+            else:
+                messagebox.showerror("Erro", mensagem)
 
     def preencher_tabela(self, solicitacoes):
         """Preenche a tabela com as solicitações"""
@@ -865,71 +983,6 @@ class TelaAnalisarSolicitacao(tk.Tk):
         """Limpa a tabela"""
         for item in self.tabela.get_children():
             self.tabela.delete(item)
-
-    def selecionar_solicitacao(self, event):
-        """Ação ao selecionar uma solicitação na tabela"""
-        selecionados = self.tabela.selection()
-
-        if selecionados:
-            item = self.tabela.item(selecionados[0])
-            status = item["values"][5] if len(item["values"]) > 5 else ""
-
-            # Habilitar/desabilitar botões apenas se status for pendente
-            if status.lower() == "pendente":
-                self.btn_aprovar.config(state="normal")
-                self.btn_reprovar.config(state="normal")
-            else:
-                self.btn_aprovar.config(state="disabled")
-                self.btn_reprovar.config(state="disabled")
-        else:
-            self.btn_aprovar.config(state="disabled")
-            self.btn_reprovar.config(state="disabled")
-
-    def aprovar_solicitacao(self):
-        """Aprova a solicitação selecionada - SEM VALIDAÇÃO"""
-        selecionados = self.tabela.selection()
-        if not selecionados:
-            return
-
-        item = self.tabela.item(selecionados[0])
-        protocolo = item["values"][0]
-
-        if messagebox.askyesno(
-            "Confirmar", "Deseja realmente APROVAR esta solicitação de férias?"
-        ):
-            # Chamar controlador - ELE FAZ TODAS AS VALIDAÇÕES
-            sucesso, mensagem = self.__controlador_solicitacao.aprovar_solicitacao(
-                protocolo
-            )
-
-            if sucesso:
-                messagebox.showinfo("Sucesso", mensagem)
-                self.mostrar_todas_solicitacoes()  # Recarregar tabela automaticamente
-            else:
-                messagebox.showerror("Erro", mensagem)
-
-    def reprovar_solicitacao(self):
-        """Reprova a solicitação selecionada - SEM VALIDAÇÃO"""
-        selecionados = self.tabela.selection()
-        if not selecionados:
-            return
-
-        item = self.tabela.item(selecionados[0])
-        protocolo = item["values"][0]
-
-        if messagebox.askyesno(
-            "Confirmar", "Deseja realmente REPROVAR esta solicitação de férias?"
-        ):
-            # Chamar controlador - ELE FAZ TODAS AS VALIDAÇÕES
-            sucesso, mensagem = self.__controlador_solicitacao.rejeitar_solicitacao(
-                protocolo
-            )
-
-            if sucesso:
-                messagebox.showinfo("Sucesso", mensagem)
-                self.mostrar_todas_solicitacoes()  # Recarregar tabela automaticamente
-            else:
-                messagebox.showerror("Erro", mensagem)
 
     def voltar(self):
         """Volta para a tela do gestor logado"""
