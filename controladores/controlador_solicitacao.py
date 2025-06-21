@@ -16,13 +16,13 @@ class ControladorSolicitacao:
         if hasattr(usuario_logado, "__class__") and "FuncionarioRH" in str(
             usuario_logado.__class__
         ):
-            from telas.tela_solicitacao import CadastraSolicitacao
+            from telas.tela_solicitacao import TelaCadastrarSolicitacao
 
-            self.__tela_solicitacao = CadastraSolicitacao(self)
+            self.__tela_solicitacao = TelaCadastrarSolicitacao(self)
         else:
-            from telas.tela_solicitacao import AnalisarSolicitacao
+            from telas.tela_solicitacao import TelaAnalisarSolicitacao
 
-            self.__tela_solicitacao = AnalisarSolicitacao(self)
+            self.__tela_solicitacao = TelaAnalisarSolicitacao(self)
 
         return self.__tela_solicitacao
 
@@ -36,7 +36,6 @@ class ControladorSolicitacao:
 
     def cadastrar_solicitacao(self, dados: dict) -> bool:
         try:
-            print(dados)
             # Validar CPF
             cpf = dados.get("cpf_colaborador", "").strip()
             if not cpf:
@@ -47,21 +46,31 @@ class ControladorSolicitacao:
                 return False
 
             # Verificar se colaborador existe
-            colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
-                cpf
+            pessoa = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
+                cpf_limpo
             )
-            if not colaborador:
+            if not pessoa:
+                pessoa = self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(
+                    cpf_limpo
+                )
+            if not pessoa:
+                pessoa = (
+                    self.__controlador_sistema.controlador_gestor.buscar_gestor_por_cpf(
+                        cpf_limpo
+                    )
+                )
+            if not pessoa:
                 return False
 
             # Verificar se colaborador tem pelo menos 12 meses de admissão
-            if hasattr(colaborador, "data_admissao"):
-                meses_admissao = (date.today() - colaborador.data_admissao).days / 30.44
+            if pessoa.data_admissao is not None:
+                meses_admissao = (date.today() - pessoa.data_admissao).days / 30.44
                 if meses_admissao < 12:
                     return False
 
             # Verificar se não há solicitação pendente
-            solicitacoes_existentes = self.buscar_solicitacoes_por_cpf(cpf)
-            if any(sol.get("status") == "pendente" for sol in solicitacoes_existentes):
+            solicitacoes_existentes = self.buscar_solicitacoes_por_cpf(cpf_limpo)
+            if any(sol.get("status") == "PENDENTE" for sol in solicitacoes_existentes):
                 return False
 
             # Verificar se a equipe já tem 50% ou mais em férias
@@ -127,17 +136,25 @@ class ControladorSolicitacao:
             )
             protocolo = f"SOL-{data}-{aleatorio}"
 
+            pessoa_json = {
+                "cpf": pessoa.cpf,
+                "nome": pessoa.nome,
+                "cargo": pessoa.cargo,
+                "data_admissao": pessoa.data_admissao.strftime("%Y-%m-%d"),
+                "email": pessoa.email,
+            }
+
             # Criar nova solicitação
             nova_solicitacao = {
                 "protocolo": protocolo,
-                "cpf_colaborador": cpf,
+                "pessoa": pessoa_json,
                 "parcelamento": parcelamento,
-                "status": "pendente",
+                "status": "PENDENTE",
                 "data_solicitacao": date.today().strftime("%Y-%m-%d"),
                 "periodos": [
                     {
-                        "data_inicio": inicio.strftime("%Y-%m-%d"),
-                        "data_fim": fim.strftime("%Y-%m-%d"),
+                        "DATA_INICIO": inicio.strftime("%Y-%m-%d"),
+                        "DATA_FIM": fim.strftime("%Y-%m-%d"),
                     }
                     for inicio, fim in periodos
                 ],
@@ -146,6 +163,7 @@ class ControladorSolicitacao:
             # Salvar
             solicitacoes = self.__solicitacao.carregar_solicitacoes()
             solicitacoes.append(nova_solicitacao)
+            self.__solicitacao.adicionar_pessoa(pessoa)
             return self.__solicitacao.salvar_solicitacoes(solicitacoes)
 
         except Exception as e:
@@ -200,10 +218,10 @@ class ControladorSolicitacao:
 
             for sol in solicitacoes:
                 if sol.get("protocolo") == protocolo:
-                    if sol.get("status") != "pendente":
+                    if sol.get("status") != "PENDENTE":
                         return False
 
-                    sol["status"] = "aprovado"
+                    sol["status"] = "APROVADA"
                     return self.__solicitacao.salvar_solicitacoes(solicitacoes)
 
             return False
@@ -217,10 +235,10 @@ class ControladorSolicitacao:
 
             for sol in solicitacoes:
                 if sol.get("protocolo") == protocolo:
-                    if sol.get("status") != "pendente":
+                    if sol.get("status") != "PENDENTE":
                         return False
 
-                    sol["status"] = "rejeitado"
+                    sol["status"] = "REJEITADA"
                     return self.__solicitacao.salvar_solicitacoes(solicitacoes)
 
             return False
@@ -234,10 +252,12 @@ class ControladorSolicitacao:
 
             for sol in solicitacoes:
                 if sol.get("protocolo") == protocolo:
-                    if sol.get("status") != "pendente":
+                    if sol.get("status") != "PENDENTE":
                         return False
 
-                    sol["status"] = "cancelado"
+                    sol["status"] = "CANCELADA"
+
+                    self.__solicitacao.cancelar_solicitacao()
                     return self.__solicitacao.salvar_solicitacoes(solicitacoes)
 
             return False

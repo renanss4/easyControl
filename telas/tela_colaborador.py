@@ -36,7 +36,7 @@ class TelaColaborador(tk.Tk):
 
         # Criar campos
         for campo_id, label in self.campos:
-            self.entries[campo_id] = self.create_label_and_entry(frame, label)
+            self.entries[campo_id] = self.gerar_campos_entrada(frame, label)
 
         # Frame para os botões
         botoes_frame = tk.Frame(frame, bg="#dcdcdc")
@@ -94,7 +94,9 @@ class TelaColaborador(tk.Tk):
 
         try:
             # Chamar o controlador para cadastrar o colaborador
-            resultado = self.__controlador_colaborador.cadastrar_colaborador(dados)
+            resultado = self.__controlador_colaborador.cadastrar_colaborador(
+                dados["cpf"], dados["nome"], dados["cargo"], dados["email"]
+            )
             if resultado:
                 messagebox.showinfo("Sucesso", "Colaborador cadastrado com sucesso!")
                 # Limpar campos após o cadastro bem-sucedido
@@ -206,7 +208,7 @@ class TelaGerenciarColaborador(tk.Tk):
 
         try:
             # Buscar colaborador pelo CPF usando o controlador
-            colaborador = self.__controlador_colaborador.buscar_por_cpf(cpf)
+            colaborador = self.__controlador_colaborador.buscar_colaborador_por_cpf(cpf)
 
             if colaborador:
                 # Armazenar CPF do colaborador encontrado
@@ -255,7 +257,10 @@ class TelaGerenciarColaborador(tk.Tk):
         try:
             # Chamar controlador para atualizar
             resultado = self.__controlador_colaborador.atualizar_colaborador(
-                self.cpf_atual, dados
+                self.cpf_atual,
+                dados["nome"],
+                dados["cargo"],
+                dados["email"],
             )
             if resultado:
                 messagebox.showinfo("Sucesso", "Colaborador atualizado com sucesso!")

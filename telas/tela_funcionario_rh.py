@@ -185,11 +185,11 @@ class TelaCadastrarRH(tk.Tk):
         for campo_id, label in self.campos:
             # Se for o campo de senha, criar com máscara
             if campo_id == "senha":
-                self.entries[campo_id] = self.create_label_and_entry(
+                self.entries[campo_id] = self.gerar_campos_entradas(
                     frame, label, show="*"
                 )
             else:
-                self.entries[campo_id] = self.create_label_and_entry(frame, label)
+                self.entries[campo_id] = self.gerar_campos_entradas(frame, label)
 
         # Frame para os botões
         botoes_frame = tk.Frame(frame, bg="#dcdcdc")

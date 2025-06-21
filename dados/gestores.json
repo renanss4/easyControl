@@ -2,25 +2,25 @@
     {
         "cpf": "11122233344",
         "nome": "Carlos Mendes",
-        "email": "carlos.mendes@empresa.com",
+        "email": "carlos@empresa.com",
         "data_admissao": "2021-03-20",
         "cargo": "Gestor de TI",
-        "senha": "GestorTI789"
+        "senha": "carlos123"
     },
     {
         "cpf": "55566677788",
         "nome": "Ana Paula Costa",
-        "email": "ana.costa@empresa.com",
+        "email": "ana@empresa.com",
         "data_admissao": "2020-08-05",
         "cargo": "Gestora de Vendas",
-        "senha": "GestoraVendas321"
+        "senha": "ana123"
     },
     {
         "cpf": "99988877766",
         "nome": "Roberto Lima",
-        "email": "roberto.lima@empresa.com",
+        "email": "roberto@empresa.com",
         "data_admissao": "2019-11-12",
         "cargo": "Gestor de Marketing",
-        "senha": "GestorMkt654"
+        "senha": "roberto123"
     }
 ]

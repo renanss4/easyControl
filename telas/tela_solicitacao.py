@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 
 
 class TelaSolicitacao(tk.Tk):
@@ -232,7 +232,7 @@ class TelaCadastrarSolicitacao(tk.Tk):
         scrollbar.pack(side="right", fill="y")
 
         # Bind mousewheel
-        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+        self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
     def on_mousewheel(self, event):
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
@@ -268,7 +268,7 @@ class TelaCadastrarSolicitacao(tk.Tk):
 
         # Data início - com data mínima de hoje + 30 dias
         tk.Label(datas_frame, text="Início:", bg="#dcdcdc").pack(side="left", padx=5)
-        data_minima = date.today() + timedelta(days=30)
+        data_minima = date.today() + timedelta(weeks=52)  # 1 ano de antecedência
         data_inicio = DateEntry(
             datas_frame,
             width=12,
@@ -316,8 +316,8 @@ class TelaCadastrarSolicitacao(tk.Tk):
     def atualizar_dias(self, data_inicio, data_fim, label_dias):
         """Atualiza o contador de dias para um período"""
         try:
-            inicio = date.strptime(data_inicio.get(), "%Y-%m-%d").date()
-            fim = date.strptime(data_fim.get(), "%Y-%m-%d").date()
+            inicio = datetime.strptime(data_inicio.get(), "%Y-%m-%d").date()
+            fim = datetime.strptime(data_fim.get(), "%Y-%m-%d").date()
 
             dias = (fim - inicio).days + 1
             label_dias.config(text=f"Dias: {dias}")
@@ -335,8 +335,8 @@ class TelaCadastrarSolicitacao(tk.Tk):
         total = 0
         for _, data_inicio, data_fim in self.periodos:
             try:
-                inicio = date.strptime(data_inicio.get(), "%Y-%m-%d").date()
-                fim = date.strptime(data_fim.get(), "%Y-%m-%d").date()
+                inicio = datetime.strptime(data_inicio.get(), "%Y-%m-%d").date()
+                fim = datetime.strptime(data_fim.get(), "%Y-%m-%d").date()
                 total += (fim - inicio).days + 1
             except ValueError:
                 continue
@@ -380,8 +380,8 @@ class TelaCadastrarSolicitacao(tk.Tk):
         periodos = []
         for _, data_inicio, data_fim in self.periodos:
             try:
-                inicio = date.strptime(data_inicio.get(), "%Y-%m-%d").date()
-                fim = date.strptime(data_fim.get(), "%Y-%m-%d").date()
+                inicio = datetime.strptime(data_inicio.get(), "%Y-%m-%d").date()
+                fim = datetime.strptime(data_fim.get(), "%Y-%m-%d").date()
                 periodos.append((inicio, fim))
             except ValueError:
                 messagebox.showerror("Erro", "Datas inválidas")
@@ -395,15 +395,15 @@ class TelaCadastrarSolicitacao(tk.Tk):
         }
 
         # Chamar controlador - ELE FAZ TODAS AS VALIDAÇÕES
-        sucesso, mensagem = self.__controlador_solicitacao.cadastrar_solicitacao(
+        sucesso = self.__controlador_solicitacao.cadastrar_solicitacao(
             dados_solicitacao
         )
 
         if sucesso:
-            messagebox.showinfo("Sucesso", mensagem)
+            messagebox.showinfo("Sucesso", "Solicitação enviada com sucesso!")
             self.voltar()
         else:
-            messagebox.showerror("Erro", mensagem)
+            messagebox.showerror("Erro", "Erro ao enviar solicitação. Verifique os dados.")
 
     def gerenciar_solicitacao(self):
         """Abre a tela de gerenciamento de solicitações"""
@@ -564,8 +564,8 @@ class TelaGerenciarSolicitacoes(tk.Tk):
                     "end",
                     values=(
                         sol.get("protocolo", "N/A"),
-                        sol.get("nome_colaborador", "Nome não encontrado"),
-                        sol.get("cpf_colaborador", "N/A"),
+                        sol["pessoa"].get("nome", "Nome não encontrado"),
+                        sol["pessoa"].get("cpf", "N/A"),
                         sol.get("data_solicitacao", "N/A"),
                         periodos,
                         sol.get("status", "N/A"),
@@ -619,14 +619,14 @@ class TelaGerenciarSolicitacoes(tk.Tk):
         if "periodos" in solicitacao and isinstance(solicitacao["periodos"], list):
             periodos_formatados = []
             for p in solicitacao["periodos"]:
-                inicio = p.get("data_inicio", "N/A")
-                fim = p.get("data_fim", "N/A")
+                inicio = p.get("DATA_INICIO", "N/A")
+                fim = p.get("DATA_FIM", "N/A")
                 periodos_formatados.append(f"{inicio} a {fim}")
             return " | ".join(periodos_formatados)
 
         # Fallback para formato antigo
-        inicio = solicitacao.get("data_inicio", "N/A")
-        fim = solicitacao.get("data_fim", "N/A")
+        inicio = solicitacao.get("DATA_INICIO", "N/A")
+        fim = solicitacao.get("DATA_FIM", "N/A")
         return f"{inicio} a {fim}"
 
     def cancelar_solicitacao(self):
@@ -642,15 +642,15 @@ class TelaGerenciarSolicitacoes(tk.Tk):
             "Confirmar", "Deseja realmente cancelar esta solicitação?"
         ):
             # Chamar controlador - ELE FAZ TODAS AS VALIDAÇÕES
-            sucesso, mensagem = self.__controlador_solicitacao.cancelar_solicitacao(
+            sucesso = self.__controlador_solicitacao.cancelar_solicitacao(
                 protocolo
             )
 
             if sucesso:
-                messagebox.showinfo("Sucesso", mensagem)
+                messagebox.showinfo("Sucesso", "Cancelo de solicitação realizado com sucesso.")
                 self.mostrar_todas_solicitacoes()  # Recarregar tabela
             else:
-                messagebox.showerror("Erro", mensagem)
+                messagebox.showerror("Erro", "Erro ao cancelar solicitação. Verifique o protocolo.")
 
     def voltar(self):
         """Volta para a tela de cadastro de solicitação"""
@@ -669,6 +669,7 @@ class TelaAnalisarSolicitacao(tk.Tk):
         self.usuario_logado = (
             self.__controlador_solicitacao.controlador_sistema.usuario_logado
         )
+        breakpoint()
         self.cpf_gestor = (
             getattr(self.usuario_logado, "cpf", None) if self.usuario_logado else None
         )

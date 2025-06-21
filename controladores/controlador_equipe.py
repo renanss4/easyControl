@@ -89,14 +89,16 @@ class ControladorEquipe:
             # Enriquecer com nomes
             for equipe in equipes:
                 # Nome do gestor
-                cpf_gestor = equipe.get("cpf_gestor", "")
+                cpf_gestor = (
+                    equipe["gestor"]["cpf"]
+                    if "gestor" in equipe and "cpf" in equipe["gestor"]
+                    else None
+                )
                 if cpf_gestor:
-                    gestor = (
-                        self.__controlador_sistema.controlador_gestor.buscar_por_cpf(
-                            cpf_gestor
-                        )
+                    gestor = self.__controlador_sistema.controlador_gestor.buscar_gestor_por_cpf(
+                        cpf_gestor
                     )
-                    equipe["nome_gestor"] = (
+                    equipe["gestor"] = (
                         gestor.nome if gestor else "Gestor não encontrado"
                     )
                 else:
@@ -104,7 +106,8 @@ class ControladorEquipe:
 
                 # Nomes dos colaboradores
                 colaboradores_nomes = []
-                for cpf in equipe.get("colaboradores_cpf", []):
+                for colaborador in equipe["colaboradores"]:
+                    cpf = colaborador["cpf"]
                     colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
                         cpf
                     )
@@ -114,7 +117,7 @@ class ControladorEquipe:
                         colaboradores_nomes.append(f"CPF {cpf} não encontrado")
 
                 equipe["colaboradores_nomes"] = colaboradores_nomes
-                equipe["total_colaboradores"] = len(equipe.get("colaboradores_cpf", []))
+                equipe["total_colaboradores"] = len(equipe.get("colaboradores", []))
 
             return equipes
 
@@ -161,8 +164,10 @@ class ControladorEquipe:
                 if len(cpf_limpo) != 11 or not cpf_limpo.isdigit():
                     return False
 
-                gestor = self.__controlador_sistema.controlador_gestor.buscar_por_cpf(
-                    cpf_gestor
+                gestor = (
+                    self.__controlador_sistema.controlador_gestor.buscar_gestor_por_cpf(
+                        cpf_gestor
+                    )
                 )
                 if not gestor:
                     return False
@@ -226,17 +231,18 @@ class ControladorEquipe:
 
             # Buscar CPFs já em equipes
             equipes = self.__equipe.carregar_equipes()
-            cpfs_em_equipes = set()
+            colaboradores_em_equipes = set()
 
             for equipe in equipes:
-                cpfs_em_equipes.update(equipe.get("colaboradores_cpf", []))
+                for colaborador in equipe.get("colaboradores", []):
+                    colaboradores_em_equipes.add(colaborador["cpf"])
 
             # Filtrar colaboradores sem equipe
             colaboradores_sem_equipe = []
             for colaborador in todos_colaboradores:
                 if (
                     hasattr(colaborador, "cpf")
-                    and colaborador.cpf not in cpfs_em_equipes
+                    and colaborador.cpf not in colaboradores_em_equipes
                 ):
                     colaboradores_sem_equipe.append(
                         {"cpf": colaborador.cpf, "nome": colaborador.nome}
@@ -260,7 +266,7 @@ class ControladorEquipe:
             cpfs_gestores_em_equipes = set()
 
             for equipe in equipes:
-                cpf_gestor = equipe.get("cpf_gestor", "")
+                cpf_gestor = equipe["gestor"]["cpf"]
                 if cpf_gestor:
                     cpfs_gestores_em_equipes.add(cpf_gestor)
 

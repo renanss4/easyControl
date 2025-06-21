@@ -2,17 +2,9 @@
     {
         "cpf": "12345678901",
         "nome": "Maria Silva",
-        "email": "maria.silva@empresa.com",
+        "email": "maria@empresa.com",
         "data_admissao": "2023-01-15",
         "cargo": "Analista de Recursos Humanos",
-        "senha": "AnalistaRH123"
-    },
-    {
-        "cpf": "98765432109",
-        "nome": "João Santos",
-        "email": "joao.santos@empresa.com",
-        "data_admissao": "2022-06-10",
-        "cargo": "Coordenador de RH",
-        "senha": "CoordenadorRH456"
+        "senha": "maria123"
     }
 ]

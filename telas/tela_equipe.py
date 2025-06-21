@@ -53,8 +53,8 @@ class TelaEquipe(tk.Tk):
             text="Ver Gestores Disponíveis",
             command=self.mostrar_gestores_disponiveis,
             font=("Arial", 8),
-            bg="#2196F3",
-            fg="white",
+            bg="#c0c0c0",
+            fg="black",
         ).pack(side="left")
 
         # Colaboradores
@@ -73,8 +73,8 @@ class TelaEquipe(tk.Tk):
             text="Ver Colaboradores Disponíveis",
             command=self.mostrar_colaboradores_disponiveis,
             font=("Arial", 8),
-            bg="#4CAF50",
-            fg="white",
+            bg="#c0c0c0",
+            fg="black",
         ).pack(side="right")
 
         # Frame para campos de colaboradores
@@ -93,8 +93,8 @@ class TelaEquipe(tk.Tk):
             text="+ Adicionar Colaborador",
             command=self.adicionar_campo_colaborador,
             font=("Arial", 9),
-            bg="#FF9800",
-            fg="white",
+            bg="#c0c0c0",
+            fg="black",
         ).pack(pady=5)
 
         # Frame para os botões
@@ -143,8 +143,8 @@ class TelaEquipe(tk.Tk):
                 text="Remover",
                 command=lambda: self.remover_campo_colaborador(frame, entry),
                 font=("Arial", 8),
-                bg="#F44336",
-                fg="white",
+                bg="#c0c0c0",
+                fg="black",
                 width=8,
             )
             btn_remover.pack(side="left")
@@ -215,8 +215,8 @@ class TelaEquipe(tk.Tk):
             text="Selecionar",
             command=selecionar_gestor,
             font=("Arial", 10, "bold"),
-            bg="#4CAF50",
-            fg="white",
+            bg="#c0c0c0",
+            fg="black",
             width=12,
         ).pack(side="left", padx=5)
 
@@ -309,8 +309,8 @@ class TelaEquipe(tk.Tk):
             text="Selecionar Marcados",
             command=selecionar_colaboradores,
             font=("Arial", 10, "bold"),
-            bg="#4CAF50",
-            fg="white",
+            bg="#c0c0c0",
+            fg="black",
             width=15,
         ).pack(side="left", padx=5)
 
@@ -421,8 +421,8 @@ class TelaGerenciarEquipe(tk.Tk):
             text="Buscar",
             command=self.buscar_equipe,
             font=("Arial", 10),
-            bg="#2196F3",
-            fg="white",
+            bg="#c0c0c0",
+            fg="black",
         ).pack(side="left")
 
         # Frame para listagem de todas as equipes
@@ -496,7 +496,7 @@ class TelaGerenciarEquipe(tk.Tk):
         tk.Label(
             self.campos_frame, text="Gestor:", bg="#dcdcdc", font=("Arial", 10, "bold")
         ).grid(row=1, column=0, sticky="w", padx=5, pady=5)
-        self.campos["gestor"] = tk.Entry(self.campos_frame, width=40, state="disabled")
+        self.campos["gestor"] = tk.Entry(self.campos_frame, width=40)
         self.campos["gestor"].grid(row=1, column=1, padx=5, pady=5, sticky="w")
 
         # Colaboradores (como texto somente leitura)
@@ -532,8 +532,8 @@ class TelaGerenciarEquipe(tk.Tk):
             text="Ver Detalhes Completos",
             command=self.ver_detalhes_equipe,
             font=("Arial", 10),
-            bg="#2196F3",
-            fg="white",
+            bg="#c0c0c0",
+            fg="black",
             width=20,
             state="disabled",
         )
@@ -544,8 +544,8 @@ class TelaGerenciarEquipe(tk.Tk):
             text="Excluir Equipe",
             command=self.excluir_equipe,
             font=("Arial", 10),
-            bg="#F44336",
-            fg="white",
+            bg="#c0c0c0",
+            fg="black",
             width=15,
             state="disabled",
         )
@@ -611,7 +611,7 @@ class TelaGerenciarEquipe(tk.Tk):
                     "end",
                     values=(
                         equipe.get("nome", "N/A"),
-                        equipe.get("nome_gestor", "N/A"),
+                        equipe.get("gestor", "N/A"),
                         equipe.get("total_colaboradores", 0),
                     ),
                 )
@@ -650,7 +650,7 @@ class TelaGerenciarEquipe(tk.Tk):
 
         # Preencher campos
         self.campos["nome"].insert(0, equipe.get("nome", ""))
-        self.campos["gestor"].insert(0, equipe.get("nome_gestor", "Sem gestor"))
+        self.campos["gestor"].insert(0, equipe.get("gestor", "Sem gestor"))
 
         # Preencher colaboradores
         colaboradores_nomes = equipe.get("colaboradores_nomes", [])
@@ -734,7 +734,7 @@ class TelaGerenciarEquipe(tk.Tk):
         ).pack(anchor="w", pady=2)
         tk.Label(
             info_frame,
-            text=f"Gestor: {equipe.get('nome_gestor', 'Sem gestor')}",
+            text=f"Gestor: {equipe.get('gestor', 'Sem gestor')}",
             font=("Arial", 10),
             bg="#dcdcdc",
         ).pack(anchor="w", pady=2)

@@ -39,11 +39,11 @@ class TelaGestor(tk.Tk):
         for campo_id, label in self.campos:
             # Se for o campo de senha, criar com máscara
             if campo_id == "senha":
-                self.entries[campo_id] = self.create_label_and_entry(
+                self.entries[campo_id] = self.gerar_campos_entrada(
                     frame, label, show="*"
                 )
             else:
-                self.entries[campo_id] = self.create_label_and_entry(frame, label)
+                self.entries[campo_id] = self.gerar_campos_entrada(frame, label)
 
         # Frame para os botões
         botoes_frame = tk.Frame(frame, bg="#dcdcdc")
@@ -203,6 +203,7 @@ class TelaGestorLogado(tk.Tk):
             self.__controlador_gestor.abrir_tela_solicitacao()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir análise de solicitações: {e}")
+            TelaGestorLogado(self.__controlador_gestor)
 
     def consultar_lista_colaboradores(self):
         """Consulta a lista de colaboradores da equipe"""
@@ -211,6 +212,7 @@ class TelaGestorLogado(tk.Tk):
             self.__controlador_gestor.abrir_tela_equipe()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao consultar colaboradores: {e}")
+            TelaGestorLogado(self.__controlador_gestor)
 
 
 class TelaGerenciarGestor(tk.Tk):
@@ -312,7 +314,7 @@ class TelaGerenciarGestor(tk.Tk):
 
         try:
             # Buscar gestor pelo CPF usando o controlador
-            gestor = self.__controlador_gestor.buscar_por_cpf(cpf)
+            gestor = self.__controlador_gestor.buscar_gestor_por_cpf(cpf)
 
             if gestor:
                 # Armazenar CPF do gestor encontrado
