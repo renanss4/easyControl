@@ -115,14 +115,9 @@ class TelaRH(tk.Tk):
 
     def abrir_cadastro_solicitacao(self):
         """Abre a tela de cadastro de solicitação"""
-        try:
-            # Destroy this window first
-            self.destroy()
-            self.__controlador_funcionario_rh.abrir_tela_solicitacao()
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir cadastro de solicitação: {e}")
-            # If there's an error, reopen this window
-            TelaRH(self.__controlador_funcionario_rh)
+        self.destroy()
+        self.__controlador_funcionario_rh.abrir_tela_solicitacao()
+        
 
     def abrir_cadastro_equipe(self):
         """Abre a tela de cadastro de equipe"""
