@@ -199,39 +199,49 @@ class ControladorSolicitacao:
             print(f"Erro ao buscar solicitação: {e}")
             return None
 
-    def aprovar_solicitacao(self, protocolo: str) -> bool:
+    def aprovar_solicitacao(self, protocolo: str) -> tuple[bool, str]:
         try:
             solicitacoes = self.__solicitacao.carregar_solicitacoes()
 
             for sol in solicitacoes:
                 if sol.get("protocolo") == protocolo:
                     if sol.get("status") != "PENDENTE":
-                        return False
+                        return False, "Apenas solicitações pendentes podem ser aprovadas"
 
                     sol["status"] = "APROVADA"
-                    return self.__solicitacao.salvar_solicitacoes(solicitacoes)
+                    sucesso = self.__solicitacao.salvar_solicitacoes(solicitacoes)
+                    
+                    if sucesso:
+                        return True, "Solicitação aprovada com sucesso!"
+                    else:
+                        return False, "Erro ao salvar aprovação"
 
-            return False
+            return False, "Solicitação não encontrada"
         except Exception as e:
             print(f"Erro ao aprovar solicitação: {e}")
-            return False
+            return False, f"Erro interno: {str(e)}"
 
-    def rejeitar_solicitacao(self, protocolo: str) -> bool:
+    def rejeitar_solicitacao(self, protocolo: str) -> tuple[bool, str]:
         try:
             solicitacoes = self.__solicitacao.carregar_solicitacoes()
 
             for sol in solicitacoes:
                 if sol.get("protocolo") == protocolo:
                     if sol.get("status") != "PENDENTE":
-                        return False
+                        return False, "Apenas solicitações pendentes podem ser rejeitadas"
 
                     sol["status"] = "REJEITADA"
-                    return self.__solicitacao.salvar_solicitacoes(solicitacoes)
+                    sucesso = self.__solicitacao.salvar_solicitacoes(solicitacoes)
+                    
+                    if sucesso:
+                        return True, "Solicitação rejeitada com sucesso!"
+                    else:
+                        return False, "Erro ao salvar rejeição"
 
-            return False
+            return False, "Solicitação não encontrada"
         except Exception as e:
             print(f"Erro ao rejeitar solicitação: {e}")
-            return False
+            return False, f"Erro interno: {str(e)}"
 
     def cancelar_solicitacao(self, protocolo: str) -> bool:
         try:
@@ -251,3 +261,59 @@ class ControladorSolicitacao:
         except Exception as e:
             print(f"Erro ao cancelar solicitação: {e}")
             return False
+
+    def buscar_solicitacoes_equipe(self, cpf_gestor: str) -> list[dict]:
+        """Busca todas as solicitações dos colaboradores da equipe do gestor"""
+        try:
+            # Buscar a equipe do gestor
+            equipes = self.__controlador_sistema.controlador_equipe._ControladorEquipe__equipe.carregar_equipes()
+            equipe_do_gestor = None
+            
+            for equipe in equipes:
+                if (equipe.get("gestor") and 
+                    isinstance(equipe["gestor"], dict) and 
+                    equipe["gestor"].get("cpf") == cpf_gestor):
+                    equipe_do_gestor = equipe
+                    break
+            
+            if not equipe_do_gestor:
+                print(f"Nenhuma equipe encontrada para o gestor {cpf_gestor}")
+                return []
+            
+            # Obter CPFs dos colaboradores da equipe
+            cpfs_colaboradores = []
+            for colaborador in equipe_do_gestor.get("colaboradores", []):
+                if isinstance(colaborador, dict) and colaborador.get("cpf"):
+                    cpfs_colaboradores.append(colaborador["cpf"])
+            
+            if not cpfs_colaboradores:
+                print("Nenhum colaborador encontrado na equipe")
+                return []
+            
+            print(f"Colaboradores da equipe: {cpfs_colaboradores}")
+            
+            # Buscar solicitações de todos os colaboradores da equipe
+            todas_solicitacoes = self.__solicitacao.carregar_solicitacoes()
+            solicitacoes_equipe = []
+            
+            for solicitacao in todas_solicitacoes:
+                pessoa = solicitacao.get("pessoa", {})
+                cpf_colaborador = pessoa.get("cpf") if isinstance(pessoa, dict) else None
+                
+                if cpf_colaborador in cpfs_colaboradores:
+                    # Buscar nome do colaborador
+                    colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf_colaborador)
+                    nome_colaborador = colaborador.nome if colaborador else pessoa.get("nome", "Nome não encontrado")
+                    
+                    # Adicionar dados necessários à solicitação
+                    solicitacao_completa = solicitacao.copy()
+                    solicitacao_completa["nome_colaborador"] = nome_colaborador
+                    solicitacao_completa["cpf_colaborador"] = cpf_colaborador  # Adicionar CPF para exibição
+                    solicitacoes_equipe.append(solicitacao_completa)
+            
+            print(f"Encontradas {len(solicitacoes_equipe)} solicitações para a equipe")
+            return solicitacoes_equipe
+            
+        except Exception as e:
+            print(f"Erro ao buscar solicitações da equipe: {e}")
+            return []

@@ -548,30 +548,26 @@ class TelaGerenciarSolicitacoes(tk.Tk):
             self.btn_cancelar.config(state="disabled")
 
     def mostrar_todas_solicitacoes(self):
-        """Exibe todas as solicitações na tabela"""
-        # Limpar tabela
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-
+        """Mostra todas as solicitações da equipe do gestor"""
         try:
-            solicitacoes = self.__controlador_solicitacao.buscar_solicitacoes()
+            if not self.cpf_gestor:
+                messagebox.showerror("Erro", "CPF do gestor não encontrado")
+                return
 
-            for sol in solicitacoes:
-                periodos = self.formatar_periodos(sol)
+            # Buscar solicitações da equipe do gestor
+            solicitacoes = self.__controlador_solicitacao.buscar_solicitacoes_equipe(
+                self.cpf_gestor
+            )
 
-                self.tree.insert(
-                    "",
-                    "end",
-                    values=(
-                        sol.get("protocolo", "N/A"),
-                        sol["pessoa"].get("nome", "Nome não encontrado"),
-                        sol["pessoa"].get("cpf", "N/A"),
-                        sol.get("data_solicitacao", "N/A"),
-                        periodos,
-                        sol.get("status", "N/A"),
-                    ),
+            if not solicitacoes:
+                messagebox.showinfo(
+                    "Info", "Nenhuma solicitação encontrada para sua equipe"
                 )
+
+            self.preencher_tabela(solicitacoes)
+
         except Exception as e:
+            print(f"Erro ao carregar solicitações: {e}")
             messagebox.showerror("Erro", f"Erro ao carregar solicitações: {e}")
 
     def buscar_solicitacoes(self):
@@ -669,9 +665,8 @@ class TelaAnalisarSolicitacao(tk.Tk):
 
         # Obter informações da equipe do gestor logado
         self.usuario_logado = (
-            self.__controlador_solicitacao.controlador_sistema.usuario_logado
+            self.__controlador_solicitacao._ControladorSolicitacao__controlador_sistema.usuario_logado
         )
-        breakpoint()
         self.cpf_gestor = (
             getattr(self.usuario_logado, "cpf", None) if self.usuario_logado else None
         )
@@ -775,19 +770,30 @@ class TelaAnalisarSolicitacao(tk.Tk):
             side="left", padx=10
         )
 
-        # Carregar dados iniciais
+        # Carregar dados iniciais AUTOMATICAMENTE
         self.mostrar_todas_solicitacoes()
 
     def mostrar_todas_solicitacoes(self):
         """Mostra todas as solicitações da equipe do gestor"""
-        self.limpar_tabela()
-
         try:
+            if not self.cpf_gestor:
+                messagebox.showerror("Erro", "CPF do gestor não encontrado")
+                return
+
+            # Buscar solicitações da equipe do gestor
             solicitacoes = self.__controlador_solicitacao.buscar_solicitacoes_equipe(
                 self.cpf_gestor
             )
+
+            if not solicitacoes:
+                messagebox.showinfo(
+                    "Info", "Nenhuma solicitação encontrada para sua equipe"
+                )
+
             self.preencher_tabela(solicitacoes)
+
         except Exception as e:
+            print(f"Erro ao carregar solicitações: {e}")
             messagebox.showerror("Erro", f"Erro ao carregar solicitações: {e}")
 
     def buscar_solicitacoes(self):
@@ -817,14 +823,21 @@ class TelaAnalisarSolicitacao(tk.Tk):
             if "periodos" in sol and isinstance(sol["periodos"], list):
                 periodos_formatados = []
                 for p in sol["periodos"]:
-                    inicio = p.get("data_inicio", "N/A")
-                    fim = p.get("data_fim", "N/A")
+                    inicio = p.get("DATA_INICIO", "N/A")
+                    fim = p.get("DATA_FIM", "N/A")
                     periodos_formatados.append(f"{inicio} a {fim}")
                 periodos_texto = " | ".join(periodos_formatados)
             else:
                 inicio = sol.get("data_inicio", "N/A")
                 fim = sol.get("data_fim", "N/A")
                 periodos_texto = f"{inicio} a {fim}"
+
+            # Obter CPF do colaborador - CORRIGIDO
+            cpf_colaborador = sol.get("cpf_colaborador")
+            if not cpf_colaborador:
+                # Tentar obter do campo pessoa
+                pessoa = sol.get("pessoa", {})
+                cpf_colaborador = pessoa.get("cpf", "N/A") if isinstance(pessoa, dict) else "N/A"
 
             status = sol.get("status", "N/A")
 
@@ -834,18 +847,18 @@ class TelaAnalisarSolicitacao(tk.Tk):
                 values=(
                     sol.get("protocolo", "N/A"),
                     sol.get("nome_colaborador", "Nome não encontrado"),
-                    sol.get("cpf_colaborador", "N/A"),
+                    cpf_colaborador,  # CPF corrigido
                     sol.get("data_solicitacao", "N/A"),
                     periodos_texto,
                     status,
                 ),
-                tags=(status,) if status else (),
+                tags=(status.lower(),) if status else (),
             )
 
         # Configurar cores para status
         self.tabela.tag_configure("pendente", background="#FFFFCC")
-        self.tabela.tag_configure("aprovado", background="#CCFFCC")
-        self.tabela.tag_configure("rejeitado", background="#FFCCCC")
+        self.tabela.tag_configure("aprovada", background="#CCFFCC")
+        self.tabela.tag_configure("rejeitada", background="#FFCCCC")
         self.tabela.tag_configure("cancelada", background="#E0E0E0")
 
     def limpar_tabela(self):
@@ -891,7 +904,7 @@ class TelaAnalisarSolicitacao(tk.Tk):
 
             if sucesso:
                 messagebox.showinfo("Sucesso", mensagem)
-                self.mostrar_todas_solicitacoes()  # Recarregar tabela
+                self.mostrar_todas_solicitacoes()  # Recarregar tabela automaticamente
             else:
                 messagebox.showerror("Erro", mensagem)
 
@@ -914,7 +927,7 @@ class TelaAnalisarSolicitacao(tk.Tk):
 
             if sucesso:
                 messagebox.showinfo("Sucesso", mensagem)
-                self.mostrar_todas_solicitacoes()  # Recarregar tabela
+                self.mostrar_todas_solicitacoes()  # Recarregar tabela automaticamente
             else:
                 messagebox.showerror("Erro", mensagem)
 
