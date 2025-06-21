@@ -395,15 +395,15 @@ class TelaCadastrarSolicitacao(tk.Tk):
         }
 
         # Chamar controlador - ELE FAZ TODAS AS VALIDAÇÕES
-        sucesso = self.__controlador_solicitacao.cadastrar_solicitacao(
+        sucesso, mensagem = self.__controlador_solicitacao.cadastrar_solicitacao(
             dados_solicitacao
         )
 
         if sucesso:
-            messagebox.showinfo("Sucesso", "Solicitação enviada com sucesso!")
+            messagebox.showinfo("Sucesso", mensagem)
             self.voltar()
         else:
-            messagebox.showerror("Erro", "Erro ao enviar solicitação. Verifique os dados.")
+            messagebox.showerror("Erro", mensagem)
 
     def gerenciar_solicitacao(self):
         """Abre a tela de gerenciamento de solicitações"""
@@ -642,15 +642,17 @@ class TelaGerenciarSolicitacoes(tk.Tk):
             "Confirmar", "Deseja realmente cancelar esta solicitação?"
         ):
             # Chamar controlador - ELE FAZ TODAS AS VALIDAÇÕES
-            sucesso = self.__controlador_solicitacao.cancelar_solicitacao(
-                protocolo
-            )
+            sucesso = self.__controlador_solicitacao.cancelar_solicitacao(protocolo)
 
             if sucesso:
-                messagebox.showinfo("Sucesso", "Cancelo de solicitação realizado com sucesso.")
+                messagebox.showinfo(
+                    "Sucesso", "Cancelo de solicitação realizado com sucesso."
+                )
                 self.mostrar_todas_solicitacoes()  # Recarregar tabela
             else:
-                messagebox.showerror("Erro", "Erro ao cancelar solicitação. Verifique o protocolo.")
+                messagebox.showerror(
+                    "Erro", "Erro ao cancelar solicitação. Verifique o protocolo."
+                )
 
     def voltar(self):
         """Volta para a tela de cadastro de solicitação"""
