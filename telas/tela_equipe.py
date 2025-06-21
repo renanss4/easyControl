@@ -340,7 +340,7 @@ class TelaEquipe(tk.Tk):
             "gestor": cpf_gestor,
             "colaboradores": colaboradores_cpf,
         }
-
+        print(f"Dados coletados: {dados}")
         # Chamar controlador
         sucesso, mensagem = self.__controlador_equipe.cadastrar_equipe(dados)
 
@@ -351,7 +351,7 @@ class TelaEquipe(tk.Tk):
             messagebox.showerror("Erro", mensagem)
 
     def limpar_campos(self):
-        """Limpa todos os campos do formulário"""
+        """Limpa os campos do formulário"""
         self.nome_entry.delete(0, tk.END)
         self.cpf_gestor_entry.delete(0, tk.END)
 
@@ -527,6 +527,18 @@ class TelaGerenciarEquipe(tk.Tk):
         gerenciar_frame = tk.Frame(main_frame, bg="#dcdcdc")
         gerenciar_frame.pack(fill="x", pady=10)
 
+        self.btn_editar = tk.Button(
+            gerenciar_frame,
+            text="Editar Equipe",
+            command=self.editar_equipe,
+            font=("Arial", 10),
+            bg="#4CAF50",
+            fg="white",
+            width=15,
+            state="disabled",
+        )
+        self.btn_editar.pack(side="left", padx=5)
+
         self.btn_ver_detalhes = tk.Button(
             gerenciar_frame,
             text="Ver Detalhes Completos",
@@ -631,6 +643,7 @@ class TelaGerenciarEquipe(tk.Tk):
             if equipe:
                 self.exibir_detalhes_equipe(equipe)
 
+            self.btn_editar.config(state="normal")
             self.btn_ver_detalhes.config(state="normal")
             self.btn_excluir.config(state="normal")
         else:
@@ -683,6 +696,7 @@ class TelaGerenciarEquipe(tk.Tk):
         self.colaboradores_text.delete(1.0, tk.END)
         self.colaboradores_text.config(state="disabled")
 
+        self.btn_editar.config(state="disabled")
         self.btn_ver_detalhes.config(state="disabled")
         self.btn_excluir.config(state="disabled")
 
@@ -810,6 +824,307 @@ class TelaGerenciarEquipe(tk.Tk):
                     messagebox.showerror("Erro", mensagem)
             except Exception as e:
                 messagebox.showerror("Erro", f"Erro ao excluir equipe: {str(e)}")
+
+    def editar_equipe(self):
+        """Abre janela para editar a equipe selecionada"""
+        if not self.equipe_selecionada:
+            return
+
+        equipe = self.__controlador_equipe.buscar_equipe_por_nome(self.equipe_selecionada)
+        if not equipe:
+            messagebox.showerror("Erro", "Equipe não encontrada")
+            return
+
+        # Criar janela de edição
+        janela = tk.Toplevel(self)
+        janela.title(f"Editar Equipe: {equipe['nome']}")
+        janela.geometry("600x700")
+        janela.configure(bg="#dcdcdc")
+        janela.transient(self)
+        janela.grab_set()
+
+        # Frame principal
+        main_frame = tk.Frame(janela, bg="#dcdcdc", padx=20, pady=20)
+        main_frame.pack(fill="both", expand=True)
+
+        # Título
+        tk.Label(
+            main_frame,
+            text=f"Editando: {equipe['nome']}",
+            font=("Arial", 16, "bold"),
+            bg="#dcdcdc",
+        ).pack(pady=(0, 20))
+
+        # Nome da equipe
+        tk.Label(
+            main_frame, text="Nome da Equipe*", bg="#dcdcdc", font=("Arial", 10, "bold")
+        ).pack(anchor="w", pady=(5, 0))
+        nome_entry = tk.Entry(main_frame, width=40)
+        nome_entry.pack(pady=(0, 10))
+        nome_entry.insert(0, equipe.get("nome", ""))
+
+        # Gestor atual
+        tk.Label(
+            main_frame, text="Gestor Atual", bg="#dcdcdc", font=("Arial", 10, "bold")
+        ).pack(anchor="w", pady=(10, 0))
+        
+        gestor_frame = tk.Frame(main_frame, bg="#dcdcdc")
+        gestor_frame.pack(fill="x", pady=(5, 10))
+        
+        cpf_gestor_entry = tk.Entry(gestor_frame, width=20)
+        cpf_gestor_entry.pack(side="left", padx=(0, 10))
+        
+        # Preencher gestor atual se existir
+        equipes_originais = self.__controlador_equipe._ControladorEquipe__equipe.carregar_equipes()
+        for eq in equipes_originais:
+            if eq.get("nome") == self.equipe_selecionada:
+                if eq.get("gestor") and isinstance(eq["gestor"], dict):
+                    cpf_gestor_entry.insert(0, eq["gestor"].get("cpf", ""))
+                break
+
+        def mostrar_gestores_para_equipe():
+            gestores = self.__controlador_equipe.obter_gestores_disponiveis_para_equipe(self.equipe_selecionada)
+            
+            if not gestores:
+                messagebox.showinfo("Info", "Não há gestores disponíveis")
+                return
+
+            # Janela de seleção de gestor
+            janela_gestor = tk.Toplevel(janela)
+            janela_gestor.title("Gestores Disponíveis")
+            janela_gestor.geometry("450x350")
+            janela_gestor.configure(bg="#dcdcdc")
+            janela_gestor.transient(janela)
+            janela_gestor.grab_set()
+
+            tk.Label(
+                janela_gestor,
+                text="Gestores Disponíveis",
+                font=("Arial", 14, "bold"),
+                bg="#dcdcdc",
+            ).pack(pady=15)
+
+            frame_lista = tk.Frame(janela_gestor, bg="#dcdcdc")
+            frame_lista.pack(fill="both", expand=True, padx=20, pady=10)
+
+            listbox = tk.Listbox(frame_lista, font=("Arial", 10))
+            scrollbar = ttk.Scrollbar(frame_lista, orient="vertical", command=listbox.yview)
+            listbox.configure(yscrollcommand=scrollbar.set)
+
+            for gestor in gestores:
+                listbox.insert(tk.END, f"{gestor['nome']} - {gestor['cpf']}")
+
+            listbox.pack(side="left", fill="both", expand=True)
+            scrollbar.pack(side="right", fill="y")
+
+            def selecionar_gestor():
+                selecao = listbox.curselection()
+                if selecao:
+                    gestor_selecionado = gestores[selecao[0]]
+                    cpf_gestor_entry.delete(0, tk.END)
+                    cpf_gestor_entry.insert(0, gestor_selecionado["cpf"])
+                    janela_gestor.destroy()
+                else:
+                    messagebox.showwarning("Aviso", "Selecione um gestor")
+
+            botoes_frame = tk.Frame(janela_gestor, bg="#dcdcdc")
+            botoes_frame.pack(pady=15)
+
+            tk.Button(
+                botoes_frame, text="Selecionar", command=selecionar_gestor,
+                font=("Arial", 10, "bold"), bg="#c0c0c0", width=12
+            ).pack(side="left", padx=5)
+
+            tk.Button(
+                botoes_frame, text="Remover Gestor", 
+                command=lambda: (cpf_gestor_entry.delete(0, tk.END), janela_gestor.destroy()),
+                font=("Arial", 10), bg="#f44336", fg="white", width=12
+            ).pack(side="left", padx=5)
+
+            tk.Button(
+                botoes_frame, text="Cancelar", command=janela_gestor.destroy,
+                font=("Arial", 10), bg="#9E9E9E", fg="white", width=12
+            ).pack(side="left", padx=5)
+
+        tk.Button(
+            gestor_frame, text="Alterar Gestor", command=mostrar_gestores_para_equipe,
+            font=("Arial", 8), bg="#c0c0c0", fg="black"
+        ).pack(side="left")
+
+        # Colaboradores
+        tk.Label(
+            main_frame, text="Colaboradores", bg="#dcdcdc", font=("Arial", 10, "bold")
+        ).pack(anchor="w", pady=(10, 5))
+
+        colaboradores_frame = tk.Frame(main_frame, bg="#dcdcdc")
+        colaboradores_frame.pack(fill="x", pady=(0, 10))
+
+        colaboradores_entries = []
+
+        def adicionar_campo_colaborador():
+            frame = tk.Frame(colaboradores_frame, bg="#dcdcdc")
+            frame.pack(fill="x", pady=2)
+
+            entry = tk.Entry(frame, width=20)
+            entry.pack(side="left", padx=(0, 10))
+
+            if len(colaboradores_entries) > 0:
+                btn_remover = tk.Button(
+                    frame, text="Remover",
+                    command=lambda: remover_campo_colaborador(frame, entry),
+                    font=("Arial", 8), bg="#f44336", fg="white", width=8
+                )
+                btn_remover.pack(side="left")
+
+            colaboradores_entries.append(entry)
+
+        def remover_campo_colaborador(frame, entry):
+            if len(colaboradores_entries) > 1:
+                colaboradores_entries.remove(entry)
+                frame.destroy()
+
+        # Preencher colaboradores atuais
+        for eq in equipes_originais:
+            if eq.get("nome") == self.equipe_selecionada:
+                for colab in eq.get("colaboradores", []):
+                    adicionar_campo_colaborador()
+                    colaboradores_entries[-1].insert(0, colab.get("cpf", ""))
+                break
+        
+        # Se não há colaboradores, adicionar pelo menos um campo vazio
+        if not colaboradores_entries:
+            adicionar_campo_colaborador()
+
+        # Botão para adicionar mais colaboradores
+        tk.Button(
+            main_frame, text="+ Adicionar Colaborador",
+            command=adicionar_campo_colaborador,
+            font=("Arial", 9), bg="#c0c0c0", fg="black"
+        ).pack(pady=5)
+
+        def mostrar_colaboradores_para_equipe():
+            colaboradores = self.__controlador_equipe.obter_colaboradores_disponiveis_para_equipe(self.equipe_selecionada)
+            
+            if not colaboradores:
+                messagebox.showinfo("Info", "Não há colaboradores disponíveis")
+                return
+
+            # Janela de seleção de colaboradores
+            janela_colab = tk.Toplevel(janela)
+            janela_colab.title("Colaboradores Disponíveis")
+            janela_colab.geometry("450x400")
+            janela_colab.configure(bg="#dcdcdc")
+            janela_colab.transient(janela)
+            janela_colab.grab_set()
+
+            tk.Label(
+                janela_colab,
+                text="Colaboradores Disponíveis",
+                font=("Arial", 14, "bold"),
+                bg="#dcdcdc",
+            ).pack(pady=15)
+
+            tk.Label(
+                janela_colab,
+                text="(Selecione múltiplos colaboradores segurando Ctrl)",
+                font=("Arial", 9), bg="#dcdcdc", fg="gray",
+            ).pack()
+
+            frame_lista = tk.Frame(janela_colab, bg="#dcdcdc")
+            frame_lista.pack(fill="both", expand=True, padx=20, pady=10)
+
+            listbox = tk.Listbox(frame_lista, selectmode="multiple", font=("Arial", 10))
+            scrollbar = ttk.Scrollbar(frame_lista, orient="vertical", command=listbox.yview)
+            listbox.configure(yscrollcommand=scrollbar.set)
+
+            for colaborador in colaboradores:
+                listbox.insert(tk.END, f"{colaborador['nome']} - {colaborador['cpf']}")
+
+            listbox.pack(side="left", fill="both", expand=True)
+            scrollbar.pack(side="right", fill="y")
+
+            def selecionar_colaboradores():
+                selecoes = listbox.curselection()
+                if selecoes:
+                    # Limpar campos atuais
+                    for entry in colaboradores_entries:
+                        entry.delete(0, tk.END)
+
+                    # Adicionar campos se necessário
+                    while len(colaboradores_entries) < len(selecoes):
+                        adicionar_campo_colaborador()
+
+                    # Preencher CPFs
+                    for i, selecao in enumerate(selecoes):
+                        if i < len(colaboradores_entries):
+                            colaborador_selecionado = colaboradores[selecao]
+                            colaboradores_entries[i].insert(0, colaborador_selecionado["cpf"])
+
+                    janela_colab.destroy()
+                else:
+                    messagebox.showwarning("Aviso", "Selecione pelo menos um colaborador")
+
+            botoes_frame = tk.Frame(janela_colab, bg="#dcdcdc")
+            botoes_frame.pack(pady=15)
+
+            tk.Button(
+                botoes_frame, text="Selecionar Marcados", command=selecionar_colaboradores,
+                font=("Arial", 10, "bold"), bg="#c0c0c0", fg="black", width=15
+            ).pack(side="left", padx=5)
+
+            tk.Button(
+                botoes_frame, text="Cancelar", command=janela_colab.destroy,
+                font=("Arial", 10), bg="#9E9E9E", fg="white", width=12
+            ).pack(side="left", padx=5)
+
+        tk.Button(
+            main_frame, text="Ver Colaboradores Disponíveis",
+            command=mostrar_colaboradores_para_equipe,
+            font=("Arial", 9), bg="#c0c0c0", fg="black"
+        ).pack(pady=5)
+
+        # Botões de ação
+        def salvar_alteracoes():
+            # Coletar dados
+            nome = nome_entry.get().strip()
+            cpf_gestor = cpf_gestor_entry.get().strip()
+            colaboradores_cpf = [
+                entry.get().strip()
+                for entry in colaboradores_entries
+                if entry.get().strip()
+            ]
+
+            dados = {
+                "nome": nome,
+                "gestor": cpf_gestor,
+                "colaboradores": colaboradores_cpf,
+            }
+
+            # Chamar controlador
+            sucesso, mensagem = self.__controlador_equipe.atualizar_equipe(
+                self.equipe_selecionada, dados
+            )
+
+            if sucesso:
+                messagebox.showinfo("Sucesso", mensagem)
+                janela.destroy()
+                self.carregar_equipes()  # Recarregar lista
+                self.limpar_campos()
+            else:
+                messagebox.showerror("Erro", mensagem)
+
+        botoes_frame = tk.Frame(main_frame, bg="#dcdcdc")
+        botoes_frame.pack(pady=(30, 0))
+
+        tk.Button(
+            botoes_frame, text="Salvar Alterações", command=salvar_alteracoes,
+            font=("Arial", 10, "bold"), bg="#4CAF50", fg="white", width=15
+        ).pack(side="left", padx=5)
+
+        tk.Button(
+            botoes_frame, text="Cancelar", command=janela.destroy,
+            font=("Arial", 10), bg="#9E9E9E", fg="white", width=15
+        ).pack(side="left", padx=5)
 
     def voltar(self):
         """Volta para a tela de cadastro de equipe"""
