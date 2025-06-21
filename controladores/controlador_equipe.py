@@ -19,20 +19,20 @@ class ControladorEquipe:
         self.__controlador_sistema.controlador_funcionario_rh.abrir_tela_funcionario_rh()
 
     # CRUD de Equipe
-    def cadastrar_equipe(self, dados: dict) -> bool:
+    def cadastrar_equipe(self, dados: dict) -> tuple[bool, str]:
         try:
             # Validar nome da equipe
             nome = dados.get("nome", "").strip()
             if not nome:
-                return False
+                return False, "Nome da equipe é obrigatório"
             if len(nome) < 3:
-                return False
+                return False, "Nome da equipe deve ter pelo menos 3 caracteres"
 
             # Validar se equipe já existe
             equipes = self.__equipe.carregar_equipes()
             for equipe in equipes:
                 if equipe.get("nome", "").lower() == nome.lower():
-                    return False
+                    return False, "Já existe uma equipe com este nome"
 
             cpf_gestor = dados.get("cpf_gestor", "").strip()
             colaboradores_cpf = dados.get("colaboradores_cpf", [])
@@ -41,46 +41,51 @@ class ControladorEquipe:
             if cpf_gestor:
                 cpf_limpo = cpf_gestor.replace(".", "").replace("-", "")
                 if len(cpf_limpo) != 11 or not cpf_limpo.isdigit():
-                    return False
+                    return False, "CPF do gestor inválido"
 
-                gestor = self.__controlador_sistema.controlador_gestor.buscar_por_cpf(
+                gestor = self.__controlador_sistema.controlador_gestor.buscar_gestor_por_cpf(
                     cpf_gestor
                 )
                 if not gestor:
-                    return False
-
+                    return False, "Gestor não encontrado"
+                print(gestor.nome)
             # Validar colaboradores
             cpfs_validados = []
             for cpf in colaboradores_cpf:
                 if cpf.strip():
                     cpf_limpo = cpf.strip().replace(".", "").replace("-", "")
                     if len(cpf_limpo) != 11 or not cpf_limpo.isdigit():
-                        return False
+                        return False, f"CPF inválido: {cpf}"
 
                     colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
                         cpf.strip()
                     )
                     if not colaborador:
-                        return False
+                        return False, f"Colaborador não encontrado: {cpf}"
 
                     if cpf.strip() in cpfs_validados:
-                        return False
+                        return False, f"CPF duplicado: {cpf}"
 
                     cpfs_validados.append(cpf.strip())
 
             # Criar nova equipe
             nova_equipe = {
                 "nome": nome,
-                "cpf_gestor": cpf_gestor,
-                "colaboradores_cpf": cpfs_validados,
+                "gestor": cpf_gestor,
+                "colaboradores": cpfs_validados,
             }
-
+            print(nova_equipe)
             equipes.append(nova_equipe)
-            return self.__equipe.salvar_equipes(equipes)
+            sucesso = self.__equipe.salvar_equipes(equipes)
+            
+            if sucesso:
+                return True, "Equipe cadastrada com sucesso!"
+            else:
+                return False, "Erro ao salvar equipe no banco de dados"
 
         except Exception as e:
             print(f"Erro ao cadastrar equipe: {e}")
-            return False
+            return False, f"Erro interno: {str(e)}"
 
     def buscar_equipes(self) -> list[dict]:
         try:
@@ -207,7 +212,7 @@ class ControladorEquipe:
             print(f"Erro ao atualizar equipe: {e}")
             return False
 
-    def excluir_equipe(self, nome: str) -> bool:
+    def excluir_equipe(self, nome: str) -> tuple[bool, str]:
         try:
             equipes = self.__equipe.carregar_equipes()
             equipes_filtradas = [
@@ -215,13 +220,18 @@ class ControladorEquipe:
             ]
 
             if len(equipes) == len(equipes_filtradas):
-                return False  # Equipe não encontrada
+                return False, "Equipe não encontrada"
 
-            return self.__equipe.salvar_equipes(equipes_filtradas)
+            sucesso = self.__equipe.salvar_equipes(equipes_filtradas)
+            
+            if sucesso:
+                return True, "Equipe excluída com sucesso!"
+            else:
+                return False, "Erro ao excluir equipe do banco de dados"
 
         except Exception as e:
             print(f"Erro ao excluir equipe: {e}")
-            return False
+            return False, f"Erro interno: {str(e)}"
 
     # Métodos adicionais
     def obter_colaboradores_sem_equipe(self) -> list[dict]:

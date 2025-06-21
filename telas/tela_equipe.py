@@ -337,8 +337,8 @@ class TelaEquipe(tk.Tk):
 
         dados = {
             "nome": nome,
-            "cpf_gestor": cpf_gestor,
-            "colaboradores_cpf": colaboradores_cpf,
+            "gestor": cpf_gestor,
+            "colaboradores": colaboradores_cpf,
         }
 
         # Chamar controlador
