@@ -83,6 +83,39 @@ class TelaGestor(tk.Tk):
         entry = tk.Entry(parent, width=30, show=show)
         entry.pack(pady=(0, 10))
         return entry
+    
+    def valida_nome(self, dados):
+        nome = dados["nome"].strip()
+        if len(nome) < 3 or not all(char.isalpha() or char.isspace() for char in nome):
+            messagebox.showerror("Erro", "Nome inválido. Deve conter apenas letras e espaços, mínimo 3 caracteres.")
+            return False
+        return True
+
+    def valida_cpf(self, dados):
+        cpf = dados["cpf"].replace(".", "").replace("-", "")
+        if len(cpf) != 11 or not cpf.isdigit():
+            messagebox.showerror("Erro", "CPF inválido. Deve conter 11 dígitos numéricos.")
+            return False
+        return True
+
+    def valida_email(self, dados):
+        if "@" not in dados["email"] or "." not in dados["email"]:
+            messagebox.showerror("Erro", "E-mail inválido. Formato esperado: exemplo@dominio.com")
+            return False
+        return True
+
+    def valida_senha(self, dados):
+        if len(dados["senha"]) < 6:
+            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
+            return False
+        return True
+
+    def valida_cargo(self, dados):
+        cargo = dados["cargo"].strip()
+        if len(cargo) < 2 or not all(char.isalpha() or char.isspace() for char in cargo):
+            messagebox.showerror("Erro", "Cargo inválido. Deve conter apenas letras e espaços, mínimo 2 caracteres.")
+            return False
+        return True
 
     def concluir_cadastro(self):
         """Conclui o cadastro do gestor"""
@@ -91,30 +124,26 @@ class TelaGestor(tk.Tk):
             campo_id: self.entries[campo_id].get().strip()
             for campo_id, _ in self.campos
         }
-
-        # Validação básica
-        if not all(dados.values()):
-            messagebox.showerror(
-                "Erro de Validação",
-                "Todos os campos são obrigatórios e devem ser preenchidos",
-            )
-            return
-
-        # Validar formato do CPF (11 dígitos)
-        cpf = dados["cpf"].replace(".", "").replace("-", "")
-        if len(cpf) != 11 or not cpf.isdigit():
-            messagebox.showerror("Erro", "CPF deve conter 11 dígitos numéricos!")
-            return
-
-        # Validar email básico
-        if "@" not in dados["email"] or "." not in dados["email"]:
-            messagebox.showerror("Erro", "Email inválido!")
-            return
-
-        # Validar senha
-        if len(dados["senha"]) < 6:
-            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
-            return
+        # Valida Nome
+        validador = self.valida_nome(dados)
+        if not validador:
+            return False
+        # Valida CPF
+        validador = self.valida_cpf(dados)
+        if not validador:
+            return False
+        # Valida email
+        validador = self.valida_email(dados)
+        if not validador:
+            return False
+        # Valida senha
+        validador = self.valida_senha(dados)
+        if not validador:
+            return False
+        # Valida cargo
+        validador = self.valida_cargo(dados)
+        if not validador:
+            return False
 
         try:
             # Chamar o controlador para cadastrar o gestor
