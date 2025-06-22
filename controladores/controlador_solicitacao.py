@@ -55,7 +55,8 @@ class ControladorSolicitacao:
 
         # Verificação de tempo de admissão
         if pessoa.data_admissao:
-            meses_admissao = (date.today() - pessoa.data_admissao).days / 30.44
+            meses_admissao = (date.today() - pessoa.data_admissao).days / 30.5 + 1
+            meses_admissao = int(meses_admissao)  # Convertendo para inteiro
             if meses_admissao < 12:
                 return False, "Colaborador deve ter pelo menos 12 meses de admissão."
 
@@ -199,14 +200,19 @@ class ControladorSolicitacao:
             print(f"Erro ao buscar solicitação: {e}")
             return None
 
-    def aprovar_solicitacao(self, protocolo: str, cpf_gestor: str = None) -> tuple[bool, str]:
+    def aprovar_solicitacao(
+        self, protocolo: str, cpf_gestor: str = None
+    ) -> tuple[bool, str]:
         try:
             solicitacoes = self.__solicitacao.carregar_solicitacoes()
 
             for sol in solicitacoes:
                 if sol.get("protocolo") == protocolo:
                     if sol.get("status") != "PENDENTE":
-                        return False, "Apenas solicitações pendentes podem ser aprovadas"
+                        return (
+                            False,
+                            "Apenas solicitações pendentes podem ser aprovadas",
+                        )
 
                     # VERIFICAR PORCENTAGEM DE FÉRIAS SE GESTOR FORNECIDO
                     if cpf_gestor:
@@ -216,18 +222,22 @@ class ControladorSolicitacao:
                             # Usar o primeiro período como referência (pode ser expandido para todos)
                             periodo_inicio = periodos[0]["DATA_INICIO"]
                             periodo_fim = periodos[-1]["DATA_FIM"]  # Último período
-                            
+
                             print(f"=== VERIFICANDO APROVAÇÃO ===")
                             print(f"Protocolo: {protocolo}")
                             print(f"Período: {periodo_inicio} a {periodo_fim}")
                             print(f"Gestor: {cpf_gestor}")
-                            
-                            porcentagem_com_aprovacao, pode_aprovar = self.calcular_porcentagem_ferias_equipe(
-                                cpf_gestor, periodo_inicio, periodo_fim, protocolo
+
+                            porcentagem_com_aprovacao, pode_aprovar = (
+                                self.calcular_porcentagem_ferias_equipe(
+                                    cpf_gestor, periodo_inicio, periodo_fim, protocolo
+                                )
                             )
-                            
-                            print(f"Resultado: {porcentagem_com_aprovacao:.1f}% - Pode aprovar: {pode_aprovar}")
-                            
+
+                            print(
+                                f"Resultado: {porcentagem_com_aprovacao:.1f}% - Pode aprovar: {pode_aprovar}"
+                            )
+
                             if not pode_aprovar:
                                 mensagem_erro = f"Não é possível aprovar esta solicitação. Durante o período de {periodo_inicio} a {periodo_fim}, a equipe teria {porcentagem_com_aprovacao:.1f}% de colaboradores em férias (máximo permitido: 50%)"
                                 print(f"BLOQUEANDO APROVAÇÃO: {mensagem_erro}")
@@ -235,7 +245,7 @@ class ControladorSolicitacao:
 
                     sol["status"] = "APROVADA"
                     sucesso = self.__solicitacao.salvar_solicitacoes(solicitacoes)
-                    
+
                     if sucesso:
                         print(f"APROVAÇÃO REALIZADA COM SUCESSO: {protocolo}")
                         return True, "Solicitação aprovada com sucesso!"
@@ -254,11 +264,14 @@ class ControladorSolicitacao:
             for sol in solicitacoes:
                 if sol.get("protocolo") == protocolo:
                     if sol.get("status") != "PENDENTE":
-                        return False, "Apenas solicitações pendentes podem ser rejeitadas"
+                        return (
+                            False,
+                            "Apenas solicitações pendentes podem ser rejeitadas",
+                        )
 
                     sol["status"] = "REJEITADA"
                     sucesso = self.__solicitacao.salvar_solicitacoes(solicitacoes)
-                    
+
                     if sucesso:
                         return True, "Solicitação rejeitada com sucesso!"
                     else:
@@ -294,57 +307,73 @@ class ControladorSolicitacao:
             # Buscar a equipe do gestor
             equipes = self.__controlador_sistema.controlador_equipe._ControladorEquipe__equipe.carregar_equipes()
             equipe_do_gestor = None
-            
+
             for equipe in equipes:
-                if (equipe.get("gestor") and 
-                    isinstance(equipe["gestor"], dict) and 
-                    equipe["gestor"].get("cpf") == cpf_gestor):
+                if (
+                    equipe.get("gestor")
+                    and isinstance(equipe["gestor"], dict)
+                    and equipe["gestor"].get("cpf") == cpf_gestor
+                ):
                     equipe_do_gestor = equipe
                     break
-            
+
             if not equipe_do_gestor:
                 print(f"Nenhuma equipe encontrada para o gestor {cpf_gestor}")
                 return []
-            
+
             # Obter CPFs dos colaboradores da equipe
             cpfs_colaboradores = []
             for colaborador in equipe_do_gestor.get("colaboradores", []):
                 if isinstance(colaborador, dict) and colaborador.get("cpf"):
                     cpfs_colaboradores.append(colaborador["cpf"])
-            
+
             if not cpfs_colaboradores:
                 print("Nenhum colaborador encontrado na equipe")
                 return []
-            
+
             print(f"Colaboradores da equipe: {cpfs_colaboradores}")
-            
+
             # Buscar solicitações de todos os colaboradores da equipe
             todas_solicitacoes = self.__solicitacao.carregar_solicitacoes()
             solicitacoes_equipe = []
-            
+
             for solicitacao in todas_solicitacoes:
                 pessoa = solicitacao.get("pessoa", {})
-                cpf_colaborador = pessoa.get("cpf") if isinstance(pessoa, dict) else None
-                
+                cpf_colaborador = (
+                    pessoa.get("cpf") if isinstance(pessoa, dict) else None
+                )
+
                 if cpf_colaborador in cpfs_colaboradores:
                     # Buscar nome do colaborador
-                    colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf_colaborador)
-                    nome_colaborador = colaborador.nome if colaborador else pessoa.get("nome", "Nome não encontrado")
-                    
+                    colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
+                        cpf_colaborador
+                    )
+                    nome_colaborador = (
+                        colaborador.nome
+                        if colaborador
+                        else pessoa.get("nome", "Nome não encontrado")
+                    )
+
                     # Adicionar dados necessários à solicitação
                     solicitacao_completa = solicitacao.copy()
                     solicitacao_completa["nome_colaborador"] = nome_colaborador
                     solicitacao_completa["cpf_colaborador"] = cpf_colaborador
                     solicitacoes_equipe.append(solicitacao_completa)
-            
+
             print(f"Encontradas {len(solicitacoes_equipe)} solicitações para a equipe")
             return solicitacoes_equipe
-            
+
         except Exception as e:
             print(f"Erro ao buscar solicitações da equipe: {e}")
             return []
 
-    def calcular_porcentagem_ferias_equipe(self, cpf_gestor: str, periodo_inicio: str = None, periodo_fim: str = None, protocolo_para_aprovar: str = None) -> tuple[float, bool]:
+    def calcular_porcentagem_ferias_equipe(
+        self,
+        cpf_gestor: str,
+        periodo_inicio: str = None,
+        periodo_fim: str = None,
+        protocolo_para_aprovar: str = None,
+    ) -> tuple[float, bool]:
         """
         Calcula porcentagem de colaboradores em férias em um período específico
         Se periodo_inicio e periodo_fim forem fornecidos, considera sobreposição com esse período
@@ -354,48 +383,52 @@ class ControladorSolicitacao:
         try:
             from datetime import date
             import copy
-            
+
             # Buscar a equipe do gestor
             equipes = self.__controlador_sistema.controlador_equipe._ControladorEquipe__equipe.carregar_equipes()
             equipe_do_gestor = None
-            
+
             for equipe in equipes:
-                if (equipe.get("gestor") and 
-                    isinstance(equipe["gestor"], dict) and 
-                    equipe["gestor"].get("cpf") == cpf_gestor):
+                if (
+                    equipe.get("gestor")
+                    and isinstance(equipe["gestor"], dict)
+                    and equipe["gestor"].get("cpf") == cpf_gestor
+                ):
                     equipe_do_gestor = equipe
                     break
-            
+
             if not equipe_do_gestor:
                 return 0.0, True
-            
+
             # Obter CPFs dos colaboradores da equipe
             cpfs_colaboradores = []
             for colaborador in equipe_do_gestor.get("colaboradores", []):
                 if isinstance(colaborador, dict) and colaborador.get("cpf"):
                     cpfs_colaboradores.append(colaborador["cpf"])
-            
+
             total_colaboradores = len(cpfs_colaboradores)
             if total_colaboradores == 0:
                 return 0.0, True
-            
+
             # Buscar todas as solicitações
             todas_solicitacoes = self.__solicitacao.carregar_solicitacoes()
-            
+
             # CORRIGIR: Fazer uma cópia profunda para simular aprovação sem modificar original
             solicitacoes_simulacao = copy.deepcopy(todas_solicitacoes)
-            
+
             # Se há protocolo para aprovar, simular aprovação na cópia
             if protocolo_para_aprovar:
                 for sol in solicitacoes_simulacao:
                     if sol.get("protocolo") == protocolo_para_aprovar:
                         sol["status"] = "APROVADA"
-                        print(f"SIMULANDO APROVAÇÃO do protocolo {protocolo_para_aprovar}")
+                        print(
+                            f"SIMULANDO APROVAÇÃO do protocolo {protocolo_para_aprovar}"
+                        )
                         break
-            
+
             # Contar colaboradores em férias (aprovadas) com sobreposição no período
             colaboradores_em_ferias = set()  # Usar set para evitar duplicatas
-            
+
             # Se não há período específico, usar data atual
             if not periodo_inicio or not periodo_fim:
                 hoje = date.today()
@@ -407,18 +440,20 @@ class ControladorSolicitacao:
                     periodo_fim_date = date.fromisoformat(periodo_fim)
                 except ValueError:
                     return 0.0, True
-            
+
             print(f"Analisando período: {periodo_inicio_date} a {periodo_fim_date}")
             print(f"Total de colaboradores na equipe: {total_colaboradores}")
-            
+
             # USAR A SIMULAÇÃO PARA CALCULAR
             for solicitacao in solicitacoes_simulacao:
                 if solicitacao.get("status") != "APROVADA":
                     continue
-                    
+
                 pessoa = solicitacao.get("pessoa", {})
-                cpf_colaborador = pessoa.get("cpf") if isinstance(pessoa, dict) else None
-                
+                cpf_colaborador = (
+                    pessoa.get("cpf") if isinstance(pessoa, dict) else None
+                )
+
                 if cpf_colaborador in cpfs_colaboradores:
                     # Verificar se há sobreposição de períodos
                     periodos = solicitacao.get("periodos", [])
@@ -426,27 +461,34 @@ class ControladorSolicitacao:
                         try:
                             data_inicio = date.fromisoformat(periodo["DATA_INICIO"])
                             data_fim = date.fromisoformat(periodo["DATA_FIM"])
-                            
+
                             # Verificar sobreposição entre os períodos
                             # Há sobreposição se: inicio1 <= fim2 AND inicio2 <= fim1
-                            if (data_inicio <= periodo_fim_date and periodo_inicio_date <= data_fim):
+                            if (
+                                data_inicio <= periodo_fim_date
+                                and periodo_inicio_date <= data_fim
+                            ):
                                 colaboradores_em_ferias.add(cpf_colaborador)
-                                print(f"Colaborador {cpf_colaborador} estará em férias no período (protocolo: {solicitacao.get('protocolo')})")
+                                print(
+                                    f"Colaborador {cpf_colaborador} estará em férias no período (protocolo: {solicitacao.get('protocolo')})"
+                                )
                                 break
                         except (ValueError, KeyError):
                             continue
-            
+
             # Calcular porcentagem
             num_colaboradores_ferias = len(colaboradores_em_ferias)
             porcentagem = (num_colaboradores_ferias / total_colaboradores) * 100
             pode_aprovar = porcentagem <= 50.0
-            
-            print(f"Colaboradores em férias: {num_colaboradores_ferias}/{total_colaboradores}")
+
+            print(
+                f"Colaboradores em férias: {num_colaboradores_ferias}/{total_colaboradores}"
+            )
             print(f"Porcentagem calculada: {porcentagem:.1f}%")
             print(f"Pode aprovar: {pode_aprovar}")
-            
+
             return porcentagem, pode_aprovar
-            
+
         except Exception as e:
             print(f"Erro ao calcular porcentagem de férias da equipe: {e}")
             return 0.0, True

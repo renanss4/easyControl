@@ -268,7 +268,7 @@ class TelaCadastrarSolicitacao(tk.Tk):
 
         # Data início - com data mínima de hoje + 30 dias
         tk.Label(datas_frame, text="Início:", bg="#dcdcdc").pack(side="left", padx=5)
-        data_minima = date.today() + timedelta(weeks=52)  # 1 ano de antecedência
+        data_minima = date.today() + timedelta(days=30)
         data_inicio = DateEntry(
             datas_frame,
             width=12,
@@ -447,9 +447,11 @@ class TelaGerenciarSolicitacoes(tk.Tk):
         self.cpf_entry = tk.Entry(search_frame, width=15)
         self.cpf_entry.pack(side="left", padx=(0, 10))
 
-        tk.Button(search_frame, text="Buscar", command=self.__controlador_solicitacao.buscar_solicitacoes_equipe).pack(
-            side="left"
-        )
+        tk.Button(
+            search_frame,
+            text="Buscar",
+            command=self.__controlador_solicitacao.buscar_solicitacoes_equipe,
+        ).pack(side="left")
 
         tk.Button(
             search_frame, text="Mostrar Todas", command=self.mostrar_todas_solicitacoes
@@ -548,23 +550,29 @@ class TelaGerenciarSolicitacoes(tk.Tk):
             self.btn_cancelar.config(state="disabled")
 
     def mostrar_todas_solicitacoes(self):
-        """Mostra todas as solicitações da equipe do gestor"""
+        """Exibe todas as solicitações na tabela"""
+        # Limpar tabela
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
         try:
-            if not self.cpf_gestor:
-                messagebox.showerror("Erro", "CPF do gestor não encontrado")
-                return
+            solicitacoes = self.__controlador_solicitacao.buscar_solicitacoes()
 
-            # Buscar solicitações da equipe do gestor
-            solicitacoes = self.__controlador_solicitacao.buscar_solicitacoes_equipe(
-                self.cpf_gestor
-            )
+            for sol in solicitacoes:
+                periodos = self.formatar_periodos(sol)
 
-            if not solicitacoes:
-                messagebox.showinfo(
-                    "Info", "Nenhuma solicitação encontrada para sua equipe"
+                self.tree.insert(
+                    "",
+                    "end",
+                    values=(
+                        sol.get("protocolo", "N/A"),
+                        sol["pessoa"].get("nome", "Nome não encontrado"),
+                        sol["pessoa"].get("cpf", "N/A"),
+                        sol.get("data_solicitacao", "N/A"),
+                        periodos,
+                        sol.get("status", "N/A"),
+                    ),
                 )
-
-            self.preencher_tabela(solicitacoes)
 
         except Exception as e:
             print(f"Erro ao carregar solicitações: {e}")
@@ -664,9 +672,7 @@ class TelaAnalisarSolicitacao(tk.Tk):
         self.__controlador_solicitacao = controlador_solicitacao
 
         # Obter informações da equipe do gestor logado
-        self.usuario_logado = (
-            self.__controlador_solicitacao._ControladorSolicitacao__controlador_sistema.usuario_logado
-        )
+        self.usuario_logado = self.__controlador_solicitacao._ControladorSolicitacao__controlador_sistema.usuario_logado
         self.cpf_gestor = (
             getattr(self.usuario_logado, "cpf", None) if self.usuario_logado else None
         )
@@ -687,9 +693,11 @@ class TelaAnalisarSolicitacao(tk.Tk):
         self.cpf_entry = tk.Entry(busca_frame, width=15)
         self.cpf_entry.pack(side="left", padx=5)
 
-        tk.Button(busca_frame, text="Buscar", command=self.__controlador_solicitacao.buscar_solicitacoes_equipe).pack(
-            side="left", padx=5
-        )
+        tk.Button(
+            busca_frame,
+            text="Buscar",
+            command=self.__controlador_solicitacao.buscar_solicitacoes_equipe,
+        ).pack(side="left", padx=5)
 
         tk.Button(
             busca_frame, text="Mostrar Todos", command=self.mostrar_todas_solicitacoes
@@ -780,20 +788,24 @@ class TelaAnalisarSolicitacao(tk.Tk):
             if not self.cpf_gestor:
                 self.info_equipe_label.config(text="CPF do gestor não encontrado")
                 return
-            
+
             # Calcular porcentagem para período específico ou atual
             if periodo_inicio and periodo_fim:
-                porcentagem, pode_aprovar = self.__controlador_solicitacao.calcular_porcentagem_ferias_equipe(
-                    self.cpf_gestor, periodo_inicio, periodo_fim
+                porcentagem, pode_aprovar = (
+                    self.__controlador_solicitacao.calcular_porcentagem_ferias_equipe(
+                        self.cpf_gestor, periodo_inicio, periodo_fim
+                    )
                 )
                 periodo_texto = f" (período: {periodo_inicio} a {periodo_fim})"
             else:
                 # Calcular porcentagem atual (hoje)
-                porcentagem, pode_aprovar = self.__controlador_solicitacao.calcular_porcentagem_ferias_equipe(
-                    self.cpf_gestor
+                porcentagem, pode_aprovar = (
+                    self.__controlador_solicitacao.calcular_porcentagem_ferias_equipe(
+                        self.cpf_gestor
+                    )
                 )
                 periodo_texto = " (atual)"
-            
+
             # Definir cor baseada na porcentagem
             if porcentagem > 50:
                 cor = "red"
@@ -804,10 +816,10 @@ class TelaAnalisarSolicitacao(tk.Tk):
             else:
                 cor = "black"
                 status_text = ""
-            
+
             texto = f"Porcentagem de colaboradores da equipe em férias: {porcentagem:.1f}%{status_text}{periodo_texto}"
             self.info_equipe_label.config(text=texto, fg=cor)
-            
+
         except Exception as e:
             self.info_equipe_label.config(text="Erro ao carregar informações da equipe")
             print(f"Erro ao atualizar info da equipe: {e}")
@@ -824,10 +836,14 @@ class TelaAnalisarSolicitacao(tk.Tk):
             # OBTER PERÍODO DA SOLICITAÇÃO SELECIONADA
             periodo_inicio = None
             periodo_fim = None
-            
+
             try:
                 # Buscar a solicitação completa pelo protocolo
-                solicitacao = self.__controlador_solicitacao.buscar_solicitacao_por_protocolo(protocolo)
+                solicitacao = (
+                    self.__controlador_solicitacao.buscar_solicitacao_por_protocolo(
+                        protocolo
+                    )
+                )
                 if solicitacao and solicitacao.get("periodos"):
                     periodos = solicitacao["periodos"]
                     # Usar primeiro e último período para calcular intervalo completo
@@ -842,13 +858,17 @@ class TelaAnalisarSolicitacao(tk.Tk):
             # Habilitar/desabilitar botões apenas se status for pendente
             if status.lower() == "pendente":
                 self.btn_reprovar.config(state="normal")
-                
+
                 # VERIFICAR SE PODE APROVAR BASEADO NA PORCENTAGEM DO PERÍODO
                 if self.cpf_gestor and protocolo and periodo_inicio and periodo_fim:
-                    _, pode_aprovar = self.__controlador_solicitacao.calcular_porcentagem_ferias_equipe(
-                        self.cpf_gestor, periodo_inicio, periodo_fim, protocolo
+                    _, pode_aprovar = (
+                        self.__controlador_solicitacao.calcular_porcentagem_ferias_equipe(
+                            self.cpf_gestor, periodo_inicio, periodo_fim, protocolo
+                        )
                     )
-                    self.btn_aprovar.config(state="normal" if pode_aprovar else "disabled")
+                    self.btn_aprovar.config(
+                        state="normal" if pode_aprovar else "disabled"
+                    )
                 else:
                     self.btn_aprovar.config(state="normal")
             else:
@@ -955,7 +975,9 @@ class TelaAnalisarSolicitacao(tk.Tk):
             if not cpf_colaborador:
                 # Tentar obter do campo pessoa
                 pessoa = sol.get("pessoa", {})
-                cpf_colaborador = pessoa.get("cpf", "N/A") if isinstance(pessoa, dict) else "N/A"
+                cpf_colaborador = (
+                    pessoa.get("cpf", "N/A") if isinstance(pessoa, dict) else "N/A"
+                )
 
             status = sol.get("status", "N/A")
 
