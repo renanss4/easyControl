@@ -450,7 +450,7 @@ class TelaGerenciarSolicitacoes(tk.Tk):
         tk.Button(
             search_frame,
             text="Buscar",
-            command=self.__controlador_solicitacao.buscar_solicitacoes_equipe,
+            command=self.buscar_solicitacoes,
         ).pack(side="left")
 
         tk.Button(
@@ -696,7 +696,7 @@ class TelaAnalisarSolicitacao(tk.Tk):
         tk.Button(
             busca_frame,
             text="Buscar",
-            command=self.__controlador_solicitacao.buscar_solicitacoes_equipe,
+            command=self.busca,
         ).pack(side="left", padx=5)
 
         tk.Button(
@@ -780,6 +780,13 @@ class TelaAnalisarSolicitacao(tk.Tk):
 
         # Carregar dados iniciais
         self.mostrar_todas_solicitacoes()
+        self.atualizar_info_equipe()
+
+    def busca(self):
+        solicitacao = self.__controlador_solicitacao.buscar_solicitacoes_por_cpf(
+            self.cpf_entry.get().strip()
+        )
+        self.preencher_tabela(solicitacao)
         self.atualizar_info_equipe()
 
     def atualizar_info_equipe(self, periodo_inicio=None, periodo_fim=None):
