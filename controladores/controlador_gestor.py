@@ -59,23 +59,6 @@ class ControladorGestor:
     # CRUD de Gestor
     def cadastrar_gestor(self, dados: dict) -> bool:
         try:
-            campos_obrigatorios = ["cpf", "nome", "cargo", "email", "senha"]
-
-            # Verificar se todos os campos obrigatórios estão presentes
-            for campo in campos_obrigatorios:
-                if campo not in dados or not dados[campo]:
-                    return False
-
-            # Validar formato do CPF (11 dígitos)
-            cpf = dados["cpf"].replace(".", "").replace("-", "")
-            if len(cpf) != 11 or not cpf.isdigit():
-                return False
-
-            # Validar email básico
-            email = dados["email"]
-            if "@" not in email or "." not in email:
-                return False
-
             # Carregar gestores existentes
             gestores = self.__gestor.carregar_gestores()
 
