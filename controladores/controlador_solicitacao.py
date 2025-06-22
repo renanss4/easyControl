@@ -217,17 +217,27 @@ class ControladorSolicitacao:
                             periodo_inicio = periodos[0]["DATA_INICIO"]
                             periodo_fim = periodos[-1]["DATA_FIM"]  # Último período
                             
+                            print(f"=== VERIFICANDO APROVAÇÃO ===")
+                            print(f"Protocolo: {protocolo}")
+                            print(f"Período: {periodo_inicio} a {periodo_fim}")
+                            print(f"Gestor: {cpf_gestor}")
+                            
                             porcentagem_com_aprovacao, pode_aprovar = self.calcular_porcentagem_ferias_equipe(
                                 cpf_gestor, periodo_inicio, periodo_fim, protocolo
                             )
                             
+                            print(f"Resultado: {porcentagem_com_aprovacao:.1f}% - Pode aprovar: {pode_aprovar}")
+                            
                             if not pode_aprovar:
-                                return False, f"Não é possível aprovar esta solicitação. Durante o período de {periodo_inicio} a {periodo_fim}, a equipe teria {porcentagem_com_aprovacao:.1f}% de colaboradores em férias (máximo permitido: 50%)"
+                                mensagem_erro = f"Não é possível aprovar esta solicitação. Durante o período de {periodo_inicio} a {periodo_fim}, a equipe teria {porcentagem_com_aprovacao:.1f}% de colaboradores em férias (máximo permitido: 50%)"
+                                print(f"BLOQUEANDO APROVAÇÃO: {mensagem_erro}")
+                                return False, mensagem_erro
 
                     sol["status"] = "APROVADA"
                     sucesso = self.__solicitacao.salvar_solicitacoes(solicitacoes)
                     
                     if sucesso:
+                        print(f"APROVAÇÃO REALIZADA COM SUCESSO: {protocolo}")
                         return True, "Solicitação aprovada com sucesso!"
                     else:
                         return False, "Erro ao salvar aprovação"
@@ -343,6 +353,7 @@ class ControladorSolicitacao:
         """
         try:
             from datetime import date
+            import copy
             
             # Buscar a equipe do gestor
             equipes = self.__controlador_sistema.controlador_equipe._ControladorEquipe__equipe.carregar_equipes()
@@ -371,12 +382,15 @@ class ControladorSolicitacao:
             # Buscar todas as solicitações
             todas_solicitacoes = self.__solicitacao.carregar_solicitacoes()
             
-            # Se há protocolo para aprovar, simular aprovação
+            # CORRIGIR: Fazer uma cópia profunda para simular aprovação sem modificar original
+            solicitacoes_simulacao = copy.deepcopy(todas_solicitacoes)
+            
+            # Se há protocolo para aprovar, simular aprovação na cópia
             if protocolo_para_aprovar:
-                for sol in todas_solicitacoes:
+                for sol in solicitacoes_simulacao:
                     if sol.get("protocolo") == protocolo_para_aprovar:
-                        sol = sol.copy()  # Não modificar o original
                         sol["status"] = "APROVADA"
+                        print(f"SIMULANDO APROVAÇÃO do protocolo {protocolo_para_aprovar}")
                         break
             
             # Contar colaboradores em férias (aprovadas) com sobreposição no período
@@ -394,7 +408,11 @@ class ControladorSolicitacao:
                 except ValueError:
                     return 0.0, True
             
-            for solicitacao in todas_solicitacoes:
+            print(f"Analisando período: {periodo_inicio_date} a {periodo_fim_date}")
+            print(f"Total de colaboradores na equipe: {total_colaboradores}")
+            
+            # USAR A SIMULAÇÃO PARA CALCULAR
+            for solicitacao in solicitacoes_simulacao:
                 if solicitacao.get("status") != "APROVADA":
                     continue
                     
@@ -413,13 +431,19 @@ class ControladorSolicitacao:
                             # Há sobreposição se: inicio1 <= fim2 AND inicio2 <= fim1
                             if (data_inicio <= periodo_fim_date and periodo_inicio_date <= data_fim):
                                 colaboradores_em_ferias.add(cpf_colaborador)
+                                print(f"Colaborador {cpf_colaborador} estará em férias no período (protocolo: {solicitacao.get('protocolo')})")
                                 break
                         except (ValueError, KeyError):
                             continue
             
             # Calcular porcentagem
-            porcentagem = (len(colaboradores_em_ferias) / total_colaboradores) * 100
+            num_colaboradores_ferias = len(colaboradores_em_ferias)
+            porcentagem = (num_colaboradores_ferias / total_colaboradores) * 100
             pode_aprovar = porcentagem <= 50.0
+            
+            print(f"Colaboradores em férias: {num_colaboradores_ferias}/{total_colaboradores}")
+            print(f"Porcentagem calculada: {porcentagem:.1f}%")
+            print(f"Pode aprovar: {pode_aprovar}")
             
             return porcentagem, pode_aprovar
             
