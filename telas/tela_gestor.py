@@ -125,24 +125,24 @@ class TelaGestor(tk.Tk):
             for campo_id, _ in self.campos
         }
         # Valida Nome
-        validador = self.valida_nome(dados)
-        if not validador:
+        validador_nome = self.valida_nome(dados)
+        if not validador_nome:
             return False
         # Valida CPF
-        validador = self.valida_cpf(dados)
-        if not validador:
+        validador_cpf = self.valida_cpf(dados)
+        if not validador_cpf:
             return False
         # Valida email
-        validador = self.valida_email(dados)
-        if not validador:
+        validador_email = self.valida_email(dados)
+        if not validador_email:
             return False
         # Valida senha
-        validador = self.valida_senha(dados)
-        if not validador:
+        validador_senha = self.valida_senha(dados)
+        if not validador_senha:
             return False
         # Valida cargo
-        validador = self.valida_cargo(dados)
-        if not validador:
+        validador_cargo = self.valida_cargo(dados)
+        if not validador_cargo:
             return False
 
         try:
