@@ -84,33 +84,33 @@ class TelaGestor(tk.Tk):
         entry.pack(pady=(0, 10))
         return entry
     
-    def valida_nome(self, dados):
+    def valida_nome(self, dados: dict):
         nome = dados["nome"].strip()
         if len(nome) < 3 or not all(char.isalpha() or char.isspace() for char in nome):
             messagebox.showerror("Erro", "Nome inválido. Deve conter apenas letras e espaços, mínimo 3 caracteres.")
             return False
         return True
 
-    def valida_cpf(self, dados):
+    def valida_cpf(self, dados: dict):
         cpf = dados["cpf"].replace(".", "").replace("-", "")
         if len(cpf) != 11 or not cpf.isdigit():
             messagebox.showerror("Erro", "CPF inválido. Deve conter 11 dígitos numéricos.")
             return False
         return True
 
-    def valida_email(self, dados):
+    def valida_email(self, dados: dict):
         if "@" not in dados["email"] or "." not in dados["email"]:
             messagebox.showerror("Erro", "E-mail inválido. Formato esperado: exemplo@dominio.com")
             return False
         return True
 
-    def valida_senha(self, dados):
+    def valida_senha(self, dados: dict):
         if len(dados["senha"]) < 6:
             messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
             return False
         return True
 
-    def valida_cargo(self, dados):
+    def valida_cargo(self, dados: dict):
         cargo = dados["cargo"].strip()
         if len(cargo) < 2 or not all(char.isalpha() or char.isspace() for char in cargo):
             messagebox.showerror("Erro", "Cargo inválido. Deve conter apenas letras e espaços, mínimo 2 caracteres.")
@@ -376,26 +376,26 @@ class TelaGerenciarGestor(tk.Tk):
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao buscar gestor: {str(e)}")
 
-    def valida_nome(self, dados):
+    def valida_nome(self, dados: dict):
         nome = dados["nome"].strip()
         if len(nome) < 3 or not all(char.isalpha() or char.isspace() for char in nome):
             messagebox.showerror("Erro", "Nome inválido. Deve conter apenas letras e espaços, mínimo 3 caracteres.")
             return False
         return True
 
-    def valida_email(self, dados):
+    def valida_email(self, dados: dict):
         if "@" not in dados["email"] or "." not in dados["email"]:
             messagebox.showerror("Erro", "E-mail inválido. Formato esperado: exemplo@dominio.com")
             return False
         return True
 
-    def valida_senha(self, dados):
+    def valida_senha(self, dados: dict):
         if len(dados["senha"]) < 6:
             messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
             return False
         return True
 
-    def valida_cargo(self, dados):
+    def valida_cargo(self, dados: dict):
         cargo = dados["cargo"].strip()
         if len(cargo) < 2 or not all(char.isalpha() or char.isspace() for char in cargo):
             messagebox.showerror("Erro", "Cargo inválido. Deve conter apenas letras e espaços, mínimo 2 caracteres.")
