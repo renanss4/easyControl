@@ -376,6 +376,32 @@ class TelaGerenciarGestor(tk.Tk):
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao buscar gestor: {str(e)}")
 
+    def valida_nome(self, dados):
+        nome = dados["nome"].strip()
+        if len(nome) < 3 or not all(char.isalpha() or char.isspace() for char in nome):
+            messagebox.showerror("Erro", "Nome inválido. Deve conter apenas letras e espaços, mínimo 3 caracteres.")
+            return False
+        return True
+
+    def valida_email(self, dados):
+        if "@" not in dados["email"] or "." not in dados["email"]:
+            messagebox.showerror("Erro", "E-mail inválido. Formato esperado: exemplo@dominio.com")
+            return False
+        return True
+
+    def valida_senha(self, dados):
+        if len(dados["senha"]) < 6:
+            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
+            return False
+        return True
+
+    def valida_cargo(self, dados):
+        cargo = dados["cargo"].strip()
+        if len(cargo) < 2 or not all(char.isalpha() or char.isspace() for char in cargo):
+            messagebox.showerror("Erro", "Cargo inválido. Deve conter apenas letras e espaços, mínimo 2 caracteres.")
+            return False
+        return True
+
     def salvar_edicao(self):
         """Salva as alterações feitas no gestor"""
         if not self.cpf_atual:
@@ -385,24 +411,22 @@ class TelaGerenciarGestor(tk.Tk):
         dados = {campo: entry.get().strip() for campo, entry in self.campos.items()}
         dados["cpf"] = self.cpf_atual  # Incluir o CPF nos dados para o controlador
 
-        # Validar dados
-        if not dados["nome"] or not dados["email"] or not dados["cargo"]:
-            messagebox.showerror(
-                "Erro de Validação",
-                "Nome, email e cargo são obrigatórios",
-            )
-            return
+        validador_nome = self.valida_nome(dados)
+        if not validador_nome:
+            return False
 
-        # Validar email básico
-        if "@" not in dados["email"] or "." not in dados["email"]:
-            messagebox.showerror("Erro", "Email inválido!")
-            return
-
-        # Validar senha se foi fornecida
-        if dados["senha"] and len(dados["senha"]) < 6:
-            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
-            return
-
+        validador_email = self.valida_email(dados)
+        if not validador_email:
+            return False
+        
+        validador_senha = self.valida_senha(dados)
+        if not validador_senha:
+            return False
+        
+        validador_cargo = self.valida_cargo(dados)
+        if not validador_cargo:
+            return False
+        
         try:
             # Chamar controlador para atualizar
             resultado = self.__controlador_gestor.atualizar_gestor(

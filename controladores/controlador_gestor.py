@@ -104,23 +104,6 @@ class ControladorGestor:
 
     def atualizar_gestor(self, cpf: str, dados: dict) -> bool:
         try:
-            # Validar dados obrigatórios
-            if (
-                not dados.get("nome")
-                or not dados.get("email")
-                or not dados.get("cargo")
-            ):
-                return False
-
-            # Validar email básico
-            email = dados["email"]
-            if "@" not in email or "." not in email:
-                return False
-
-            # Validar senha se foi fornecida
-            if dados.get("senha") and len(dados["senha"]) < 6:
-                return False
-
             gestores = self.__gestor.carregar_gestores()
 
             for i, gest in enumerate(gestores):
