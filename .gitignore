@@ -14,5 +14,9 @@ env/
 # Project specific
 /data/
 /data/*
+/gui/
+/controllers/
+/models/
+/utils/
 
 __init__.py
