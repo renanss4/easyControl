@@ -143,7 +143,7 @@ class ControladorEquipe:
                     if cpf:
                         colaborador_obj = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
                             cpf
-                        )
+                        ) or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(cpf)
                         if colaborador_obj:
                             colaboradores_nomes.append(colaborador_obj.nome)
                         else:

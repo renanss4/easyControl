@@ -33,5 +33,12 @@
         "cargo": "Analista de Marketing",
         "data_admissao": "2023-06-12",
         "email": "rafael@empresa.com"
+    },
+    {
+        "cpf": "12345678998",
+        "nome": "Teste da Silva",
+        "cargo": "Pedreiro",
+        "data_admissao": "2025-06-25",
+        "email": "Teste@teste.com"
     }
 ]
