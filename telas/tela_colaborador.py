@@ -10,7 +10,6 @@ class TelaColaborador(tk.Tk):
         self.geometry("800x700")
         self.configure(bg="#dcdcdc")
 
-        # Center frame within the larger window
         frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=20, pady=20)
         frame.place(relx=0.5, rely=0.5, anchor="center")
 

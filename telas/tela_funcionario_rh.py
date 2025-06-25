@@ -82,35 +82,29 @@ class TelaRH(tk.Tk):
     def abrir_cadastro_colaborador(self):
         """Abre a tela de cadastro de colaborador"""
         try:
-            # Destroy this window first
             self.destroy()
             self.__controlador_funcionario_rh._ControladorFuncionarioRH__tela_funcionario_rh = None
             self.__controlador_funcionario_rh.abrir_tela_colaborador()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de colaborador: {e}")
-            # If there's an error, reopen this window
             TelaRH(self.__controlador_funcionario_rh)
 
     def abrir_cadastro_gestor(self):
         """Abre a tela de cadastro de gestor"""
         try:
-            # Destroy this window first
             self.destroy()
             self.__controlador_funcionario_rh.abrir_tela_gestor()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de gestor: {e}")
-            # If there's an error, reopen this window
             TelaRH(self.__controlador_funcionario_rh)
 
     def abrir_cadastro_funcionario_rh(self):
         """Abre a tela de cadastro de funcionário RH"""
         try:
-            # Destroy this window first
             self.destroy()
             TelaCadastrarRH(self.__controlador_funcionario_rh)
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de RH: {e}")
-            # If there's an error, reopen this window
             TelaRH(self.__controlador_funcionario_rh)
 
     def abrir_cadastro_solicitacao(self):
@@ -122,12 +116,10 @@ class TelaRH(tk.Tk):
     def abrir_cadastro_equipe(self):
         """Abre a tela de cadastro de equipe"""
         try:
-            # Destroy this window first
             self.destroy()
             self.__controlador_funcionario_rh.abrir_tela_equipe()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir cadastro de equipe: {e}")
-            # If there's an error, reopen this window
             TelaRH(self.__controlador_funcionario_rh)
 
     def gerar_relatorio_ferias(self):
@@ -154,7 +146,6 @@ class TelaCadastrarRH(tk.Tk):
         self.geometry("800x700")
         self.configure(bg="#dcdcdc")
 
-        # Center frame within the larger window
         frame = tk.Frame(self, bg="#dcdcdc", bd=2, relief="groove", padx=20, pady=20)
         frame.place(relx=0.5, rely=0.5, anchor="center")
 
