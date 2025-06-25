@@ -154,7 +154,7 @@ class TelaGestor(tk.Tk):
                     if hasattr(entry, "delete"):
                         entry.delete(0, tk.END)
             else:
-                messagebox.showerror("Erro", "Não foi possível cadastrar o gestor")
+                messagebox.showerror("Erro", "Não foi possível cadastrar o gestor. Email ou CPF já cadastrados.")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao cadastrar: {str(e)}")
 
@@ -435,7 +435,7 @@ class TelaGerenciarGestor(tk.Tk):
                 messagebox.showinfo("Sucesso", "Gestor atualizado com sucesso!")
                 self.limpar_campos()
             else:
-                messagebox.showerror("Erro", "Não foi possível atualizar o gestor")
+                messagebox.showerror("Erro", "Não foi possível cadastrar o gestor. Email ou CPF já cadastrados.")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao atualizar: {str(e)}")
 

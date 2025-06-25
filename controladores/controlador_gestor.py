@@ -67,6 +67,10 @@ class ControladorGestor:
                 if gest.get("cpf") == dados["cpf"]:
                     return False  # CPF já existe
 
+            for gest in gestores:
+                if gest.get("email") == dados["email"]:
+                    return False # Email já existe
+
             novo_gestor = {
                 "cpf": dados["cpf"],
                 "nome": dados["nome"],
@@ -105,17 +109,17 @@ class ControladorGestor:
     def atualizar_gestor(self, cpf: str, dados: dict) -> bool:
         try:
             gestores = self.__gestor.carregar_gestores()
-
             for i, gest in enumerate(gestores):
                 if gest.get("cpf") == cpf:
-                    # Atualizar apenas os campos fornecidos
                     gestores[i]["nome"] = dados["nome"]
-                    gestores[i]["email"] = dados["email"]
                     gestores[i]["cargo"] = dados["cargo"]
-
-                    # Só atualizar senha se foi fornecida
                     if dados.get("senha"):
                         gestores[i]["senha"] = dados["senha"]
+                    for ind, gestor in enumerate(gestores):
+                        if gestor.get("cpf") != cpf:
+                            if gestor.get("email") == dados["email"]:
+                                return False
+                    gestores[i]["email"] = dados["email"]
 
                     return self.__gestor.salvar_gestores(gestores)
 
