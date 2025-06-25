@@ -215,6 +215,39 @@ class TelaCadastrarRH(tk.Tk):
         entry = tk.Entry(parent, width=30, show=show)
         entry.pack(pady=(0, 10))
         return entry
+    
+    def valida_nome(self, dados: dict):
+        nome = dados["nome"].strip()
+        if len(nome) < 3 or not all(char.isalpha() or char.isspace() for char in nome):
+            messagebox.showerror("Erro", "Nome inválido. Deve conter apenas letras e espaços, mínimo 3 caracteres.")
+            return False
+        return True
+
+    def valida_cpf(self, dados: dict):
+        cpf = dados["cpf"].replace(".", "").replace("-", "")
+        if len(cpf) != 11 or not cpf.isdigit():
+            messagebox.showerror("Erro", "CPF inválido. Deve conter 11 dígitos numéricos.")
+            return False
+        return True
+
+    def valida_email(self, dados: dict):
+        if "@" not in dados["email"] or "." not in dados["email"]:
+            messagebox.showerror("Erro", "E-mail inválido. Formato esperado: exemplo@dominio.com")
+            return False
+        return True
+
+    def valida_senha(self, dados: dict):
+        if len(dados["senha"]) < 6:
+            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
+            return False
+        return True
+
+    def valida_cargo(self, dados: dict):
+        cargo = dados["cargo"].strip()
+        if len(cargo) < 2 or not all(char.isalpha() or char.isspace() for char in cargo):
+            messagebox.showerror("Erro", "Cargo inválido. Deve conter apenas letras e espaços, mínimo 2 caracteres.")
+            return False
+        return True
 
     def concluir_cadastro(self):
         # Coletar dados dos campos
@@ -223,24 +256,41 @@ class TelaCadastrarRH(tk.Tk):
             for campo_id, _ in self.campos
         }
 
-        if not all(dados.values()):
-            messagebox.showerror(
-                "Erro de Validação",
-                "Todos os campos são obrigatórios e devem ser preenchidos",
-            )
-            return
+        # Valida Nome
+        validador_nome = self.valida_nome(dados)
+        if not validador_nome:
+            return False
+        # Valida CPF
+        validador_cpf = self.valida_cpf(dados)
+        if not validador_cpf:
+            return False
+        # Valida email
+        validador_email = self.valida_email(dados)
+        if not validador_email:
+            return False
+        # Valida senha
+        validador_senha = self.valida_senha(dados)
+        if not validador_senha:
+            return False
+        # Valida cargo
+        validador_cargo = self.valida_cargo(dados)
+        if not validador_cargo:
+            return False
 
         try:
             # Chamar o controller para criar o usuário RH
-            self.__controlador_funcionario_rh.cadastrar_funcionario_rh(
+            resultado = self.__controlador_funcionario_rh.cadastrar_funcionario_rh(
                 nome=dados["nome"],
                 cpf=dados["cpf"],
                 email=dados["email"],
                 senha=dados["senha"],
                 cargo=dados["cargo"],
             )
-            messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
-            self.voltar()
+            if resultado:
+                messagebox.showinfo("Sucesso", "Funcionário RH cadastrado com sucesso!")
+                self.voltar()
+            else:
+                messagebox.showerror("Erro", "Não foi possível cadastrar o funcionário de RH. Email ou CPF já cadastrados.")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao cadastrar: {str(e)}")
 
@@ -381,6 +431,32 @@ class TelaGerenciarRH(tk.Tk):
                 self.limpar_campos()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao buscar usuário: {str(e)}")
+        
+    def valida_nome(self, dados: dict):
+        nome = dados["nome"].strip()
+        if len(nome) < 3 or not all(char.isalpha() or char.isspace() for char in nome):
+            messagebox.showerror("Erro", "Nome inválido. Deve conter apenas letras e espaços, mínimo 3 caracteres.")
+            return False
+        return True
+
+    def valida_email(self, dados: dict):
+        if "@" not in dados["email"] or "." not in dados["email"]:
+            messagebox.showerror("Erro", "E-mail inválido. Formato esperado: exemplo@dominio.com")
+            return False
+        return True
+
+    def valida_senha(self, dados: dict):
+        if len(dados["senha"]) < 6:
+            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
+            return False
+        return True
+
+    def valida_cargo(self, dados: dict):
+        cargo = dados["cargo"].strip()
+        if len(cargo) < 2 or not all(char.isalpha() or char.isspace() for char in cargo):
+            messagebox.showerror("Erro", "Cargo inválido. Deve conter apenas letras e espaços, mínimo 2 caracteres.")
+            return False
+        return True
 
     def salvar_edicao(self):
         if not self.cpf_atual:
@@ -389,31 +465,31 @@ class TelaGerenciarRH(tk.Tk):
         # Coletar dados dos campos
         dados = {campo: entry.get().strip() for campo, entry in self.campos.items()}
 
-        # Validar dados
-        if not dados["nome"] or not dados["email"] or not dados["cargo"]:
-            messagebox.showerror(
-                "Erro de Validação",
-                "Nome, email e cargo são obrigatórios",
-            )
-            return
-
-        # Validar email básico
-        if "@" not in dados["email"] or "." not in dados["email"]:
-            messagebox.showerror("Erro", "Email inválido!")
-            return
-
-        # Validar senha se foi fornecida
-        if dados["senha"] and len(dados["senha"]) < 6:
-            messagebox.showerror("Erro", "A senha deve ter pelo menos 6 caracteres!")
-            return
+        # Valida Nome
+        validador_nome = self.valida_nome(dados)
+        if not validador_nome:
+            return False
+        # Valida email
+        validador_email = self.valida_email(dados)
+        if not validador_email:
+            return False
+        # Valida senha
+        validador_senha = self.valida_senha(dados)
+        if not validador_senha:
+            return False
+        # Valida cargo
+        validador_cargo = self.valida_cargo(dados)
+        if not validador_cargo:
+            return False
 
         try:
             # Implementar no controlador
-            self.__controlador_funcionario_rh.atualizar_funcionario_rh(
-                self.cpf_atual, dados
-            )
-            messagebox.showinfo("Sucesso", "Usuário atualizado com sucesso!")
-            self.limpar_campos()
+            resultado = self.__controlador_funcionario_rh.atualizar_funcionario_rh(self.cpf_atual, dados)
+            if resultado:
+                messagebox.showinfo("Sucesso", "Usuário atualizado com sucesso!")
+                self.limpar_campos()
+            else:
+                messagebox.showerror("Erro", "Não foi possível atualizar os dados do funcionário de RH. Email já cadastrado.")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao atualizar usuário: {str(e)}")
 

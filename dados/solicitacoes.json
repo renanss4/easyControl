@@ -16,7 +16,7 @@
             }
         ],
         "parcelamento": false,
-        "status": "PENDENTE"
+        "status": "REJEITADA"
     },
     {
         "protocolo": "SOL-2024-002",
@@ -87,5 +87,180 @@
         ],
         "parcelamento": true,
         "status": "PENDENTE"
+    },
+    {
+        "protocolo": "SOL-20250625-WIQNI",
+        "pessoa": {
+            "cpf": "12345678901",
+            "nome": "Maria Silva",
+            "cargo": "Analista de Recursos Humanos",
+            "data_admissao": "2023-01-15",
+            "email": "maria@empresa.com"
+        },
+        "parcelamento": false,
+        "status": "CANCELADA",
+        "data_solicitacao": "2025-06-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2025-07-30",
+                "DATA_FIM": "2025-08-28"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250625-0UVQL",
+        "pessoa": {
+            "cpf": "55555555555",
+            "nome": "Rafael Souza",
+            "cargo": "Analista de Marketing",
+            "data_admissao": "2023-06-12",
+            "email": "rafael@empresa.com"
+        },
+        "parcelamento": false,
+        "status": "CANCELADA",
+        "data_solicitacao": "2025-06-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2025-07-30",
+                "DATA_FIM": "2025-08-28"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250625-8CBIZ",
+        "pessoa": {
+            "cpf": "11122233344",
+            "nome": "Carlos Mendes",
+            "cargo": "Gestor de TI",
+            "data_admissao": "2021-03-20",
+            "email": "carlos@empresa.com"
+        },
+        "parcelamento": false,
+        "status": "CANCELADA",
+        "data_solicitacao": "2025-06-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2025-07-30",
+                "DATA_FIM": "2025-08-28"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250625-0BFEA",
+        "pessoa": {
+            "cpf": "11122233344",
+            "nome": "Carlos Mendes",
+            "cargo": "Gestor de TI",
+            "data_admissao": "2021-03-20",
+            "email": "carlos@empresa.com"
+        },
+        "parcelamento": true,
+        "status": "CANCELADA",
+        "data_solicitacao": "2025-06-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2025-07-30",
+                "DATA_FIM": "2025-08-12"
+            },
+            {
+                "DATA_INICIO": "2025-08-13",
+                "DATA_FIM": "2025-08-28"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250625-F3XXJ",
+        "pessoa": {
+            "cpf": "11122233344",
+            "nome": "Carlos Mendes",
+            "cargo": "Gestor de TI",
+            "data_admissao": "2021-03-20",
+            "email": "carlos@empresa.com"
+        },
+        "parcelamento": false,
+        "status": "CANCELADA",
+        "data_solicitacao": "2025-06-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2025-07-30",
+                "DATA_FIM": "2025-08-28"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250625-B83U2",
+        "pessoa": {
+            "cpf": "44444444444",
+            "nome": "Mariana Alves",
+            "cargo": "Designer UX/UI",
+            "data_admissao": "2023-02-28",
+            "email": "mariana@empresa.com"
+        },
+        "parcelamento": false,
+        "status": "APROVADA",
+        "data_solicitacao": "2025-06-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2025-07-30",
+                "DATA_FIM": "2025-08-28"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250625-38L5H",
+        "pessoa": {
+            "cpf": "11122233344",
+            "nome": "Carlos Mendes",
+            "cargo": "Gestor de TI",
+            "data_admissao": "2021-03-20",
+            "email": "carlos@empresa.com"
+        },
+        "parcelamento": false,
+        "status": "PENDENTE",
+        "data_solicitacao": "2025-06-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2025-07-30",
+                "DATA_FIM": "2025-08-28"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250625-T7KRW",
+        "pessoa": {
+            "cpf": "12345678901",
+            "nome": "Maria Silva",
+            "cargo": "Analista de Recursos Humanos",
+            "data_admissao": "2023-01-15",
+            "email": "maria@empresa.com"
+        },
+        "parcelamento": false,
+        "status": "CANCELADA",
+        "data_solicitacao": "2025-06-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2025-07-30",
+                "DATA_FIM": "2025-08-28"
+            }
+        ]
+    },
+    {
+        "protocolo": "SOL-20250625-AL3AT",
+        "pessoa": {
+            "cpf": "12345678901",
+            "nome": "Maria Silva",
+            "cargo": "Analista de Recursos Humanos",
+            "data_admissao": "2023-01-15",
+            "email": "maria@empresa.com"
+        },
+        "parcelamento": false,
+        "status": "REJEITADA",
+        "data_solicitacao": "2025-06-25",
+        "periodos": [
+            {
+                "DATA_INICIO": "2025-07-30",
+                "DATA_FIM": "2025-08-28"
+            }
+        ]
     }
 ]

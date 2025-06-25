@@ -22,5 +22,13 @@
         "data_admissao": "2019-11-12",
         "cargo": "Gestor de Marketing",
         "senha": "roberto123"
+    },
+    {
+        "cpf": "12345678902",
+        "nome": "Rodolfo Tester",
+        "cargo": "Gestor de RH",
+        "data_admissao": "2025-06-25",
+        "email": "rodolfo@empresa.com",
+        "senha": "rodolfo123"
     }
 ]

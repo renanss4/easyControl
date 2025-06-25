@@ -72,6 +72,8 @@ class ControladorEquipe:
 
                     colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
                         cpf.strip()
+                    ) or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(
+                        cpf.strip()
                     )
                     if not colaborador:
                         return False, f"Colaborador não encontrado: {cpf}"
@@ -84,9 +86,9 @@ class ControladorEquipe:
             colaborador_json = [
                 {
                     "cpf": cpf,
-                    "nome": self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf).nome,
-                    "email": self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf).email,
-                    "cargo": self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf).cargo,
+                    "nome": self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf).nome or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(cpf).nome,
+                    "email": self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf).email or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(cpf).email,
+                    "cargo": self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf).cargo or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(cpf).cargo
                 }
                 for cpf in cpfs_validados
             ]
@@ -221,6 +223,8 @@ class ControladorEquipe:
 
                     colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(
                         cpf.strip()
+                    ) or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(
+                        cpf.strip()
                     )
                     if not colaborador:
                         return False, f"Colaborador não encontrado: {cpf}"
@@ -233,7 +237,7 @@ class ControladorEquipe:
             # Criar lista de colaboradores JSON
             colaborador_json = []
             for cpf in cpfs_validados:
-                colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf)
+                colaborador = self.__controlador_sistema.controlador_colaborador.buscar_colaborador_por_cpf(cpf) or self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionario_rh_por_cpf(cpf)
                 colaborador_json.append({
                     "cpf": colaborador.cpf,
                     "nome": colaborador.nome,
@@ -288,7 +292,7 @@ class ControladorEquipe:
         try:
             # Buscar todos os colaboradores
             todos_colaboradores = self.__controlador_sistema.controlador_colaborador.buscar_colaboradores()
-
+            todos_funcionarios_rh = self.__controlador_sistema.controlador_funcionario_rh.buscar_funcionarios_rh()
             # Buscar CPFs já em equipes
             equipes = self.__equipe.carregar_equipes()
             colaboradores_em_equipes = set()
@@ -307,7 +311,13 @@ class ControladorEquipe:
                     colaboradores_sem_equipe.append(
                         {"cpf": colaborador.cpf, "nome": colaborador.nome}
                     )
-
+            for funcionario_rh in todos_funcionarios_rh:
+                if (
+                    hasattr(funcionario_rh, "cpf") and funcionario_rh.cpf not in colaboradores_em_equipes
+                ):
+                    colaboradores_sem_equipe.append(
+                        {"cpf": funcionario_rh.cpf, "nome": funcionario_rh.nome}
+                    )
             return colaboradores_sem_equipe
 
         except Exception as e:

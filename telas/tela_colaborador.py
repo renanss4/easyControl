@@ -56,7 +56,7 @@ class TelaColaborador(tk.Tk):
             text="Gerenciar Colaboradores",
             font=("Arial", 10, "bold"),
             bg="#c0c0c0",
-            width=15,
+            width=25,
             command=self.gerenciar_colaborador,
         ).pack(side="left", padx=5)
 

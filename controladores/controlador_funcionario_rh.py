@@ -62,23 +62,6 @@ class ControladorFuncionarioRH:
         self, nome: str, cpf: str, email: str, senha: str, cargo: str
     ) -> bool:
         try:
-            # Validar dados
-            if not all([nome, cpf, email, senha, cargo]):
-                return False
-
-            # Validar formato do CPF (11 dígitos)
-            cpf_limpo = cpf.replace(".", "").replace("-", "")
-            if len(cpf_limpo) != 11 or not cpf_limpo.isdigit():
-                return False
-
-            # Validar email básico
-            if "@" not in email or "." not in email:
-                return False
-
-            # Validar senha
-            if len(senha) < 6:
-                return False
-
             # Carregar funcionários existentes
             funcionarios = self.__funcionario_rh.carregar_funcionarios_rh()
 
@@ -86,6 +69,10 @@ class ControladorFuncionarioRH:
             for func in funcionarios:
                 if func.get("cpf") == cpf:
                     return False  # CPF já existe
+
+            for func in funcionarios:
+                if func.get("email") == email:
+                    return False # Email já existe
 
             # Criar novo funcionário
             novo_funcionario = {
@@ -128,35 +115,18 @@ class ControladorFuncionarioRH:
 
     def atualizar_funcionario_rh(self, cpf: str, dados: dict) -> bool:
         try:
-            # Validar dados obrigatórios
-            if (
-                not dados.get("nome")
-                or not dados.get("email")
-                or not dados.get("cargo")
-            ):
-                return False
-
-            # Validar email básico
-            email = dados["email"]
-            if "@" not in email or "." not in email:
-                return False
-
-            # Validar senha se foi fornecida
-            if dados.get("senha") and len(dados["senha"]) < 6:
-                return False
-
             funcionarios = self.__funcionario_rh.carregar_funcionarios_rh()
-
             for i, func in enumerate(funcionarios):
                 if func.get("cpf") == cpf:
-                    # Atualizar apenas os campos fornecidos
                     funcionarios[i]["nome"] = dados["nome"]
-                    funcionarios[i]["email"] = dados["email"]
                     funcionarios[i]["cargo"] = dados["cargo"]
-
-                    # Só atualizar senha se foi fornecida
                     if dados.get("senha"):
                         funcionarios[i]["senha"] = dados["senha"]
+                    for ind, rh in enumerate(funcionarios):
+                        if rh.get("cpf") != cpf:
+                            if rh.get("email") == dados["email"]:
+                                return False
+                    funcionarios[i]["email"] = dados["email"]
 
                     return self.__funcionario_rh.salvar_funcionarios_rh(funcionarios)
 
